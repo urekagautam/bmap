@@ -18,7 +18,7 @@ const organizationSchema = new mongoose.Schema(
       required: true,
       select: false,
     },
-    phonenum: {
+    phone: {
       type: String,
       select: false,
       unique: true,
