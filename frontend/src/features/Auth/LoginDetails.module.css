@@ -1,0 +1,87 @@
+.mainWrapper {
+    max-width: 160rem;
+    margin: 0 auto;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--bg);
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(to right, var(--primary80) 38.4%, var(--bg) 0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .mainWrapper .logo {
+    color: var(--bg);
+    font-size: 4.8rem;
+    font-weight: 600;
+    letter-spacing: 1.44px;
+    position: absolute;
+    left: 52px;
+    top: 32px;
+  }
+  
+  .loginWrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14.9rem;
+    height: 100%;
+  }
+  
+  .loginimg {
+    max-width: 57.3rem;
+    height:40.4rem;
+  }
+  
+  .loginContainer {
+    width: 37.4rem;
+  }
+  
+  .loginContainer > h1 {
+    padding-bottom: 1rem;
+    font-size: 3.2rem;
+    font-weight: 600;
+    letter-spacing: 0.64px;
+  }
+  
+  .loginContainer > p:first-of-type {
+    padding-bottom: var(--m);
+    font-size: 1.6rem;
+    letter-spacing: 0.24px;
+    color: var(--neutral70);
+  }
+  
+  .loginContainer > p:last-of-type {
+    letter-spacing: 0.24px;
+    color: var(--neutral60);
+  }
+  
+  .signUpLink {
+    color: var(--accent);
+    font-weight: 500;
+    padding-left: var(--xs);
+    letter-spacing: 0.24px;
+  }
+  
+  .formContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.68rem;
+    max-width:35.2rem;
+    padding-bottom: var(--m);
+  }
+  
+  .formContainer > button {
+    margin-top: 2.6rem;
+  }
+  
+  .inputfield {
+    width: 100%;
+  }
+  
+  .requiredAsterisk {
+    color: var(--error);
+    font-size: 1.4rem;
+  }

@@ -1,0 +1,157 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 10px;
+}
+
+body {
+  font-size: 1.4rem;
+  font-family: "Poppins", serif;
+  letter-spacing: 0.24px;
+  position: relative;
+}
+
+button{
+  font-family: Poppins;
+}
+
+label{
+  color:var(--neutral90);
+  font-size:1.4rem;
+  padding-bottom:var(--s);
+  display: block;
+  font-weight: 500;
+}
+
+input{
+caret-color:var(--secondary90);
+}
+
+input::placeholder{
+  font-size:1.2rem;
+  font-family: "Poppins", serif;
+  color:var(--neutral30);
+}
+
+.requiredAsterisk{
+  color:red;
+}
+
+:root {
+  /* colors */
+  --primary-hsl: 158, 83%, 14%;
+  --secondary-hsl: 185, 27%, 74%;
+  --accent-hsl: 67, 59%, 64%;
+  --neutral-hsl: 160, 84%, 5%;
+
+  --bg-hsl: 156, 100%, 99%;
+
+  --success-hsl: 134, 83%, 36%;
+  --warning-hsl: 50, 96%, 50%;
+  --error-hsl: 359, 93%, 44%;
+  --information-hsl: 246, 83%, 36%;
+
+  --bg: hsl(var(--bg-hsl));
+  --bg60: hsl(var(--bg-hsl), 60%);
+  --bg70: hsl(var(--bg-hsl), 70%);
+
+  --success: hsl(var(--success-hsl));
+  --warning: hsl(var(--warning-hsl));
+  --error: hsl(var(--error-hsl));
+  --information: hsl(var(--information-hsl));
+
+  --success70: hsl(var(--success-hsl), 70%);
+  --success30: hsl(var(--success-hsl), 30%);
+  --success10: hsl(var(--success-hsl), 10%);
+
+  --warning70: hsl(var(--warning-hsl), 70%);
+  --warning30: hsl(var(--warning-hsl), 30%);
+  --warning10: hsl(var(--warning-hsl), 10%);
+
+  --error70: hsl(var(--error-hsl), 70%);
+  --error30: hsl(var(--error-hsl), 30%);
+  --error10: hsl(var(--error-hsl), 10%);
+
+  --information70: hsl(var(--information-hsl), 70%);
+  --information30: hsl(var(--information-hsl), 30%);
+  --information10: hsl(var(--information-hsl), 10%);
+
+  --primary: hsl(var(--primary-hsl));
+  --secondary: hsl(var(--secondary-hsl));
+  --neutral: hsl(var(--neutral-hsl));
+  --accent: hsl(var(--accent-hsl));
+
+
+
+  --primary5: hsl(var(--primary-hsl), 5%);
+  --primary10: hsl(var(--primary-hsl), 10%);
+  --primary20: hsl(var(--primary-hsl), 20%);
+  --primary30: hsl(var(--primary-hsl), 30%);
+  --primary40: hsl(var(--primary-hsl), 40%);
+  --primary50: hsl(var(--primary-hsl), 50%);
+  --primary60: hsl(var(--primary-hsl), 60%);
+  --primary70: hsl(var(--primary-hsl), 70%);
+  --primary80: hsl(var(--primary-hsl), 80%);
+  --primary90: hsl(var(--primary-hsl), 90%);
+
+  --secondary10: hsl(var(--secondary-hsl), 10%);
+  --secondary20: hsl(var(--secondary-hsl), 20%);
+  --secondary30: hsl(var(--secondary-hsl), 30%);
+  --secondary40: hsl(var(--secondary-hsl), 40%);
+  --secondary50: hsl(var(--secondary-hsl), 50%);
+  --secondary60: hsl(var(--secondary-hsl), 60%);
+  --secondary70: hsl(var(--secondary-hsl), 70%);
+  --secondary80: hsl(var(--secondary-hsl), 80%);
+  --secondary90: hsl(var(--secondary-hsl), 90%);
+
+  --accent10: hsl(var(--accent-hsl), 10%);
+  --accent20: hsl(var(--accent-hsl), 20%);
+  --accent30: hsl(var(--accent-hsl), 30%);
+  --accent40: hsl(var(--accent-hsl), 40%);
+  --accent50: hsl(var(--accent-hsl), 50%);
+  --accent60: hsl(var(--accent-hsl), 60%);
+  --accent70: hsl(var(--accent-hsl), 70%);
+  --accent80: hsl(var(--accent-hsl), 80%);
+  --accent90: hsl(var(--accent-hsl), 90%);
+
+  --neutral10: hsl(var(--neutral-hsl), 10%);
+  --neutral20: hsl(var(--neutral-hsl), 20%);
+  --neutral30: hsl(var(--neutral-hsl), 30%);
+  --neutral40: hsl(var(--neutral-hsl), 40%);
+  --neutral50: hsl(var(--neutral-hsl), 50%);
+  --neutral60: hsl(var(--neutral-hsl), 60%);
+  --neutral70: hsl(var(--neutral-hsl), 70%);
+  --neutral80: hsl(var(--neutral-hsl), 80%);
+  --neutral90: hsl(var(--neutral-hsl), 90%);
+
+  /* scaling - spacing */
+  --xs: 0.4rem;
+  --s: 0.8rem;
+  --sm: 1.6rem;
+  --m: 2.4rem;
+  --l: 3.2rem;
+  --xl: 4rem;
+  --xxl: 4.8rem;
+  --xxxl: 7.2rem;
+
+  /* widths and heights */
+  --max-width: 150rem;
+/* --nav-height: 5.3rem; */
+}
+
+.full-and-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100svh;
+  width: 100%;
+}
