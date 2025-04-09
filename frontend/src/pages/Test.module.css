@@ -1,0 +1,7 @@
+.abc > h3{
+    color: var(--primary90);
+}
+
+.abc .icon{
+    color:red;
+}
