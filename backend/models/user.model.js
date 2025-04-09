@@ -25,6 +25,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       select: false,
       unique: true,
+      sparse:true
     },
     image: {
       type: String,
@@ -32,18 +33,15 @@ const userSchema = new mongoose.Schema(
     },
     experience_level: {
       type: String,
-      required: true,
       enum: ["Entry-Level","Junior","Senior"] //to modify later after UI
     },
     location: {
       lat: {
         type: Number,
-        required: true,
         select: false
       },
       lng:{
         type: Number,
-        required: true,
         select: false
       },
     },
