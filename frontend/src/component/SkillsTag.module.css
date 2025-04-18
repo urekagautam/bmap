@@ -1,0 +1,14 @@
+.skillsTagWrapper{
+    background-color: var(--neutral5);
+    text-align: center;
+    width: fit-content;
+    height: fit-content;
+    padding: var(--xs)var(--s);
+    border-radius: var(--xl);
+}
+
+.skillsTagWrapper > h2{
+    color:var(--neutral70);
+    font-size: 1rem;
+    font-weight: 500;
+}

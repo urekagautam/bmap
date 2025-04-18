@@ -121,7 +121,9 @@ input::placeholder{
   --accent80: hsl(var(--accent-hsl), 80%);
   --accent90: hsl(var(--accent-hsl), 90%);
 
+  --neutral5: hsl(var(--neutral-hsl), 5%);
   --neutral10: hsl(var(--neutral-hsl), 10%);
+  --neutral15: hsl(var(--neutral-hsl), 15%);
   --neutral20: hsl(var(--neutral-hsl), 20%);
   --neutral30: hsl(var(--neutral-hsl), 30%);
   --neutral40: hsl(var(--neutral-hsl), 40%);

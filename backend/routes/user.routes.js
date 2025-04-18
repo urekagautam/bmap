@@ -3,10 +3,10 @@ import { loginUser, logoutUser, registerUser } from "../controllers/user.control
 
 const router = Router();
 
-router.route("/register").post(registerUser);
+router.route("/api/v1/auth/signup").post(registerUser);
 router.route("/login").post(loginUser);
 
 //secured routes
-router.route("/logout").post(verifyJWT, logoutUser)
+// router.route("/logout").post(verifyJWT, logoutUser)
 
 export default router;

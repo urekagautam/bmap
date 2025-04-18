@@ -21,9 +21,9 @@ return {accessToken, refreshToken}
 
 const registerUser = asyncHandler(async (req, res, next) => {
   //get user details front frontend
-  const { firstname, lastname, email, password, confirmPassword } = req.body;
+  const { name, email, password, confirmpassword } = req.body;
 
-  if (!firstname || !lastname || !email || !password || !confirmPassword) {
+  if (!name|| !email || !password || !confirmpassword) {
     return next(new ApiError(400, "All fields are required"));
   }
 
@@ -31,7 +31,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
     return next(new ApiError(400, "Email is already used"));
   }
 
-  const user = await User.create({firstname, lastname, email, password});
+  const user = await User.create({name, email, password});
 
   const createdUser = await User.findById(user._id).select("-password -refreshToken")
   if(!createdUser){
@@ -42,9 +42,9 @@ const registerUser = asyncHandler(async (req, res, next) => {
   .status(201)
   .json(
     new ApiResponse(
-      200, 
+      201, 
       createdUser, 
-      "User Registered Successfully")
+      "User Registered Successfully (backend talking)")
   )
 });
 

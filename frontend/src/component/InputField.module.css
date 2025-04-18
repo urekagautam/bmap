@@ -1,75 +1,74 @@
-.inputContainer{
-    max-width: 37.4rem;
-    height: 4.8rem;
+.inputContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
-}
+    height: 4.8rem;
+  }
+  
+  .inputContainer.lg {
+    max-width: 49.6rem;
+    width: 100%;
+  }
+ 
+  .inputContainer.md {
+    max-width: 35.2rem;
+    width: 100%;
+  }
+  
+  .inputContainer.sm {
+    max-width: 16.8rem;
+    width: 100%;
+  } 
 
-.input{
+  .inputContainer.fw {
+    width: 100%;
+  }
+  
+  .input {
     display: flex;
     padding: 1.2rem 1rem;
     align-items: center;
     gap: 10px;
-    align-self: stretch;
     border: 1px solid var(--neutral60);
     border-radius: 8px;
     caret-color: var(--secondary);
-    height: 4.8rem;
+    height:100%;
+    max-height: 4.8rem;
     background-color: var(--bg);
-}
-
-.input:active,
-.input:focus{
+    width: 100%; 
+  }
+  
+  .input:active,
+  .input:focus {
     border: none;
     outline: 1px solid var(--secondary90);
-}
-
-.none{
-    border:none;
-    outline: none;
-}
-
-.none:focus, .none:active {
+  }
+  
+  .none {
+    /* border: none; */
+    /* outline: none; */
+  }
+  
+  .none:focus,
+  .none:active {
     border: none;
     outline: none;
   }
-
-.error{
+  
+  .error {
     background-color: var(--error10);
     border: 1px solid var(--error70);
-}
-
-/* .errorMessage{
+  }
+  
+  .errorMessage {
     color: var(--error70);
     font-size: 1.2rem;
-} */
-
-.errorMessage {
-    color: var(--error70);
-    font-size: 1.2rem;
-    padding-top:0.8rem;
-}
-
-/* layouts */
-.lg {
-    width: 49.6rem;
-}
-
-.md {
-    width: 35.2rem;
-}
-
-.sm {
-    width: 16.8rem;
-}
-
-.fw {
-    width: 100%;
-}
-
-@media (max-width: 366px) {
-    .lg {
-        width: 100%;
+    padding-top: 0.8rem;
+  }
+  
+  @media (max-width: 366px) {
+    .inputContainer.lg {
+      width: 100%;
     }
-}
+  }
+  
