@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 4.8rem;
+    height: 100%;
   }
   
   .inputContainer.lg {
@@ -33,7 +33,7 @@
     border-radius: 8px;
     caret-color: var(--secondary);
     height:100%;
-    max-height: 4.8rem;
+    /* max-height: 4.8rem; */
     background-color: var(--bg);
     width: 100%; 
   }

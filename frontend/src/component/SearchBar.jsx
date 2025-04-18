@@ -6,7 +6,9 @@ import { cns } from "../utils/classNames.js"
 export default function SearchBar({ className="", layout = "lg"}) {
   return (
     <div className={cns(styles.mainWrapper, styles[layout])}>
+      <div className={styles.searchWrapper}>
       <InputField placeholder="Search Job tiltle, company" layout="fw" border="none" />
+      </div>
       <IconSearch />
     </div>
   )

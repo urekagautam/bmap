@@ -2,6 +2,10 @@ import React from 'react'
 import VacancyCard from '../component/VacancyCard'
 import styles from './Test.module.css'
 import SearchBar from '../component/SearchBar'
+import { IconOrganizationProfile } from '../component/icons/IconOrganizationProfile'
+import { IconPeoplePlus } from '../component/icons/IconPeoplePlus'
+import { IconBag } from '../component/icons/IconBag'
+import UserNavbar from '../component/UserNavbar'
 
 export default function Test() {
   return (
@@ -14,7 +18,8 @@ export default function Test() {
         skills={["Communication", "Motivation", "Supervision"]}
       /> */}
 
-      <SearchBar />
+      {/* <SearchBar /> */}
+      <UserNavbar />
     </div>
   )
 }
