@@ -4,6 +4,7 @@ import styles from "./InputField.module.css";
 export default function InputField({
   className = "",
   layout = "md",
+  border,
   error,
   ...props
 }) {
@@ -16,6 +17,7 @@ export default function InputField({
         className={cns(
           styles.input,
           styles[layout],
+          styles[border],
           className,
           error ? styles.error : ""
         )}

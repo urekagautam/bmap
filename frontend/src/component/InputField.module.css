@@ -25,6 +25,16 @@
     outline: 1px solid var(--secondary90);
 }
 
+.none{
+    border:none;
+    outline: none;
+}
+
+.none:focus, .none:active {
+    border: none;
+    outline: none;
+  }
+
 .error{
     background-color: var(--error10);
     border: 1px solid var(--error70);
