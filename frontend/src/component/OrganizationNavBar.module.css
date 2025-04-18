@@ -3,7 +3,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.8rem 2.4rem;
-    background-color: var(--bg);
+    background-color:var(--bg);
     border-bottom: 1px solid var(--neutral10);
     height: var(--navheight);
     position: fixed;

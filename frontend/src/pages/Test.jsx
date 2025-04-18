@@ -6,6 +6,8 @@ import { IconOrganizationProfile } from '../component/icons/IconOrganizationProf
 import { IconPeoplePlus } from '../component/icons/IconPeoplePlus'
 import { IconBag } from '../component/icons/IconBag'
 import UserNavbar from '../component/UserNavbar'
+import OrganizationNavbar from '../component/OrganizationNavBar'
+import InputField from '../component/InputField'
 
 export default function Test() {
   return (
@@ -20,6 +22,7 @@ export default function Test() {
 
       {/* <SearchBar /> */}
       <UserNavbar />
+      <OrganizationNavbar />
     </div>
   )
 }
