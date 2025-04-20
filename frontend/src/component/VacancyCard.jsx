@@ -14,6 +14,7 @@ export default function VacancyCard({deadline,views,vacancyTitle,vacancyCompany,
 
   return (
     <div className={styles.mainWrapper}>
+      <div className={styles.shrinkWrapper}>
       <div className={styles.topMainWrapper}>
         <div className={styles.topLWrapper}>
            <img className={styles.loginimg} src="/RandomImage.png" alt="RandomImage" />
@@ -44,6 +45,7 @@ export default function VacancyCard({deadline,views,vacancyTitle,vacancyCompany,
         <h3>{views}</h3>
         </div>
 
+      </div>
       </div>
     </div>
   )

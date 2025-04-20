@@ -13,10 +13,12 @@ app.use(cors({
 
 //routes import
 import userRouter from "./routes/user.routes.js"
+import vacancyRouter from "./routes/vacancy.routes.js"
+import organizationRouter from "./routes/organization.routes.js"
 
 //routes declaration
-
-app.use("/users", userRouter) //http://localhost:5000/api/v1/users/register
+//USER
+app.use("/users/api/v1/", userRouter) //http://localhost:5000/users/api/v1/auth/signup
 app.use((err, req, res, next) => {
   console.error("Error middleware hit:", err);
 
@@ -27,4 +29,10 @@ app.use((err, req, res, next) => {
   });
 });
 
-export {app}
+//VACANCY
+app.use("/api/v1", vacancyRouter) //http://localhost:5000/vacancies/api/v1/createVacancy, getAllVacancies
+
+//ORGANIZATION
+app.use("/organization/api/v1", organizationRouter) //http://localhost:5000/organization/api/v1/auth/signup
+
+export {app} 

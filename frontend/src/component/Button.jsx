@@ -6,7 +6,6 @@ export default function Button({
   layout = "md",
   fill = "fill",
   color = "primary",
-  icon,
   children,
   ...props
 }) {
@@ -23,7 +22,6 @@ export default function Button({
     >
       <div className={styles.inline}>
         {children}
-        {icon}
       </div>
     </button>
   );

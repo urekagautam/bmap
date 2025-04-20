@@ -1,0 +1,198 @@
+.mainWrapper {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  margin-top: 6.2rem;
+  height: calc(90vh - var(--nav-height));
+}
+
+.box {
+  border: 1px solid var(--neutral5);
+  background-color: var(--bg);
+  max-width: 76rem;
+  width: 100%;
+  height: 100%;
+  padding: 2rem;
+  padding-bottom: 1rem;
+  border-radius: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  margin: 0 auto;
+  margin-top: 9.6rem;
+  overflow-y: scroll;
+  border-radius: 1.6rem;
+}
+
+.box::-webkit-scrollbar{
+    display: none;
+}
+
+.box .title > h1 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--text-90);
+  letter-spacing: 0.3;
+}
+
+.box .title > p {
+  font-size: 1.6rem;
+  font-weight: 300;
+  color: var(--neutral70);
+}
+
+.dataTitle {
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: 0.54;
+  padding: 0.8rem 0;
+}
+
+.allDatas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.orgData {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 2.4rem;
+  row-gap: 1.6rem;
+  padding-bottom: 1.6rem;
+}
+
+.NameImg,
+.citizenship,
+.registration {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  padding: 0.8rem 0;
+  padding-bottom: 1.2rem;
+}
+
+.form {
+  position: relative;
+}
+
+.form > span:first-child {
+  color: var(--neutral40);
+  letter-spacing: 0.42px;
+  font-size: 1.4rem;
+}
+
+.stepOne,
+.stepTwo,
+.stepThree {
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--neutral20);
+  padding-bottom: 0.8rem;
+}
+
+.requiredAsterisk {
+  color: var(--error);
+  font-size: 1.4rem;
+}
+
+.bracketText {
+  color: var(--neutral60);
+  font-weight: 400;
+}
+
+.removeBtns {
+  margin-top: 1.2rem;
+}
+
+.addPhoto {
+  display: flex;
+  margin-left: 3.6rem;
+  gap: 0.8rem;
+}
+
+.addPhoto .rightSide {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.addPhoto .rightSide > h5 {
+  font-weight: 400;
+  color: var(--neutral80);
+  padding-left: 0.4rem;
+}
+
+.button {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.uploadButton {
+    position: relative;
+    cursor: pointer;
+    width: 9rem;
+    height: 9rem;
+    background-color: var(--neutral5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding:0;/*  removing padding for label (which was in util class in index.css) */
+  }
+  
+  .previewImage {
+    object-fit: cover;
+    position: absolute;
+  
+  }
+  
+  .previewImage, .overlay{
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+  }
+  
+  .overlay {
+      background-color: transparent;
+      opacity: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--bg);
+      font-size: 1.4rem;
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+  
+    .previewContainer:hover .overlay {
+      background-color: var(--neutral50);
+      opacity: 1;
+      pointer-events: auto;
+    }
+  
+  .uploadButton:hover {
+    background-color: var(--neutral10);
+  }
+  
+  .uploadText {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  
+  .uploadText > h3 {
+    color: var(--neutral50);
+    font-size: 1.2rem;
+    font-weight: 400;
+  }
+  
+  .uploadText > svg {
+    color: var(--neutral40);
+    font-size: 2.8rem;
+  }
+  
+  .fileInput {
+    display: none;
+  }
+  

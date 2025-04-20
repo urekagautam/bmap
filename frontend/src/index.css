@@ -144,8 +144,8 @@ input::placeholder{
   --xxxl: 7.2rem;
 
   /* widths and heights */
-  --max-width: 150rem;
---nav-height: 6rem;
+--max-width: 124.1rem;
+--nav-height: 5.6rem;
 }
 
 .full-and-center {
@@ -157,3 +157,4 @@ input::placeholder{
   height: 100svh;
   width: 100%;
 }
+

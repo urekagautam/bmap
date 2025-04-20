@@ -3,8 +3,9 @@ import { loginUser, logoutUser, registerUser } from "../controllers/user.control
 
 const router = Router();
 
-router.route("/api/v1/auth/signup").post(registerUser);
-router.route("/login").post(loginUser);
+//Authenticate User
+router.route("/auth/signup").post(registerUser);
+router.route("/auth/login").post(loginUser);
 
 //secured routes
 // router.route("/logout").post(verifyJWT, logoutUser)

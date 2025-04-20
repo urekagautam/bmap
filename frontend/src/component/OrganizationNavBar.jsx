@@ -30,7 +30,7 @@ export default function OrganizationNavbar({ className = "" }) {
           <span className={styles.navItemText}>People</span>
         </div>
 
-        <Link to="/profile" className={styles.navItem}>
+        <Link to="/orgprofile" className={styles.navItem}>
           <IconOrganizationProfile />
           <span className={styles.navItemText}>Profile</span>
         </Link>

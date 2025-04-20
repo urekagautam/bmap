@@ -33,6 +33,10 @@
   .neutral {
     --color: var(--neutral90);
   }
+
+  .neutralLight {
+    --color: var(--neutral40);
+  }
   
   .accent {
     --color: var(--accent90);

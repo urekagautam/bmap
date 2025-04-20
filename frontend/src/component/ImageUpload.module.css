@@ -1,0 +1,68 @@
+.uploadButton {
+  position: relative;
+  cursor: pointer;
+  width: 30rem;
+  height: 14.6rem;
+  background-color: var(--neutral5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.previewImage {
+  object-fit: cover;
+  position: absolute;
+
+}
+
+.previewImage, .overlay{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.overlay {
+    background-color: transparent;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg);
+    font-size: 1.4rem;
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+
+  .previewContainer:hover .overlay {
+    background-color: var(--neutral50);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+.uploadButton:hover {
+  background-color: var(--neutral10);
+}
+
+.uploadText {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.uploadText > h3 {
+  color: var(--neutral50);
+  font-size: 1.2rem;
+  font-weight: 400;
+}
+
+.uploadText > svg {
+  color: var(--neutral40);
+  font-size: 2rem;
+}
+
+.fileInput {
+  display: none;
+}

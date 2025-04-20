@@ -1,0 +1,20 @@
+.sectionWrapper{
+    max-width: var(--max-width);
+    margin:0 auto;
+   min-height: 100svh;
+   margin-top:2.4rem;
+  }
+
+  html{
+    background-color: var(--neutral5);
+  }
+
+ .Banner{
+    width: 100%;
+     margin-top:var(--nav-height);
+  }
+
+.Banner >img{
+    width: 100%;
+  }
+
