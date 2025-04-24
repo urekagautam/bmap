@@ -27,11 +27,7 @@ export default function SignUpDetails() {
       });
       console.log("Signup successful!", user);
     } catch (error) {
-     /*  console.error("Signup failed", error);
-      setError("Something went wrong during signup."); */
-   /*    const errorMessage = error.response?.data?.message || "Something went wrong during signup.";
-    setError(errorMessage); */
-    console.error("Signup failed", error);  // Log everything
+    console.error("Signup failed", error);  
     const errorMessage = error.response?.data?.message || "Something went wrong during signup.";
     setError(errorMessage);
     }
