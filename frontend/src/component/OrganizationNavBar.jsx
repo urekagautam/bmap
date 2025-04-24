@@ -1,6 +1,6 @@
 
 
-import styles from "./UserNavbar.module.css"
+import styles from "./OrganizationNavbar.module.css"
 import {Link} from "react-router-dom";
 
 import { IconBag } from "./icons/IconBag"

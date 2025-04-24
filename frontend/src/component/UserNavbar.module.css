@@ -5,7 +5,7 @@
     padding: 1.2rem 2.4rem;
     background-color: var(--bg);
     border-bottom: 1px solid var(--neutral10);
-    height: var(--navheight);
+    height: var(--nav-height);
     position: fixed;
     top: 0;
     left: 0;
