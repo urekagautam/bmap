@@ -6,7 +6,7 @@ import {Link} from "react-router-dom";
 import { IconBag } from "./icons/IconBag"
 import SearchBar from "./SearchBar"
 import { cns } from "../utils/classNames"
-import { IconOrganizationProfile } from "./icons/IconOrganizationProfile";
+import { IconOrganizationBuilding } from "./icons/IconOrganizationBuilding";
 import { IconPeoplePlus } from "./icons/IconPeoplePlus";
 
 export default function OrganizationNavbar({ className = "" }) {
@@ -31,7 +31,7 @@ export default function OrganizationNavbar({ className = "" }) {
         </div>
 
         <Link to="/orgprofile" className={styles.navItem}>
-          <IconOrganizationProfile />
+          <IconOrganizationBuilding />
           <span className={styles.navItemText}>Profile</span>
         </Link>
       </div>

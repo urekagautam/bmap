@@ -6,7 +6,7 @@ import { IconLocation } from "../../component/icons/IconLocation";
 import OrganizationNavbar from "../../component/OrganizationNavbar.jsx";
 import { IconBag } from "../../component/icons/IconBag.jsx";
 import { cns } from "../../utils/classNames.js";
-import { IconOrganizationProfile } from "../../component/icons/IconOrganizationProfile.jsx";
+import { IconOrganizationBuilding } from "../../component/icons/IconOrganizationBuilding.jsx";
 
 export default function CompanyProfile() {
   const [activeTab, setActiveTab] = useState("about");
@@ -184,16 +184,16 @@ export default function CompanyProfile() {
                   <h2>Company Information</h2>
                   <div className={styles.infoList}>
                     <span>
-                      <IconOrganizationProfile />
+                      <IconOrganizationBuilding />
                       {industry}
                     </span>
                     <span>
-                      <IconOrganizationProfile />
+                      <IconOrganizationBuilding />
                       {employeeCount}
                     </span>
                     <span className={styles.showLocation}>
                       <span className={styles.locationDetails}>
-                        <IconOrganizationProfile />
+                        <IconOrganizationBuilding />
                         {address}
                       </span>
                       <Button fill="text" color="accent">
@@ -201,7 +201,7 @@ export default function CompanyProfile() {
                       </Button>
                     </span>
                     <span>
-                      <IconOrganizationProfile />
+                      <IconOrganizationBuilding />
                       {phonenum}
                     </span>
                   </div>
