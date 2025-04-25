@@ -1,12 +1,18 @@
 import { useState } from "react";
 import styles from "./CompanyProfile.module.css";
-import SkillsTag from "../../component/SkillsTag.jsx";
+import Tag from "../../component/Tag.jsx";
 import Button from "../../component/Button.jsx";
-import { IconLocation } from "../../component/icons/IconLocation";
-import OrganizationNavbar from "../../component/OrganizationNavbar.jsx";
-import { IconBag } from "../../component/icons/IconBag.jsx";
 import { cns } from "../../utils/classNames.js";
 import { IconOrganizationBuilding } from "../../component/icons/IconOrganizationBuilding.jsx";
+import { IconPeople } from "../../component/icons/IconPeople.jsx";
+import { IconLocationPinned } from "../../component/icons/IconLocationPinned";
+import { IconPhone } from "../../component/icons/IconPhone.jsx";
+import { IconEnvelope } from "../../component/icons/IconEnvelope.jsx";
+import { IconClock } from "../../component/icons/IconClock.jsx";
+import { IconInstagram } from "../../component/icons/IconInstagram.jsx";
+import { IconFacebook } from "../../component/icons/IconFacebook.jsx";
+import { IconX } from "../../component/icons/IconX.jsx";
+import { IconPencil } from "../../component/icons/IconPencil.jsx";
 
 export default function CompanyProfile() {
   const [activeTab, setActiveTab] = useState("about");
@@ -19,11 +25,25 @@ export default function CompanyProfile() {
   const followerCount = "1K Followers";
   const address = "Payutar, Kathmandu";
   const phonenum = "+977 9840034685";
+  const email ="TecCorp123@gmail.com";
+  
   /*  based on newlines paragraph as an array store gareo hunchu so  /n ansar chutai as an array baseko assume garera: */
   const aboutText = [
     "TechCorp is a leading technology company specializing in cloud-based solutions for businesses. Founded in 2010, we've grown to serve over 10,000 customers worldwide.",
     "Our mission is to empower businesses with innovative technology solutions that drive growth and efficiency. We're committed to creating a positive impact through our products and services, and we're proud to be recognized as a leader in our industry.",
   ];
+
+    // Benefits data (same case as above)
+    const benefits = [
+      "Competitive Salary and equity package",
+      "Flexible work hours and remote work options",
+      "Professional development budget",
+      "Regular team events & retreats",
+      "Comprehensive health, dental, and vision insurance",
+      "Generous vacation policy",
+      "Home office stipend",
+      "Wellness programs and gym membership",
+    ];
 
   // Specialties data
   const specialties = [
@@ -34,17 +54,7 @@ export default function CompanyProfile() {
     "Data Analytics",
   ];
 
-  // Benefits data
-  const benefits = [
-    "Competitive Salary and equity package",
-    "Flexible work hours and remote work options",
-    "Professional development budget",
-    "Regular team events & retreats",
-    "Comprehensive health, dental, and vision insurance",
-    "Generous vacation policy",
-    "Home office stipend",
-    "Wellness programs and gym membership",
-  ];
+
 
   //half garera 2ta column ma rakhna
   const middleIndex = Math.ceil(benefits.length / 2);
@@ -106,7 +116,7 @@ export default function CompanyProfile() {
 
             <Button fill="outline" layout="sm" color="neutralLight">
               {" "}
-              <IconBag /> Edit Pofile
+              <IconPencil /> Edit Pofile
             </Button>
           </div>
 
@@ -152,7 +162,7 @@ export default function CompanyProfile() {
                     <h3>Specialties</h3>
                     <div className={styles.specialties}>
                       {specialties.map((specialty, index) => (
-                        <SkillsTag key={index} skill={specialty} />
+                        <Tag key={index} skill={specialty} />
                       ))}
                     </div>
                   </div>
@@ -188,12 +198,12 @@ export default function CompanyProfile() {
                       {industry}
                     </span>
                     <span>
-                      <IconOrganizationBuilding />
+                      <IconPeople />
                       {employeeCount}
                     </span>
                     <span className={styles.showLocation}>
                       <span className={styles.locationDetails}>
-                        <IconOrganizationBuilding />
+                        <IconLocationPinned />
                         {address}
                       </span>
                       <Button fill="text" color="accent">
@@ -201,8 +211,12 @@ export default function CompanyProfile() {
                       </Button>
                     </span>
                     <span>
-                      <IconOrganizationBuilding />
+                      <IconPhone />
                       {phonenum}
+                    </span>
+                    <span>
+                      <IconEnvelope />
+                      {email}
                     </span>
                   </div>
 
@@ -216,7 +230,7 @@ export default function CompanyProfile() {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <IconLocation platform="instagram" />
+                          <IconInstagram platform="instagram" />
                         </a>
                       )}
                       {socials.facebook && (
@@ -225,7 +239,7 @@ export default function CompanyProfile() {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <IconLocation platform="facebook" />
+                          <IconFacebook platform="facebook" />
                         </a>
                       )}
                       {socials.x && (
@@ -234,7 +248,7 @@ export default function CompanyProfile() {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <IconLocation platform="x" />
+                          <IconX platform="x" />
                         </a>
                       )}
                     </div>
@@ -248,7 +262,7 @@ export default function CompanyProfile() {
                       <div key={index} className={styles.jobCard}>
                         <h3 className={styles.jobTitle}>{job.title}</h3>
                         <div className={styles.jobLocation}>
-                          <IconLocation />
+                          <IconClock />
                           <span>
                             {job.locationType} • {job.employmentType}
                           </span>

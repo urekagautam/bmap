@@ -3,7 +3,7 @@ import { IconEyeOpen } from "./icons/IconEyeOpen.jsx";
 import { IconHourglass } from "./icons/IconHourglass.jsx";
 import { IconLightBulb } from "./icons/IconLightBulb.jsx";
 import styles from "./VacancyCard.module.css";
-import SkillsTag from "./SkillsTag.jsx";
+import Tag from "./Tag.jsx";
 
 export default function VacancyCard({
   deadline,
@@ -31,7 +31,7 @@ export default function VacancyCard({
               <IconLightBulb />
               <h3>Key Skills:</h3>
               {skills.slice(0, 3).map((skill, index) => (
-                <SkillsTag key={index} skill={skill} />
+                <Tag key={index} skill={skill} />
               ))}
             </div>
           </div>

@@ -266,3 +266,8 @@
   font-size: 1.4rem;
   padding-bottom: 1.6rem;
 }
+
+.jobLocation >svg{
+  color:var(--neutral70);
+  font-size:2.4rem;
+}

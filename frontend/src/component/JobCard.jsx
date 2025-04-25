@@ -2,8 +2,12 @@ import styles from "./JobCard.module.css";
 import { IconEyeOpen } from "./icons/IconEyeOpen.jsx";
 import { IconHourglass } from "./icons/IconHourglass.jsx";
 import { IconLightBulb } from "./icons/IconLightBulb.jsx";
-import { IconLocation } from "./icons/IconLocation.jsx";
-import SkillsTag from "./SkillsTag.jsx";
+import { IconLocationPinned } from "./icons/IconLocationPinned.jsx";
+import Tag from "./Tag.jsx";
+import { IconChartLinedUp } from "./icons/IconChartLinedUp.jsx";
+import { IconChartBar } from "./icons/IconChartBar.jsx";
+import { IconClock } from "./icons/IconClock.jsx";
+import { IconBills } from "./icons/IconBills.jsx";
 
 export default function JobCard({
   deadline,
@@ -35,7 +39,7 @@ export default function JobCard({
             <h2>{vacancyCompany}</h2>
 
             <div className={styles.skillsWrapper}>
-              <IconLocation />
+              <IconLocationPinned />
               <h3>{location}</h3>
             </div>
 
@@ -43,7 +47,7 @@ export default function JobCard({
               <IconLightBulb />
               <h3>Key Skills:</h3>
               {skills.slice(0, 3).map((skill, index) => (
-                <SkillsTag key={index} skill={skill} />
+                <Tag key={index} skill={skill} />
               ))}
             </div>
           </div>
@@ -52,22 +56,22 @@ export default function JobCard({
 
       <div className={styles.jobDetailsWrapper}>
         <div className={styles.jobDetails}>
-          <IconHourglass />
+          <IconBills />
           <span>Rs. {salaryMin}</span> - <span>Rs. {salaryMax}</span>
         </div>
         <div className={styles.jobDetails}>
-          <IconHourglass />
+          <IconChartBar />
           {level}
         </div>
         <div className={styles.jobDetails}>
-          <IconHourglass />
+          <IconClock />
           <span>
             {" "}
             {period} • {employmentType}
           </span>
         </div>
         <div className={styles.jobDetails}>
-          <IconHourglass />
+          <IconChartLinedUp />
           {experienceRequired}
         </div>
       </div>
