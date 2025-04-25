@@ -121,12 +121,15 @@ input::placeholder{
   --accent80: hsl(var(--accent-hsl), 80%);
   --accent90: hsl(var(--accent-hsl), 90%);
 
+  --neutral5: hsl(var(--neutral-hsl), 5%);
   --neutral10: hsl(var(--neutral-hsl), 10%);
+  --neutral15: hsl(var(--neutral-hsl), 15%);
   --neutral20: hsl(var(--neutral-hsl), 20%);
   --neutral30: hsl(var(--neutral-hsl), 30%);
   --neutral40: hsl(var(--neutral-hsl), 40%);
   --neutral50: hsl(var(--neutral-hsl), 50%);
   --neutral60: hsl(var(--neutral-hsl), 60%);
+  --neutral65: hsl(var(--neutral-hsl), 65%);
   --neutral70: hsl(var(--neutral-hsl), 70%);
   --neutral80: hsl(var(--neutral-hsl), 80%);
   --neutral90: hsl(var(--neutral-hsl), 90%);
@@ -141,9 +144,20 @@ input::placeholder{
   --xxl: 4.8rem;
   --xxxl: 7.2rem;
 
+  /* heading sizes */
+  h1{
+    letter-spacing: 0.96px;
+    font-size: var(--l);
+    }
+
+    h2{
+      letter-spacing: 0.72px;
+      font-size: var(--m);
+      }
+
   /* widths and heights */
-  --max-width: 150rem;
-/* --nav-height: 5.3rem; */
+--max-width: 124.1rem;
+--nav-height: 5.6rem;
 }
 
 .full-and-center {
@@ -155,3 +169,4 @@ input::placeholder{
   height: 100svh;
   width: 100%;
 }
+

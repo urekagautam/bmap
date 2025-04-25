@@ -1,0 +1,128 @@
+.mainWrapper {
+    max-width: 58.8rem;
+    width: 100vw;
+    background-color: var(--bg60);
+    border: 1px solid var(--neutral15);
+    border-radius: var(--s);
+    padding: 0.8rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    padding-bottom:0.8rem;
+    border-bottom: 1px solid var(--neutral10);
+  }
+
+  .jobDetailsWrapper{
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    row-gap:0.4rem;
+    padding-bottom:1.2rem;
+    border-bottom: 1px solid var(--neutral10);
+    font-size:1.2rem;
+  }
+
+  .jobDetails {
+    color:var(--neutral60);
+    display: flex;
+    align-items: center;
+    gap:0.8rem;
+  }
+
+  .jobDetails > svg {
+    font-size: 2rem;
+  }
+
+  .mainWrapper:hover {
+    background-color: var(--neutal10);
+  }
+  
+  .topMainWrapper {
+    display: flex;
+    gap: 1.2rem;
+  }
+  
+  .topLWrapper {
+    padding: 0.8rem 0;
+  }
+  
+  .topRWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  
+  .topRWrapper > h1 {
+    font-size: 1.6rem;
+  }
+  
+  .topRWrapper > h2 {
+    font-size: 1.4rem;
+    font-weight: 400;
+  }
+  
+  .topLWrapper > img {
+    width: 4rem;
+    height: 4rem;
+  }
+  
+  .skillsWrapper {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    color: var(--neutral60);
+    white-space: nowrap;
+  }
+  
+  .skillsWrapper > svg {
+    font-size: 2rem;
+  }
+  
+  .skillsWrapper h3 {
+    font-size: 1.2rem;
+    font-weight: 400;
+  }
+  
+  /* bottom wrapper */
+  .bottomMainWrapper {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .bottomLWrapper,
+  .bottomRWrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  
+  .bottomLWrapper > h3 {
+    color: var(--accent);
+  }
+  
+  .bottomRWrapper > svg,
+  .bottomLWrapper > svg {
+    font-size: 2rem;
+  }
+  
+  .bottomLWrapper {
+    color: var(--accent);
+  }
+  
+  .bottomRWrapper {
+    color: var(--neutral50);
+  }
+  
+  .bottomLWrapper > h3,
+  .bottomRWrapper > h3 {
+    font-weight: 500;
+    font-size: 1.2rem;
+  }
+  
