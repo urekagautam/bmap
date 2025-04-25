@@ -158,6 +158,11 @@
       background-color: var(--color);
       color: var(--bg);
     }
+
+    .btn.neutralLight.outline:focus {
+      background-color: var(--neutral);
+      border-color: var(--neutral);
+    }
     
     /* hover for text layout*/
     .btn.primary.text:hover {
