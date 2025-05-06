@@ -1,0 +1,58 @@
+   .optionsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.6rem;
+  }
+  
+  .checkboxLabel {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    padding:0;
+  }
+  
+  .checkboxWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .checkboxInput {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .checkboxCustom {
+    margin-right: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .checkedIcon, .uncheckedIcon{
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+
+  .checkedIcon{
+    color: var(--neutral90);
+  }
+
+  .uncheckedIcon{
+    color: var(--neutral50);
+  }
+  
+  .labelText {
+    font-size: 16px;
+    color: var(--neutral50);
+  }
+
+  .checkedlabel{
+    color:var(--neutral90);
+  }
+  
