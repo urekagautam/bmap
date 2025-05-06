@@ -1,0 +1,26 @@
+.textAreaContainer {
+    width: 100%;
+    max-width: 58.1rem;
+  }
+  
+  .textArea {
+    width: 100%;
+    padding: 1.2rem 1.6rem;
+    resize: none;
+    font-size: 1.4rem;
+    line-height: 1.5;
+    border: 1px solid var(--neutral15);
+    outline: none;
+    border-radius: 0.8rem;
+    background-color: var(--bg);  
+  }
+  
+  .textArea::placeholder {
+    color:var(--neutral30);
+  }
+  
+  .textArea:focus {
+    border:none;
+    outline: 1px solid var(--secondary90);
+  }
+  
