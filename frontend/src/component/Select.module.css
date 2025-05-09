@@ -17,7 +17,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 1.2rem;
-    max-height: 4.16rem;
+    max-height: 4.8rem;
   }
 
   .focused {
@@ -49,12 +49,10 @@
   
   .optionsContainer {
     position: absolute;
-    padding-top: 1.2rem;
+    padding-top: 0.8rem;
     top: calc(100% - 5px);
     left: 0;
     right: 0;
-    max-height: 20rem;
-    overflow-y: auto;
     background-color: var(--bg);
     border: 1px solid var(--neutral15);
     border-radius: 0 0 0.8rem 0.8rem;
@@ -82,21 +80,45 @@
     flex: 1;
   }
     
-  .optionsContainer::-webkit-scrollbar {
+  .searchInput {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    border: none;
+    border-bottom: 1px solid var(--neutral15);
+    outline: none;
+  }
+
+  .optionsList {
+    max-height: 20rem;
+    overflow-y: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--neutral15);
+  }
+  
+  .noOptions {
+    padding: 1rem;
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--neutral60);
+  }
+  
+  .optionsList::-webkit-scrollbar {
     width: 1rem;
   }
   
-  .optionsContainer::-webkit-scrollbar-track {
+  .optionsList::-webkit-scrollbar-track {
     background: var(--secondary10);
     border-radius: 0.8rem;
   }
   
-  .optionsContainer::-webkit-scrollbar-thumb {
-    background:var(--neutral20);
+  .optionsList::-webkit-scrollbar-thumb {
+    background: var(--neutral20);
     border-radius: 0.8rem;
-    border: 3px solid #f0f0f0 ; 
+    border: 3px solid #f0f0f0;
   }
   
-  .optionsContainer::-webkit-scrollbar-thumb:hover {
+  .optionsList::-webkit-scrollbar-thumb:hover {
     background: var(--neutral30);
   }
+  

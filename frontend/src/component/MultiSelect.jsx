@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import styles from "./Select.module.css";
 import { IconDownArrow } from "../component/icons/IconDownArrow.jsx";
 import { cns } from "../utils/classNames";
+import InputField from "./InputField.jsx";
 
 export default function MultiSelect({
   options = [],
@@ -11,12 +12,14 @@ export default function MultiSelect({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState(defaultValues || []);
+  const [searchQuery, setSearchQuery] = useState("");
   const selectRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (selectRef.current && !selectRef.current.contains(event.target)) {
         setIsOpen(false);
+        setSearchQuery("");
       }
     };
 
@@ -31,7 +34,11 @@ export default function MultiSelect({
   }, [defaultValues]);
 
   const toggleDropdown = () => {
-    setIsOpen(!isOpen);
+    setIsOpen((prev) => {
+      const newState = !prev;
+      if (!newState) setSearchQuery("");
+      return newState;
+    });
   };
 
   const handleOptionClick = (option) => {
@@ -53,6 +60,10 @@ export default function MultiSelect({
     return selectedOptions.some((item) => item.value === option.value);
   };
 
+  const filteredOptions = options.filter((option) =>
+    option.label.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className={styles.selectContainer} ref={selectRef}>
       <div
@@ -72,20 +83,36 @@ export default function MultiSelect({
           <IconDownArrow />
         </div>
       </div>
+
       {isOpen && (
         <div className={styles.optionsContainer}>
-          {options.map((option) => (
-            <div
-              key={option.value}
-              className={cns(
-                styles.option,
-                isOptionSelected(option) ? styles.selected : ""
-              )}
-              onClick={() => handleOptionClick(option)}
-            >
-              <span className={styles.optionLabel}>{option.label}</span>
-            </div>
-          ))}
+          <InputField
+            layout="fw"
+            border="none"
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className={styles.searchInput}
+          />
+
+          <div className={styles.optionsList}>
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((option) => (
+                <div
+                  key={option.value}
+                  className={cns(
+                    styles.option,
+                    isOptionSelected(option) ? styles.selected : ""
+                  )}
+                  onClick={() => handleOptionClick(option)}
+                >
+                  <span className={styles.optionLabel}>{option.label}</span>
+                </div>
+              ))
+            ) : (
+              <div className={styles.noOptions}>No options found</div>
+            )}
+          </div>
         </div>
       )}
     </div>
