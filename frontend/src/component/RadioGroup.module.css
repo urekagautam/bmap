@@ -1,0 +1,57 @@
+  .optionsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.6rem;
+  }
+  
+  .radioLabel {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    padding:0;
+  }
+  
+  .radioWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .radioInput {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .radioCustom {
+    display: flex;
+    align-items: center;
+    margin-right: 0.8rem;
+    position: relative;
+    transition: all 0.2s ease;
+  }
+
+  .labelText {
+    font-size: 1.4rem;
+    color: var(--neutral50);
+  }
+
+  .checkedlabel{
+    color:var(--neutral90);
+  }
+  
+  .checkedIcon, .uncheckedIcon{
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+
+  .checkedIcon{
+    color: var(--neutral90);
+  }
+
+  .uncheckedIcon{
+    color: var(--neutral50);
+  }

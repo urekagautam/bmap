@@ -1,0 +1,124 @@
+.selectContainer {
+    position: relative;
+    width: 100%;
+    font-size: 1.2rem;
+    max-width: 35.2rem;
+    user-select: none;
+  }
+  
+  .selectHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 1rem;
+    background-color: var(--bg);
+    border: 1px solid var(--neutral60);
+    border-radius: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1.2rem;
+    max-height: 4.8rem;
+  }
+
+  .focused {
+    border-color: var(--secondary90);
+  }
+
+  .selectHeader:hover {
+    border-color:var(--secondary90);
+  }
+  
+  .placeholder{
+    color:var(--neutral30);
+  }
+  
+  .arrow {
+    font-size: 2.4rem;
+    margin-left: 1rem;
+    transition: transform 0.2s ease;
+    color:var(--neutral90);
+  }
+  
+  .up {
+    transform: rotate(0deg);
+  }
+  
+  .down {
+    transform: rotate(180deg);
+  }
+  
+  .optionsContainer {
+    position: absolute;
+    padding-top: 0.8rem;
+    top: calc(100% - 5px);
+    left: 0;
+    right: 0;
+    background-color: var(--bg);
+    border: 1px solid var(--neutral15);
+    border-radius: 0 0 0.8rem 0.8rem;
+    z-index: 10;
+  }
+
+  .option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 1rem ;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .option:hover {
+    background-color: var(--secondary10);
+  }
+  
+  .selected {
+    background-color: var(--secondary10);
+  }
+  
+  .optionLabel {
+    flex: 1;
+  }
+    
+  .searchInput {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    border: none;
+    border-bottom: 1px solid var(--neutral15);
+    outline: none;
+  }
+
+  .optionsList {
+    max-height: 20rem;
+    overflow-y: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--neutral15);
+  }
+  
+  .noOptions {
+    padding: 1rem;
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--neutral60);
+  }
+  
+  .optionsList::-webkit-scrollbar {
+    width: 1rem;
+  }
+  
+  .optionsList::-webkit-scrollbar-track {
+    background: var(--secondary10);
+    border-radius: 0.8rem;
+  }
+  
+  .optionsList::-webkit-scrollbar-thumb {
+    background: var(--neutral20);
+    border-radius: 0.8rem;
+    border: 3px solid #f0f0f0;
+  }
+  
+  .optionsList::-webkit-scrollbar-thumb:hover {
+    background: var(--neutral30);
+  }
+  

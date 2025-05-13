@@ -12,14 +12,14 @@ import { IconBills } from "./icons/IconBills.jsx";
 export default function JobCard({
   deadline,
   views,
-  vacancyTitle,
-  vacancyCompany,
+  title,
+  company,
   salaryMin,
   salaryMax,
-  period,
-  employmentType,
+  jobType,
+  jobMode,
   level,
-  experienceRequired,
+  experienceDuration,
   skills = [],
   location,
 }) {
@@ -35,8 +35,8 @@ export default function JobCard({
             />
           </div>
           <div className={styles.topRWrapper}>
-            <h1>{vacancyTitle}</h1>
-            <h2>{vacancyCompany}</h2>
+            <h1>{title}</h1>
+            <h2>{company}</h2>
 
             <div className={styles.skillsWrapper}>
               <IconLocationPinned />
@@ -66,13 +66,12 @@ export default function JobCard({
         <div className={styles.jobDetails}>
           <IconClock />
           <span>
-            {" "}
-            {period} • {employmentType}
+            {jobType} • {jobMode}
           </span>
         </div>
         <div className={styles.jobDetails}>
           <IconChartLinedUp />
-          {experienceRequired}
+          {experienceDuration}
         </div>
       </div>
       <div className={styles.bottomMainWrapper}>

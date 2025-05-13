@@ -84,10 +84,10 @@ export default function CompanyProfile() {
             <h3 className={styles.followers}>{followerCount}</h3>
           </div>
 
-          {activeTab === "about" && <AboutTab />}
+          {activeTab === "about" && <AboutTab setActiveTab={setActiveTab} />}
 
           {activeTab === "jobs" && <JobsTab />}
-
+c
           {activeTab === "edittab" && <EditTab />}
         </section>
       </section>
