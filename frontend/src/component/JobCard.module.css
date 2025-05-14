@@ -1,72 +1,128 @@
-.inputContainer {
+.mainWrapper {
+    max-width: 58.8rem;
+    width: 100vw;
+    background-color: var(--bg60);
+    border: 1px solid var(--neutral15);
+    border-radius: var(--s);
+    padding: 0.8rem 1rem;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    height: 100%;
-    max-height:4.8rem;
-    width: 100%;
-}
-  
-  .inputContainer.lg {
-    max-width: 49.6rem;
-  }
- 
-  .inputContainer.md {
-    max-width: 35.2rem;
+    gap: 0.8rem;
+    overflow: hidden;
+    cursor: pointer;
   }
   
-  .inputContainer.sm {
-    max-width: 16.8rem;
-  } 
-
-  .inputContainer.fw {
-    width: 100%;
-  }
-  
-  .input {
+  .wrapper {
     display: flex;
-    padding: 1.2rem 1rem;
+    flex-direction: column;
+    gap: 1.4rem;
+    padding-bottom:0.8rem;
+    border-bottom: 1px solid var(--neutral10);
+  }
+
+  .jobDetailsWrapper{
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    row-gap:0.4rem;
+    padding-bottom:1.2rem;
+    border-bottom: 1px solid var(--neutral10);
+    font-size:1.2rem;
+  }
+
+  .jobDetails {
+    color:var(--neutral60);
+    display: flex;
     align-items: center;
-    gap: 10px;
-    border: 1px solid var(--neutral60);
-    border-radius: 8px;
-    caret-color: var(--secondary);
-    height:100%;
-    /* max-height: 4.8rem; */
-    background-color: var(--bg);
-    width: 100%; 
+    gap:0.8rem;
+  }
+
+  .jobDetails > svg {
+    font-size: 2rem;
+  }
+
+  .mainWrapper:hover {
+    background-color: var(--neutal10);
   }
   
-  .input:active,
-  .input:focus {
-    border: none;
-    outline: 1px solid var(--secondary90);
+  .topMainWrapper {
+    display: flex;
+    gap: 1.2rem;
   }
   
-  .none {
-    border: none !important;
-    outline: none !important;
+  .topLWrapper {
+    padding: 0.8rem 0;
   }
   
-  .none:focus,
-  .none:active {
-    border: none;
-    outline: none;
+  .topRWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
   }
   
-  .error {
-    background-color: var(--error10);
-    border: 1px solid var(--error70);
+  .topRWrapper > h1 {
+    font-size: 1.6rem;
   }
   
-  .errorMessage {
-    color: var(--error70);
+  .topRWrapper > h2 {
+    font-size: 1.4rem;
+    font-weight: 400;
+  }
+  
+  .topLWrapper > img {
+    width: 4rem;
+    height: 4rem;
+  }
+  
+  .skillsWrapper {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    color: var(--neutral60);
+    white-space: nowrap;
+  }
+  
+  .skillsWrapper > svg {
+    font-size: 2rem;
+  }
+  
+  .skillsWrapper h3 {
     font-size: 1.2rem;
-    padding-top: 0.8rem;
+    font-weight: 400;
   }
   
-  @media (max-width: 366px) {
-    .inputContainer.lg {
-      width: 100%;
-    }
+  /* bottom wrapper */
+  .bottomMainWrapper {
+    display: flex;
+    justify-content: space-between;
   }
+  
+  .bottomLWrapper,
+  .bottomRWrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  
+  .bottomLWrapper > h3 {
+    color: var(--accent);
+  }
+  
+  .bottomRWrapper > svg,
+  .bottomLWrapper > svg {
+    font-size: 2rem;
+  }
+  
+  .bottomLWrapper {
+    color: var(--accent);
+  }
+  
+  .bottomRWrapper {
+    color: var(--neutral50);
+  }
+  
+  .bottomLWrapper > h3,
+  .bottomRWrapper > h3 {
+    font-weight: 500;
+    font-size: 1.2rem;
+  }
+  

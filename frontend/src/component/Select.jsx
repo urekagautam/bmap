@@ -9,6 +9,8 @@ export default function Select({
   placeholder = "Select an option",
   onChange = () => {},
   defaultValue = null,
+  layout = "md",
+  searchable = true, 
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(defaultValue);
@@ -49,7 +51,7 @@ export default function Select({
   );
 
   return (
-    <div className={styles.selectContainer} ref={selectRef}>
+    <div className={cns(styles.selectContainer, styles[layout])} ref={selectRef}>
       <div
         className={cns(styles.selectHeader, isOpen && styles.focused)}
         onClick={toggleDropdown}
@@ -69,35 +71,39 @@ export default function Select({
 
       {isOpen && (
         <div className={styles.optionsContainer}>
-          <InputField
-            layout="fw"
-            border="none"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className={styles.searchInput}
-          />
+          {/* ✅ Conditionally render search input */}
+          {searchable && (
+            <InputField
+              layout="fw"
+              border="none"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={styles.searchInput}
+            />
+          )}
 
           <div className={styles.optionsList}>
-          {filteredOptions.length > 0 ? (
-            filteredOptions.map((option) => (
-              <div
-                key={option.value}
-                className={cns(
-                  styles.option,
-                  selectedOption?.value === option.value ? styles.selected : ""
-                )}
-                onClick={() => handleOptionClick(option)}
-              >
-                {option.label}
-              </div>
-            ))
-          ) : (
-            <div className={styles.noOptions}>No options found</div>
-          )}
+            {(searchable ? filteredOptions : options).length > 0 ? (
+              (searchable ? filteredOptions : options).map((option) => (
+                <div
+                  key={option.value}
+                  className={cns(
+                    styles.option,
+                    selectedOption?.value === option.value ? styles.selected : ""
+                  )}
+                  onClick={() => handleOptionClick(option)}
+                >
+                  {option.label}
+                </div>
+              ))
+            ) : (
+              <div className={styles.noOptions}>No options found</div>
+            )}
           </div>
         </div>
       )}
     </div>
   );
 }
+

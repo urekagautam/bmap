@@ -1,0 +1,304 @@
+.postjobSection{
+  max-width: 110.4rem;
+  margin: 0 auto;
+  margin-top: 6.2rem;
+  height: calc(90vh - var(--nav-height));
+}
+
+.backBtn{
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap:0.8rem;
+    color:var(--neutral80);
+    padding-bottom: 1.6rem;
+}
+
+.backBtn >svg{
+    font-size: 2.4rem;
+}
+
+.formContainer {
+  width: 100%;
+  padding: 1.6rem;
+  margin-bottom: 10rem;
+  border-radius: 1.6rem;
+  border: 1px solid var(--neutral10);
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+  background-color: var(--bg);
+}
+
+.pageTitle > h1 {
+  font-weight: 600;
+  padding-bottom: 0.8rem;
+}
+
+.pageTitle > p {
+  color: var(--neutral70);
+  font-size: 1.8rem;
+}
+
+.jobDetails, .salaryDetails, .jobSpecs{
+  border:1px solid var(--neutral10);
+  border-radius: 0.8rem;
+  padding-bottom:2rem;
+}
+
+.jobDetails > h2,
+.salaryDetails > h2,
+.jobSpecs > h2 {
+  font-weight: 600;
+  font-size: 1.8rem;
+  background-color: var(--secondary20);
+  max-height: 3.5rem;
+  display: flex;
+  align-items: center;
+  padding: 1.4rem;
+  border-radius:0.8rem 0.8rem  0 0 ;
+}
+
+.jd_container, .sd_container, .js_container{
+  padding: 1.4rem;
+  padding-bottom: 1.6rem;
+}
+
+.jd_container{
+  display: flex;
+  flex-direction: column;
+  gap:1.8rem;
+}
+
+ form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  padding-top: 1.6rem;
+  padding-bottom: 1.8rem;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  padding-top:2.4rem;
+}
+
+ .jd_container .inputRow:first-child{
+  display: flex;
+  gap: 2rem;
+  justify-content: space-between;
+}
+
+.jd_container .inputField{
+width: 100%; 
+}
+
+.inputField{
+  display: flex;
+  flex-direction: column;
+}
+
+.jd_container .inputField:nth-child(2){
+display: flex;
+justify-content: center;
+align-items: center;
+}
+
+.subLabel{
+  color:var(--neutral40);
+  font-size:1.4rem;
+}
+
+.minmax{
+  display: flex;
+  gap:1.6rem;
+  padding-top:1rem;
+}
+
+.disabledInput {
+  opacity: 0.6;
+   border-color:var(--neutral40);
+  cursor: not-allowed;
+}
+
+.sd_container{
+  display: flex;
+  gap:5.6rem;
+}
+
+.hideSalary{
+  padding-top: 1.4rem;
+  width: 100%;
+}
+
+.hideSwitch{
+display: flex;
+gap:0.8rem;
+}
+
+.hideSwitch >span{
+  color:var(--neutral70);
+  font-size: 1.2rem;
+}
+
+.js_container{
+    display: flex;
+    flex-direction: column;
+    gap:1.8rem;
+}
+
+.js_container .inputRow:first-child{
+  display: flex;
+  gap:5.6rem;
+}
+
+.jobSpecsContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+}
+
+.row {
+  display: flex;
+  gap: 2.4rem;
+  align-items: flex-start;
+}
+
+.column {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.fullWidth {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.specialities{
+display: flex;
+gap:5.6rem;
+}
+
+.selectedTags > h2 {
+  color: var(--neutral70);
+  font-size: 1.4rem;
+  font-weight: 500;
+  padding-bottom: 0.8rem;
+  overflow-y: auto;
+}
+
+.tagsContainer {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  height: 5.52rem;
+  overflow-y: auto;
+  padding-right:0.4rem;
+  align-content: flex-start;
+}
+
+.tag {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+  background-color: var(--accent10);
+  color: var(--accent);
+  border-radius: 3.2rem;
+  user-select: none;
+  height: fit-content;
+  padding: 0.4rem;
+  font-size: 1.2rem;
+}
+
+.tag > button {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.tag > button > svg {
+  font-size: 1.4rem;
+}
+
+.tagsContainer::-webkit-scrollbar {
+  width: 1rem;
+}
+
+.tagsContainer::-webkit-scrollbar-track {
+  background: var(--secondary10);
+  border-radius: 0.8rem;
+}
+
+.tagsContainer::-webkit-scrollbar-thumb {
+  background:var(--neutral20);
+  border-radius: 0.8rem;
+  border: 3px solid #f0f0f0 ; 
+}
+
+.isSkillRequired, .mandatory, .mark{
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap:0.4rem;
+}
+
+.mandatory{
+  padding:0.8rem;
+  background-color: var(--information10);
+  color:var(--information);
+  font-size:1.2rem;
+  border-radius: 0.8rem;
+}
+
+.mandatory >svg{
+  font-size: 2.4rem;
+}
+
+.mark{
+color:var(--neutral70);
+font-size: 1.2rem;
+}
+
+.descXdocs{
+  display: flex;
+  gap:5.6rem;
+}
+
+.about{
+  min-width: 58.1rem;
+}
+.checkbox{
+  display: flex;
+  align-items: center;
+}
+
+.resumeText{
+ margin-left:0.6rem;
+ color:var(--neutral90);
+}
+
+.docXdeadline{
+ width: 100%;
+}
+
+.docs{
+  padding-top:1.2rem;
+ 
+}
+
+.requiredAsterisk {
+  color: var(--error);
+}

@@ -1,0 +1,40 @@
+.container {
+    width: 100%;
+    padding:1.6rem;
+    border-radius:1.6rem;
+    border: 1px solid var(--neutral10);
+    margin-bottom: 10rem;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.4rem;
+  }
+  
+  .headerText {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .title {
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: var(--primary90);
+    margin: 0;
+    line-height: 1.2;
+  }
+  
+  .subtitle {
+    font-size: 1.6rem;
+    color: var(--neutral50);
+    margin: 0.8rem 0 0 0;
+  }
+  
+  .jobGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+  

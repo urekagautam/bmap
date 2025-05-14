@@ -9,15 +9,16 @@ export default function MultiSelect({
   placeholder = "Select options",
   onChange = () => {},
   defaultValues = [],
+  layout = "md",
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState(defaultValues || []);
   const [searchQuery, setSearchQuery] = useState("");
-  const selectRef = useRef(null);
+  const multiSelectRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (selectRef.current && !selectRef.current.contains(event.target)) {
+      if (multiSelectRef.current && !multiSelectRef.current.contains(event.target)) {
         setIsOpen(false);
         setSearchQuery("");
       }
@@ -65,7 +66,7 @@ export default function MultiSelect({
   );
 
   return (
-    <div className={styles.selectContainer} ref={selectRef}>
+   <div className={cns(styles.selectContainer, styles[layout])} ref={multiSelectRef}>
       <div
         className={cns(styles.selectHeader, isOpen && styles.focused)}
         onClick={toggleDropdown}

@@ -87,7 +87,7 @@ export default function CompanyProfile() {
           {activeTab === "about" && <AboutTab setActiveTab={setActiveTab} />}
 
           {activeTab === "jobs" && <JobsTab />}
-c
+
           {activeTab === "edittab" && <EditTab />}
         </section>
       </section>
