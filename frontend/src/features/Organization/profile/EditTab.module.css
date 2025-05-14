@@ -1,0 +1,300 @@
+.editTabSection {
+  width: 100%;
+  padding: 1.6rem;
+  margin-bottom: 10rem;
+  border-radius: 1.6rem;
+  border: 1px solid var(--neutral10);
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+}
+
+.pageTitle > h1 {
+  font-weight: 500;
+  padding-bottom: 0.8rem;
+}
+
+.pageTitle > p {
+  color: var(--neutral65);
+  font-size: 1.4rem;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.basicDetails,
+.companyInfo,
+.socialProfile,
+.brandAssets {
+  border:1px solid var(--neutral10);
+  border-radius: 0.8rem;
+  padding-bottom:2rem;
+}
+
+.basicDetails > h2,
+.companyInfo > h2,
+.socialProfile > h2,
+.brandAssets > h2 {
+  font-weight: 600;
+  font-size: 1.8rem;
+  background-color: var(--secondary20);
+  max-height: 3.5rem;
+  display: flex;
+  align-items: center;
+  padding: 1.4rem;
+  border-radius:0.8rem 0.8rem  0 0 ;
+}
+
+ form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  padding-top: 1.6rem;
+  padding-bottom: 1.8rem;
+}
+
+.bd_container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  row-gap: 1.8rem;
+  column-gap: 3.2rem;
+  padding: 1.4rem;
+  padding-bottom: 1.6rem;
+}
+
+.ci_container {
+  padding: 1.4rem;
+  padding-bottom: 1.6rem;
+  min-height: 14.6rem;
+}
+
+.ci_container > .top {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 3.2rem;
+  padding-bottom: 1.8rem;
+}
+
+.selectedTags > h2 {
+  color: var(--neutral70);
+  font-size: 1.4rem;
+  font-weight: 500;
+  padding-bottom: 0.8rem;
+  overflow-y: auto;
+}
+
+.requiredAsterisk {
+  color: var(--error);
+  font-size: 1.4rem;
+}
+
+.tagsContainer {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  height: 9.52rem;
+  overflow-y: auto;
+  padding-right:0.4rem;
+  align-content: flex-start;
+}
+
+.tag {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+  background-color: var(--accent10);
+  color: var(--accent);
+  border-radius: 3.2rem;
+  user-select: none;
+  height: fit-content;
+  padding: 0.4rem;
+  font-size: 1.2rem;
+}
+
+.tag > button {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.tag > button > svg {
+  font-size: 1.4rem;
+}
+
+.tagsContainer::-webkit-scrollbar {
+  width: 1rem;
+}
+
+.tagsContainer::-webkit-scrollbar-track {
+  background: var(--secondary10);
+  border-radius: 0.8rem;
+}
+
+.tagsContainer::-webkit-scrollbar-thumb {
+  background:var(--neutral20);
+  border-radius: 0.8rem;
+  border: 3px solid #f0f0f0 ; 
+}
+
+.tagsContainer::-webkit-scrollbar-thumb:hover {
+  background: var(--neutral30);
+}
+
+
+.tagsContainer::-webkit-scrollbar {
+  /* display: none;                */
+}
+
+.middle{
+display: flex;
+justify-content: space-between; 
+gap:3.2rem;
+padding-bottom: 1.8rem;
+}
+
+.about,
+.minmax {
+  flex: 1 1 auto; 
+}
+
+.minmax{
+  display: flex;
+  gap:1.6rem;
+  padding-top:1rem;
+}
+
+.disabledInput {
+  opacity: 0.6;
+  border-color:var(--neutral40);
+  cursor: not-allowed;
+}
+
+.sp_container{
+  display: flex;
+  justify-content: space-between;
+    gap:1rem;
+}
+
+
+.social{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap:0.8rem;
+  padding:1.6rem 1.4rem;
+}
+
+.social > svg{
+  color:var(--neutral70);
+  font-size: 2.4rem;
+}
+
+.uploadButton {
+    position: relative;
+    cursor: pointer;
+    width: 9rem;
+    height: 9rem;
+    background-color: var(--neutral5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding:0;/*  removing padding for label (which was in util class in index.css) */
+  }
+  
+  .previewImage {
+    object-fit: cover;
+    position: absolute;
+  
+  }
+  
+  .previewImage, .overlay{
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+  }
+  
+  .overlay {
+      background-color: transparent;
+      opacity: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--bg);
+      font-size: 1.4rem;
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+  
+    .previewContainer:hover .overlay {
+      background-color: var(--neutral50);
+      opacity: 1;
+      pointer-events: auto;
+    }
+  
+  .uploadButton:hover {
+    background-color: var(--neutral10);
+  }
+
+    .uploadText {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  
+  .uploadText > h3 {
+    color: var(--neutral50);
+    font-size: 1.2rem;
+    font-weight: 400;
+  }
+  
+  .uploadText > svg {
+    color: var(--neutral40);
+    font-size: 2.8rem;
+  }
+  
+  .fileInput {
+    display: none;
+  }
+
+  .removeBtns {
+  margin-top: 1.2rem;
+}
+
+.logoContainer {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.addPhoto .rightSide {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.addPhoto >span{
+color:var(--neutral65);
+font-size: 1.2rem;
+display: block;
+padding-top: 1.6rem;
+padding-left: 0.4rem;
+
+}
+
+.ba_container{
+  display: flex;
+  gap:3.2rem;
+  padding:0 1.4rem;
+  padding-top: 1.6rem;
+  padding-bottom: 1.8rem;
+}

@@ -9,6 +9,7 @@ import DashboardPage from "./pages/organization/DashboardPage";
 import ProfilePage from "./pages/organization/ProfilePage";
 import NotFound from "./pages/NotFound";
 import CompanyProfileView from "./pages/organization/CompanyProfileView";
+import JobPosting from "./pages/organization/JobPosting";
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="/org" element={<DashboardPage />} />
           <Route path="/orgprofile" element={<ProfilePage />} />
           <Route path="/cmpprofile" element={<CompanyProfileView />} />
+          <Route path="/postjob" element={<JobPosting />} />
 
           {/* NOT FOUND */}
           <Route path="*" element={<NotFound />} />

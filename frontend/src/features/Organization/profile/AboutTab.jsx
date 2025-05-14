@@ -13,11 +13,7 @@ import { IconInstagram } from "../../../component/icons/IconInstagram.jsx";
 import { IconFacebook } from "../../../component/icons/IconFacebook.jsx";
 import { IconX } from "../../../component/icons/IconX.jsx";
 
-
-
-export default function AboutTab() {
-
-    const [activeTab, setActiveTab] = useState("about");
+export default function AboutTab({ setActiveTab }) {
 
 // Company data
 const companyName = "TechCorp Inc.";
