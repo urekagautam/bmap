@@ -1,38 +1,40 @@
+import { useState } from "react";
+import styles from "./OrganizationProfile.module.css";
+import { DISTRICT_OPTIONS } from "../../constants/constants.js";
+import { IconGreaterThan } from "../../component/icons/IconGreaterThan";
+import OrganizationNavbar from "../../component/OrganizationNavbar";
 import InputField from "../../component/InputField";
 import Button from "../../component/Button";
-import OrganizationNavbar from "../../component/OrganizationNavbar";
-import styles from "./OrganizationProfile.module.css";
+import Select from "../../component/Select";
 import ImageUpload from "../../component/ImageUpload";
-import { IconGreaterThan } from "../../component/icons/IconGreaterThan";
-import { useState, useEffect } from "react";
-import { IconCamera } from "../../component/icons/IconCamera";
 
 export default function OrganizationProfile() {
-  const [ownerPhotoFile, setOwnerPhotoFile] = useState(null);
-  const [ownerPreview, setOwnerPreview] = useState(null);
+  // IMAGES HANDLING
+  const [ownersPhoto, setOwnersPhoto] = useState(null);
+  const [citizenshipFront, setCitizenshipFront] = useState(null);
+  const [citizenshipBack, setCitizenshipBack] = useState(null);
+  const [panCard, setPanCard] = useState(null);
+  const [vatCard, setVatCard] = useState(null);
 
-  useEffect(() => {
-    if (ownerPhotoFile) {
-      const objectUrl = URL.createObjectURL(ownerPhotoFile);
-      setOwnerPreview(objectUrl);
-
-      return () => URL.revokeObjectURL(objectUrl); // Cleanup
-    } else {
-      setOwnerPreview(null);
-    }
-  }, [ownerPhotoFile]);
-
-  const handleOwnerPhotChange = (e) => {
-    const file = e.target.files?.[0] || null;
-    setOwnerPhotoFile(file);
-  };
+  // INPUT FIELDS
+  const [ownerName, setOwnerName] = useState("");
+  const [orgName, setOrgName] = useState("");
+  const [phoneNo, setPhoneNo] = useState("");
+  const [location, setLocation] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  };
-  const handleVatImageChange = (file) => {
-    setVatImage(file);
-    console.log("VAT Image selected:", file);
+    console.log("Owner's Name:", ownerName);
+    console.log("Organization's Name:", orgName);
+    console.log("Phone No:", phoneNo);
+    console.log("Location:", location);
+    console.log("District:", selectedDistrict);
+    console.log("Owner's Photo:", ownersPhoto?.name);
+    console.log("Citizenship Front:", citizenshipFront?.name);
+    console.log("Citizenship Back:", citizenshipBack?.name);
+    console.log("PAN Card:", panCard?.name);
+    console.log("VAT Card:", vatCard?.name);
   };
 
   return (
@@ -42,20 +44,16 @@ export default function OrganizationProfile() {
         <div className={styles.box}>
           <div className={styles.title}>
             <h1>Lets get your organization set up</h1>
-            <p>
-              Ensure you fill all the necessary data, It will only take u few
-              minutes
-            </p>
+            <p>Ensure you fill all the necessary data, It will only take u few minutes</p>
           </div>
 
           <form className={styles.form} onSubmit={handleSubmit}>
             <div className={styles.stepOne}>
-              {/* step 1/3  */}
+              {/* Step 1/3 */}
               <span>Step 1/3</span>
               <h1 className={styles.dataTitle}>Basic Owner's Information</h1>
 
               <div className={styles.allDatas}>
-                {/* step 1/3 : 1st section */}
                 <div className={styles.NameImg}>
                   <div className={styles.InpField}>
                     <label htmlFor="ownerName">
@@ -65,44 +63,20 @@ export default function OrganizationProfile() {
                     <InputField
                       placeholder="Enter owner's name"
                       id="ownerName"
+                      value={ownerName}
+                      onChange={(e) => setOwnerName(e.target.value)}
                     />
                   </div>
 
-                  {/* step 1/3 : 2nd section */}
                   <div className={styles.addPhoto}>
-                    <div className={styles.uploadWrapper}>
-                      <label
-                        className={styles.uploadButton}
-                        htmlFor="ownerPhoto"
-                      >
-                        {ownerPreview ? (
-                          <div className={styles.previewContainer}>
-                            <img
-                              src={ownerPreview}
-                              alt="Preview"
-                              className={styles.previewImage}
-                            />
-                            <div className={styles.overlay}>
-                              <span>Change</span>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className={styles.uploadText}>
-                            <IconCamera />
-                          </div>
-                        )}
-                        <input
-                          type="file"
-                          className={styles.file}
-                          id="ownerPhoto"
-                          accept="image/*"
-                          hidden
-                          onChange={handleOwnerPhotChange}
-                        />
-
-                        {/* LATER */}
-                      </label>
-                    </div>
+                    <ImageUpload
+                      id="companyLogo"
+                      shape="square"
+                      imgFile={ownersPhoto}
+                      onChange={(file) => {
+                        setOwnersPhoto(file);
+                      }}
+                    />
 
                     <div className={styles.rightSide}>
                       <h5>Owner's Photo</h5>
@@ -111,6 +85,7 @@ export default function OrganizationProfile() {
                         layout="xs"
                         color="neutralLight"
                         fill="outline"
+                        onClick={() => setOwnersPhoto(null)}
                       >
                         Remove
                       </Button>
@@ -128,7 +103,8 @@ export default function OrganizationProfile() {
                     <ImageUpload
                       id="citizenshipFront"
                       ImgUploadText="Upload your Citizenship Card"
-                      onChange={handleVatImageChange}
+                      imgFile={citizenshipFront}
+                      onChange={(file) => setCitizenshipFront(file)}
                       className="citizenshipFront"
                     />
 
@@ -137,6 +113,7 @@ export default function OrganizationProfile() {
                       layout="xs"
                       color="neutralLight"
                       fill="outline"
+                      onClick={() => setCitizenshipFront(null)}
                     >
                       Remove
                     </Button>
@@ -150,7 +127,8 @@ export default function OrganizationProfile() {
                     <ImageUpload
                       id="citizenshipBack"
                       ImgUploadText="Upload your Citizenship Card"
-                      onChange={handleVatImageChange}
+                      imgFile={citizenshipBack}
+                      onChange={(file) => setCitizenshipBack(file)}
                       className="citizenshipBack"
                     />
                     <Button
@@ -158,6 +136,7 @@ export default function OrganizationProfile() {
                       layout="xs"
                       color="neutralLight"
                       fill="outline"
+                      onClick={() => setCitizenshipBack(null)}
                     >
                       Remove
                     </Button>
@@ -166,12 +145,10 @@ export default function OrganizationProfile() {
               </div>
             </div>
 
-            {/* step 2/3 */}
+            {/* Step 2/3 */}
             <div className={styles.stepTwo}>
               <span>Step 2/3</span>
-              <h1 className={styles.dataTitle}>
-                Basic Organization's Information
-              </h1>
+              <h1 className={styles.dataTitle}>Basic Organization's Information</h1>
 
               <div className={styles.orgData}>
                 <div className={styles.InpField}>
@@ -182,6 +159,8 @@ export default function OrganizationProfile() {
                   <InputField
                     placeholder="Enter organization's name"
                     id="orgName"
+                    value={orgName}
+                    onChange={(e) => setOrgName(e.target.value)}
                   />
                 </div>
 
@@ -190,7 +169,12 @@ export default function OrganizationProfile() {
                     Phone no
                     <span className={styles.requiredAsterisk}>*</span>
                   </label>
-                  <InputField placeholder="Enter phone no" id="phoneNo" />
+                  <InputField
+                    placeholder="Enter phone no"
+                    id="phoneNo"
+                    value={phoneNo}
+                    onChange={(e) => setPhoneNo(e.target.value)}
+                  />
                 </div>
 
                 <div className={styles.InpField}>
@@ -198,7 +182,12 @@ export default function OrganizationProfile() {
                     Location
                     <span className={styles.requiredAsterisk}>*</span>
                   </label>
-                  <InputField placeholder="Enter location" id="location" />
+                  <InputField
+                    placeholder="Enter location"
+                    id="location"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                  />
                 </div>
 
                 <div className={styles.InpField}>
@@ -206,12 +195,17 @@ export default function OrganizationProfile() {
                     District
                     <span className={styles.requiredAsterisk}>*</span>
                   </label>
-                  <InputField placeholder="Enter district" id="district" />
+                  <Select
+                    options={DISTRICT_OPTIONS}
+                    placeholder="Select district"
+                    onChange={setSelectedDistrict}
+                    defaultValues={selectedDistrict}
+                  />
                 </div>
               </div>
             </div>
 
-            {/* step 3/3 */}
+            {/* Step 3/3 */}
             <div className={styles.stepThree}>
               <span>Step 3/3</span>
               <h1 className={styles.dataTitle}>Registration Information</h1>
@@ -225,7 +219,8 @@ export default function OrganizationProfile() {
                   <ImageUpload
                     id="pan"
                     ImgUploadText="Upload your PAN Card"
-                    onChange={handleVatImageChange}
+                    imgFile={panCard}
+                    onChange={(file) => setPanCard(file)}
                     className="pan"
                   />
 
@@ -234,6 +229,7 @@ export default function OrganizationProfile() {
                     layout="xs"
                     color="neutralLight"
                     fill="outline"
+                    onClick={() => setPanCard(null)}
                   >
                     Remove
                   </Button>
@@ -246,7 +242,8 @@ export default function OrganizationProfile() {
                   <ImageUpload
                     id="vat"
                     ImgUploadText="Upload your VAT Card"
-                    onChange={handleVatImageChange}
+                    imgFile={vatCard}
+                    onChange={(file) => setVatCard(file)}
                     className="vat"
                   />
                   <Button
@@ -254,6 +251,7 @@ export default function OrganizationProfile() {
                     layout="xs"
                     color="neutralLight"
                     fill="outline"
+                    onClick={() => setVatCard(null)}
                   >
                     Remove
                   </Button>
@@ -263,7 +261,7 @@ export default function OrganizationProfile() {
 
             <div className={styles.button}>
               <Button color="accent" layout="xs">
-                Next
+                Submit
                 <IconGreaterThan />
               </Button>
             </div>
