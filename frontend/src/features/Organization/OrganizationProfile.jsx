@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef } from "react";
 import styles from "./OrganizationProfile.module.css";
 import { DISTRICT_OPTIONS } from "../../constants/constants.js";
 import { IconGreaterThan } from "../../component/icons/IconGreaterThan";
@@ -7,34 +7,54 @@ import InputField from "../../component/InputField";
 import Button from "../../component/Button";
 import Select from "../../component/Select";
 import ImageUpload from "../../component/ImageUpload";
+import { useForm, Controller } from "react-hook-form";
+import toast from "react-hot-toast";
 
 export default function OrganizationProfile() {
-  // IMAGES HANDLING
-  const [ownersPhoto, setOwnersPhoto] = useState(null);
-  const [citizenshipFront, setCitizenshipFront] = useState(null);
-  const [citizenshipBack, setCitizenshipBack] = useState(null);
-  const [panCard, setPanCard] = useState(null);
-  const [vatCard, setVatCard] = useState(null);
 
-  // INPUT FIELDS
-  const [ownerName, setOwnerName] = useState("");
-  const [orgName, setOrgName] = useState("");
-  const [phoneNo, setPhoneNo] = useState("");
-  const [location, setLocation] = useState("");
-  const [selectedDistrict, setSelectedDistrict] = useState(null);
+  const selectRef = useRef(null);
+  const {
+    register,
+    handleSubmit,
+    clearErrors,
+    formState: { errors },
+    control,
+    setValue,
+    reset,
+    getValues,
+  } = useForm({
+    defaultValues: {
+      ownersName: "",
+      orgName: "",
+      phoneNo: "",
+      location: "",
+      district: "",
+      ownersPhoto: null,
+      citizenshipFront: null,
+      citizenshipBack: null,
+      panCard: null,
+      vatCard: null,
+    },
+  });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Owner's Name:", ownerName);
-    console.log("Organization's Name:", orgName);
-    console.log("Phone No:", phoneNo);
-    console.log("Location:", location);
-    console.log("District:", selectedDistrict);
-    console.log("Owner's Photo:", ownersPhoto?.name);
-    console.log("Citizenship Front:", citizenshipFront?.name);
-    console.log("Citizenship Back:", citizenshipBack?.name);
-    console.log("PAN Card:", panCard?.name);
-    console.log("VAT Card:", vatCard?.name);
+  const onSubmit = async (data) => {
+    console.log("Form data:", data);
+    toast.success("Form submitted successfully!");
+
+    // Resetting form after successfully submitting it
+    reset({
+      ownersName: "",
+      orgName: "",
+      phoneNo: "",
+      location: "",
+      district: "",
+      ownersPhoto: null,
+      citizenshipFront: null,
+      citizenshipBack: null,
+      panCard: null,
+      vatCard: null,
+    });
+
   };
 
   return (
@@ -44,10 +64,13 @@ export default function OrganizationProfile() {
         <div className={styles.box}>
           <div className={styles.title}>
             <h1>Lets get your organization set up</h1>
-            <p>Ensure you fill all the necessary data, It will only take u few minutes</p>
+            <p>
+              Ensure you fill all the necessary data, It will only take u few
+              minutes
+            </p>
           </div>
 
-          <form className={styles.form} onSubmit={handleSubmit}>
+          <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
             <div className={styles.stepOne}>
               {/* Step 1/3 */}
               <span>Step 1/3</span>
@@ -61,23 +84,42 @@ export default function OrganizationProfile() {
                       <span className={styles.requiredAsterisk}>*</span>
                     </label>
                     <InputField
+                      {...register("ownersName", {
+                        required: "Owner's name is required",
+                        minLength: {
+                          value: 3,
+                          message: "Min 3 characters required",
+                        },
+                        pattern: {
+                          value: /^[a-zA-Z\s]+$/,
+                          message: "Name should only contain letters",
+                        },
+                      })}
                       placeholder="Enter owner's name"
                       id="ownerName"
-                      value={ownerName}
-                      onChange={(e) => setOwnerName(e.target.value)}
                     />
+                    <span className={styles.error}>
+                      {errors.ownersName?.message}
+                    </span>
                   </div>
 
                   <div className={styles.addPhoto}>
-                    <ImageUpload
-                      id="companyLogo"
-                      shape="square"
-                      imgFile={ownersPhoto}
-                      onChange={(file) => {
-                        setOwnersPhoto(file);
-                      }}
+                    <Controller
+                      name="ownersPhoto"
+                      control={control}
+                      rules={{ required: "Owner's photo is required" }}
+                      render={({ field }) => (
+                        <ImageUpload
+                          id="companyLogo"
+                          shape="square"
+                          imgFile={field.value}
+                          onChange={(file) => {
+                            field.onChange(file);
+                            clearErrors("ownersPhoto");
+                          }}
+                        />
+                      )}
                     />
-
                     <div className={styles.rightSide}>
                       <h5>Owner's Photo</h5>
                       <Button
@@ -85,10 +127,15 @@ export default function OrganizationProfile() {
                         layout="xs"
                         color="neutralLight"
                         fill="outline"
-                        onClick={() => setOwnersPhoto(null)}
+                        onClick={() => {
+                          setValue("ownersPhoto", null);
+                        }}
                       >
                         Remove
                       </Button>
+                      <span className={styles.error}>
+                        {errors.ownersPhoto?.message}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -100,12 +147,24 @@ export default function OrganizationProfile() {
                       <span className={styles.requiredAsterisk}>*</span>
                       <span className={styles.bracketText}> (front)</span>
                     </label>
-                    <ImageUpload
-                      id="citizenshipFront"
-                      ImgUploadText="Upload your Citizenship Card"
-                      imgFile={citizenshipFront}
-                      onChange={(file) => setCitizenshipFront(file)}
-                      className="citizenshipFront"
+
+                    <Controller
+                      name="citizenshipFront"
+                      control={control}
+                      rules={{
+                        required: "Citizenship front image is required",
+                      }}
+                      render={({ field }) => (
+                        <ImageUpload
+                          id="citizenshipFront"
+                          ImgUploadText="Upload your Citizenship Card (Front)"
+                          imgFile={field.value}
+                          onChange={(file) => {
+                            field.onChange(file);
+                            clearErrors("citizenshipFront");
+                          }}
+                        />
+                      )}
                     />
 
                     <Button
@@ -113,10 +172,15 @@ export default function OrganizationProfile() {
                       layout="xs"
                       color="neutralLight"
                       fill="outline"
-                      onClick={() => setCitizenshipFront(null)}
+                      onClick={() => {
+                        setValue("citizenshipFront", null);
+                      }}
                     >
                       Remove
                     </Button>
+                    <span className={styles.error}>
+                      {errors.citizenshipFront?.message}
+                    </span>
                   </div>
                   <div className={styles.back}>
                     <label className={styles.label}>
@@ -124,22 +188,37 @@ export default function OrganizationProfile() {
                       <span className={styles.requiredAsterisk}>*</span>
                       <span className={styles.bracketText}> (back)</span>
                     </label>
-                    <ImageUpload
-                      id="citizenshipBack"
-                      ImgUploadText="Upload your Citizenship Card"
-                      imgFile={citizenshipBack}
-                      onChange={(file) => setCitizenshipBack(file)}
-                      className="citizenshipBack"
+                    <Controller
+                      name="citizenshipBack"
+                      control={control}
+                      rules={{ required: "Citizenship back image is required" }}
+                      render={({ field }) => (
+                        <ImageUpload
+                          id="citizenshipBack"
+                          ImgUploadText="Upload your Citizenship Card (Back)"
+                          imgFile={field.value}
+                          onChange={(file) => {
+                            field.onChange(file);
+                            clearErrors("citizenshipBack");
+                          }}
+                        />
+                      )}
                     />
+
                     <Button
                       className={styles.removeBtns}
                       layout="xs"
                       color="neutralLight"
                       fill="outline"
-                      onClick={() => setCitizenshipBack(null)}
+                      onClick={() => {
+                        setValue("citizenshipBack", null);
+                      }}
                     >
                       Remove
                     </Button>
+                    <span className={styles.error}>
+                      {errors.citizenshipBack?.message}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -148,7 +227,9 @@ export default function OrganizationProfile() {
             {/* Step 2/3 */}
             <div className={styles.stepTwo}>
               <span>Step 2/3</span>
-              <h1 className={styles.dataTitle}>Basic Organization's Information</h1>
+              <h1 className={styles.dataTitle}>
+                Basic Organization's Information
+              </h1>
 
               <div className={styles.orgData}>
                 <div className={styles.InpField}>
@@ -157,11 +238,24 @@ export default function OrganizationProfile() {
                     <span className={styles.requiredAsterisk}>*</span>
                   </label>
                   <InputField
+                    {...register("orgName", {
+                      required: "Organization's name is required",
+                      minLength: {
+                        value: 3,
+                        message: "Min 3 characters required",
+                      },
+                      pattern: {
+                        value: /^[a-zA-Z\s]+$/,
+                        message:
+                          "Organization name should only contain letters",
+                      },
+                    })}
                     placeholder="Enter organization's name"
                     id="orgName"
-                    value={orgName}
-                    onChange={(e) => setOrgName(e.target.value)}
                   />
+                  <span className={styles.error}>
+                    {errors.orgName?.message}
+                  </span>
                 </div>
 
                 <div className={styles.InpField}>
@@ -170,11 +264,19 @@ export default function OrganizationProfile() {
                     <span className={styles.requiredAsterisk}>*</span>
                   </label>
                   <InputField
+                    {...register("phoneNo", {
+                      required: "Phone number is required",
+                      pattern: {
+                        value: /^\d{10}$/,
+                        message: "Phone number must be exactly 10 'digits'",
+                      },
+                    })}
                     placeholder="Enter phone no"
                     id="phoneNo"
-                    value={phoneNo}
-                    onChange={(e) => setPhoneNo(e.target.value)}
                   />
+                  <span className={styles.error}>
+                    {errors.phoneNo?.message}
+                  </span>
                 </div>
 
                 <div className={styles.InpField}>
@@ -183,24 +285,47 @@ export default function OrganizationProfile() {
                     <span className={styles.requiredAsterisk}>*</span>
                   </label>
                   <InputField
+                    {...register("location", {
+                      required: "Location is required",
+                      minLength: {
+                        value: 3,
+                        message: "Location must be at least 3 characters long",
+                      },
+                    })}
                     placeholder="Enter location"
                     id="location"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
                   />
+                  <span className={styles.error}>
+                    {errors.location?.message}
+                  </span>
                 </div>
 
                 <div className={styles.InpField}>
-                  <label className={styles.label} htmlFor="ownerName">
+                  <label className={styles.label} htmlFor="district">
                     District
                     <span className={styles.requiredAsterisk}>*</span>
                   </label>
-                  <Select
-                    options={DISTRICT_OPTIONS}
-                    placeholder="Select district"
-                    onChange={setSelectedDistrict}
-                    defaultValues={selectedDistrict}
+
+                  <Controller
+                    name="district"
+                    control={control}
+                    rules={{ required: "District is required" }}
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        ref={selectRef}
+                        options={DISTRICT_OPTIONS}
+                        placeholder="Select district"
+                        onChange={(value) => {
+                          field.onChange(value);
+                        }}
+                        value={field.value || null}
+                      />
+                    )}
                   />
+                  <span className={styles.error}>
+                    {errors.district?.message}
+                  </span>
                 </div>
               </div>
             </div>
@@ -216,12 +341,21 @@ export default function OrganizationProfile() {
                     PAN Card
                     <span className={styles.requiredAsterisk}>*</span>
                   </label>
-                  <ImageUpload
-                    id="pan"
-                    ImgUploadText="Upload your PAN Card"
-                    imgFile={panCard}
-                    onChange={(file) => setPanCard(file)}
-                    className="pan"
+                  <Controller
+                    name="panCard"
+                    control={control}
+                    rules={{ required: "PAN Card image is required" }}
+                    render={({ field }) => (
+                      <ImageUpload
+                        id="panCard"
+                        ImgUploadText="Upload your PAN Card"
+                        imgFile={field.value}
+                        onChange={(file) => {
+                          field.onChange(file);
+                          clearErrors("panCard");
+                        }}
+                      />
+                    )}
                   />
 
                   <Button
@@ -229,38 +363,58 @@ export default function OrganizationProfile() {
                     layout="xs"
                     color="neutralLight"
                     fill="outline"
-                    onClick={() => setPanCard(null)}
+                    onClick={() => {
+                      setValue("panCard", null);
+                    }}
                   >
                     Remove
                   </Button>
+                  <span className={styles.error}>
+                    {errors.panCard?.message}
+                  </span>
                 </div>
                 <div className={styles.vat}>
                   <label className={styles.label}>
                     VAT Card
                     <span className={styles.requiredAsterisk}>*</span>
                   </label>
-                  <ImageUpload
-                    id="vat"
-                    ImgUploadText="Upload your VAT Card"
-                    imgFile={vatCard}
-                    onChange={(file) => setVatCard(file)}
-                    className="vat"
+                  <Controller
+                    name="vatCard"
+                    control={control}
+                    rules={{ required: "VAT Card image is required" }}
+                    render={({ field }) => (
+                      <ImageUpload
+                        id="vatCard"
+                        ImgUploadText="Upload your VAT Card"
+                        imgFile={field.value}
+                        onChange={(file) => {
+                          field.onChange(file);
+                          clearErrors("vatCard");
+                        }}
+                      />
+                    )}
                   />
+
                   <Button
                     className={styles.removeBtns}
                     layout="xs"
                     color="neutralLight"
                     fill="outline"
-                    onClick={() => setVatCard(null)}
+                    onClick={() => {
+                      setValue("vatCard", null);
+                    }}
                   >
                     Remove
                   </Button>
+                  <span className={styles.error}>
+                    {errors.vatCard?.message}
+                  </span>
                 </div>
               </div>
             </div>
 
             <div className={styles.button}>
-              <Button color="accent" layout="xs">
+              <Button type="submit" color="accent" layout="xs">
                 Submit
                 <IconGreaterThan />
               </Button>
