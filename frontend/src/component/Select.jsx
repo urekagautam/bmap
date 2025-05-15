@@ -8,6 +8,7 @@ export default function Select({
   options = [],
   placeholder = "Select an option",
   onChange = () => {},
+   value = null,   
   defaultValue = null,
   layout = "md",
   searchable = true, 
@@ -16,6 +17,10 @@ export default function Select({
   const [selectedOption, setSelectedOption] = useState(defaultValue);
   const [searchQuery, setSearchQuery] = useState("");
   const selectRef = useRef(null);
+
+   useEffect(() => {
+    setSelectedOption(value);
+  }, [value]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -71,7 +76,6 @@ export default function Select({
 
       {isOpen && (
         <div className={styles.optionsContainer}>
-          {/* ✅ Conditionally render search input */}
           {searchable && (
             <InputField
               layout="fw"
