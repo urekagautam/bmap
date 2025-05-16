@@ -302,3 +302,13 @@ font-size: 1.2rem;
 .requiredAsterisk {
   color: var(--error);
 }
+
+
+.error {
+  display: block;
+  color: var(--error);
+  height: 1.2rem;
+  padding-top: 0.4rem;
+  font-size: 1.2rem;
+  text-align: left;
+}

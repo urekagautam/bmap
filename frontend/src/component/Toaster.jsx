@@ -1,24 +1,16 @@
-import { Toaster as HotToaster } from "react-hot-toast";
+import { Toaster as CToaster } from "react-hot-toast";
 
 export default function Toaster() {
   return (
-    <HotToaster
+    <CToaster
       position="top-right"
       containerStyle={{ marginTop: '5rem' }}
       toastOptions={{
         success: {
-          duration: 5000,
-          style: {
-            background: "var(--success10)",
-            color: "var(--success70)",
-          },
+          duration: 2000,
         },
         error: {
-          duration: 5000,
-          style: {
-            background: "var(--error10)",
-            color: "var(--error70)",
-          },
+          duration: 2000,
         },
       }}
     />
