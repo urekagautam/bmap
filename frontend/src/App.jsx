@@ -10,6 +10,7 @@ import ProfilePage from "./pages/organization/ProfilePage";
 import NotFound from "./pages/NotFound";
 import CompanyProfileView from "./pages/organization/CompanyProfileView";
 import JobPosting from "./pages/organization/JobPosting";
+import Search from "./features/User/Search/Search";
 
 function App() {
 
@@ -23,6 +24,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/search" element={<Search/>}/>
           <Route path="/test" element={<Test />} />
 
           {/* ORGANIZATION */}
