@@ -1,5 +1,5 @@
 import { useForm, Controller } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import Button from "../../component/Button";
 import InputField from "../../component/InputField";
@@ -94,9 +94,9 @@ export default function PostJob() {
 
   return (
     <section className={styles.postjobSection}>
-      <span className={styles.backBtn}>
+      <Link to="/cmpprofile" className={styles.backBtn}>
         <IconBack /> Back
-      </span>
+      </Link>
       <div className={styles.formContainer}>
         <div className={styles.pageTitle}>
           <h1>Create New Job Posting</h1>

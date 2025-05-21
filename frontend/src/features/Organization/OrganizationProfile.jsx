@@ -8,9 +8,22 @@ import Button from "../../component/Button";
 import Select from "../../component/Select";
 import ImageUpload from "../../component/ImageUpload";
 import { useForm, Controller } from "react-hook-form";
+import useOrgAuth from "../../hooks/useOrgAuth.js";
 import toast from "react-hot-toast";
 
+const { orgId } = useOrgAuth();
+
 export default function OrganizationProfile() {
+
+console.log("Full localStorage:", localStorage);
+console.log("All stored org data:", {
+  accessToken: localStorage.getItem('orgAccessToken'),
+  refreshToken: localStorage.getItem('orgRefreshToken'),
+  organizationId: localStorage.getItem('organizationId')
+});
+
+console.log("ORGANIZATION ID : " +orgId);
+
 
   const selectRef = useRef(null);
   const {
@@ -37,8 +50,10 @@ export default function OrganizationProfile() {
     },
   });
 
-  const onSubmit = async (data) => {
+   const onSubmit = async (data) => {
     console.log("Form data:", data);
+
+    try {
     toast.success("Form submitted successfully!");
 
     // Resetting form after successfully submitting it
@@ -54,8 +69,12 @@ export default function OrganizationProfile() {
       panCard: null,
       vatCard: null,
     });
+      }  catch (error) {
+    console.error("Submission error:", error);
+    toast.error("Submission failed. Please try again.");
+  }
+  }; 
 
-  };
 
   return (
     <>
@@ -113,6 +132,7 @@ export default function OrganizationProfile() {
                           id="companyLogo"
                           shape="square"
                           imgFile={field.value}
+                          multiple={false}
                           onChange={(file) => {
                             field.onChange(file);
                             clearErrors("ownersPhoto");
@@ -159,6 +179,7 @@ export default function OrganizationProfile() {
                           id="citizenshipFront"
                           ImgUploadText="Upload your Citizenship Card (Front)"
                           imgFile={field.value}
+                          multiple={false}
                           onChange={(file) => {
                             field.onChange(file);
                             clearErrors("citizenshipFront");
@@ -197,6 +218,7 @@ export default function OrganizationProfile() {
                           id="citizenshipBack"
                           ImgUploadText="Upload your Citizenship Card (Back)"
                           imgFile={field.value}
+                          multiple={false}
                           onChange={(file) => {
                             field.onChange(file);
                             clearErrors("citizenshipBack");
