@@ -1,6 +1,8 @@
 import express from "express"
 import cookieParser from "cookie-parser"
 import cors from 'cors'
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
 app.use(express.json());
@@ -13,6 +15,7 @@ app.use(cors({
 
 //routes import
 import userRouter from "./routes/user.routes.js"
+
 
 //routes declaration
 
@@ -29,5 +32,8 @@ app.use((err, req, res, next) => {
 });
 
 //ORGANIZATION
+import orgProfileRouter from "./routes/organization.routes.js"
+app.use("/org/api/v1",orgProfileRouter) //http://localhost:5000/org/api/v1/profile
+
 
 export {app} 

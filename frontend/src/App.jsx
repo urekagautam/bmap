@@ -10,6 +10,7 @@ import ProfilePage from "./pages/organization/ProfilePage";
 import NotFound from "./pages/NotFound";
 import CompanyProfileView from "./pages/organization/CompanyProfileView";
 import JobPosting from "./pages/organization/JobPosting";
+import OrganizationSignup from "./pages/organization/OrganizationSignup";
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
 
           {/* ORGANIZATION */}
           <Route path="/org" element={<DashboardPage />} />
+           <Route path="/org/signup" element={<OrganizationSignup />} />
           <Route path="/orgprofile" element={<ProfilePage />} />
           <Route path="/cmpprofile" element={<CompanyProfileView />} />
           <Route path="/postjob" element={<JobPosting />} />
