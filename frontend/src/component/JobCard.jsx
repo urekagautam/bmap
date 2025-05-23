@@ -8,6 +8,7 @@ import { IconChartLinedUp } from "./icons/IconChartLinedUp.jsx";
 import { IconChartBar } from "./icons/IconChartBar.jsx";
 import { IconClock } from "./icons/IconClock.jsx";
 import { IconBills } from "./icons/IconBills.jsx";
+import { Link } from "react-router-dom"
 
 export default function JobCard({
   deadline,
@@ -24,6 +25,7 @@ export default function JobCard({
   location,
 }) {
   return (
+    <Link to="/jobdescription">
     <div className={styles.mainWrapper}>
       <div className={styles.wrapper}>
         <div className={styles.topMainWrapper}>
@@ -47,7 +49,7 @@ export default function JobCard({
               <IconLightBulb />
               <h3>Key Skills:</h3>
               {skills.slice(0, 3).map((skill, index) => (
-                <Tag key={index} skill={skill} />
+                <Tag key={index} data={skill} />
               ))}
             </div>
           </div>
@@ -86,5 +88,6 @@ export default function JobCard({
         </div>
       </div>
     </div>
+    </Link>
   );
 }

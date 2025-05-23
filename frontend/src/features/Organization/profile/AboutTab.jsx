@@ -99,7 +99,7 @@ const socials = {
                     <h3>Specialties</h3>
                     <div className={styles.specialties}>
                       {specialties.map((specialty, index) => (
-                        <Tag key={index} skill={specialty} />
+                        <Tag key={index} data={specialty} />
                       ))}
                     </div>
                   </div>

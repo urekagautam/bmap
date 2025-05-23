@@ -6,7 +6,9 @@ export const config = {
     dbUri: String(process.env.DB_URI),
 
     accessTokenKey: String(process.env.ACCESS_TOKEN_KEY),
-    accessTokenExpiry: String(process.env.ACCESS_TOKEN_EXPIRY),
     refreshTokenKey: String(process.env.REFRESH_TOKEN_KEY),
-    REFRESH_TOKEN_EXPIRY: String(process.env.REFRESH_TOKEN_EXPIRY),
+ 
+    accessTokenExpiry: Number(process.env.ACCESS_TOKEN_EXPIRY) || 7 * 24 * 60 * 60,
+refreshTokenExpiry: Number(process.env.REFRESH_TOKEN_EXPIRY) || 7 * 24 * 60 * 60,
+
 };

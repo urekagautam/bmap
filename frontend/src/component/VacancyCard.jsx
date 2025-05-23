@@ -4,6 +4,7 @@ import { IconHourglass } from "./icons/IconHourglass.jsx";
 import { IconLightBulb } from "./icons/IconLightBulb.jsx";
 import styles from "./VacancyCard.module.css";
 import Tag from "./Tag.jsx";
+import { Link } from "react-router-dom";
 
 export default function VacancyCard({
   deadline,
@@ -12,7 +13,9 @@ export default function VacancyCard({
   vacancyCompany,
   skills = [],
 }) {
+  const id="1234";
   return (
+     <Link to={`/jobdescription/${id}`}> 
     <div className={styles.mainWrapper}>
       <div className={styles.shrinkWrapper}>
         <div className={styles.topMainWrapper}>
@@ -50,5 +53,6 @@ export default function VacancyCard({
         </div>
       </div>
     </div>
+    </Link>
   );
 }

@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import styles from "./OrganizationProfile.module.css";
 import { DISTRICT_OPTIONS } from "../../constants/constants.js";
 import { IconGreaterThan } from "../../component/icons/IconGreaterThan";
@@ -9,72 +9,104 @@ import Select from "../../component/Select";
 import ImageUpload from "../../component/ImageUpload";
 import { useForm, Controller } from "react-hook-form";
 import useOrgAuth from "../../hooks/useOrgAuth.js";
+import { apiOrganizationSetup } from "../../services/apiOrganizationAuth.js";
+import { apiOrganizationGetProfile } from "../../services/apiOrganizationAuth.js";
 import toast from "react-hot-toast";
-
-const { orgId } = useOrgAuth();
+import { useNavigate } from "react-router-dom";
 
 export default function OrganizationProfile() {
+  const { orgId } = useOrgAuth();
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-console.log("Full localStorage:", localStorage);
-console.log("All stored org data:", {
-  accessToken: localStorage.getItem('orgAccessToken'),
-  refreshToken: localStorage.getItem('orgRefreshToken'),
-  organizationId: localStorage.getItem('organizationId')
-});
-
-console.log("ORGANIZATION ID : " +orgId);
-
+  useEffect(() => {
+    if (orgId) {
+      console.log("ORGANIZATION ID : " + orgId);
+    }
+  }, [orgId]);
 
   const selectRef = useRef(null);
+
   const {
     register,
     handleSubmit,
-    clearErrors,
     formState: { errors },
+    reset,
     control,
     setValue,
-    reset,
     getValues,
+    clearErrors,
+    watch,
   } = useForm({
     defaultValues: {
       ownersName: "",
       orgName: "",
       phoneNo: "",
-      location: "",
+      address: "",
       district: "",
-      ownersPhoto: null,
-      citizenshipFront: null,
-      citizenshipBack: null,
-      panCard: null,
-      vatCard: null,
     },
   });
 
-   const onSubmit = async (data) => {
-    console.log("Form data:", data);
+  useEffect(() => {
+    async function fetchProfile() {
+      if (!orgId) return;
 
+      try {
+        const profile = await apiOrganizationGetProfile(orgId);
+        console.log("API Response:", profile);
+
+        setValue("ownersName", profile.ownersName || "");
+        setValue("orgName", profile.orgName || "");
+        setValue("phoneNo", profile.phoneNo || "");
+        setValue("address", profile.address || "");
+
+        if (profile.district) {
+          const districtOption = DISTRICT_OPTIONS.find(
+            (opt) => opt.value === profile.district
+          ) || {
+            value: profile.district,
+            label:
+              profile.district.charAt(0).toUpperCase() +
+              profile.district.slice(1),
+          };
+          setValue("district", districtOption);
+        }
+
+        console.log("Loaded profile data:", profile);
+      } catch (err) {
+        console.error("Error loading profile data:", err);
+      }
+    }
+
+    fetchProfile();
+  }, [orgId, setValue]);
+
+  const onSubmit = async (data) => {
     try {
-    toast.success("Form submitted successfully!");
+      setIsSubmitting(true);
 
-    // Resetting form after successfully submitting it
-    reset({
-      ownersName: "",
-      orgName: "",
-      phoneNo: "",
-      location: "",
-      district: "",
-      ownersPhoto: null,
-      citizenshipFront: null,
-      citizenshipBack: null,
-      panCard: null,
-      vatCard: null,
-    });
-      }  catch (error) {
-    console.error("Submission error:", error);
-    toast.error("Submission failed. Please try again.");
-  }
-  }; 
+      const districtString =
+        typeof data.district === "object" ? data.district.value : data.district;
+      const response = await apiOrganizationSetup({
+        orgId: orgId,
+        ownersName: data.ownersName,
+        orgName: data.orgName,
+        phoneNo: data.phoneNo,
+        address: data.address,
+        district: districtString,
+      });
 
+      toast.success("Profile setup complete!");
+      setTimeout(() => {
+        navigate("/org");
+      }, 1000);
+    } catch (error) {
+      console.error("Setup error:", error);
+      toast.error(error.message || "Setup failed");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <>
@@ -82,7 +114,12 @@ console.log("ORGANIZATION ID : " +orgId);
       <section className={styles.mainWrapper}>
         <div className={styles.box}>
           <div className={styles.title}>
-            <h1>Lets get your organization set up</h1>
+            {watch("ownersName") ? (
+              <h1>Update your organization setup</h1>
+            ) : (
+              <h1>Let's get your organization set up</h1>
+            )}
+
             <p>
               Ensure you fill all the necessary data, It will only take u few
               minutes
@@ -302,23 +339,23 @@ console.log("ORGANIZATION ID : " +orgId);
                 </div>
 
                 <div className={styles.InpField}>
-                  <label className={styles.label} htmlFor="location">
-                    Location
+                  <label className={styles.label} htmlFor="address">
+                    Address
                     <span className={styles.requiredAsterisk}>*</span>
                   </label>
                   <InputField
-                    {...register("location", {
-                      required: "Location is required",
+                    {...register("address", {
+                      required: "Address is required",
                       minLength: {
                         value: 3,
-                        message: "Location must be at least 3 characters long",
+                        message: "Address must be at least 3 characters long",
                       },
                     })}
-                    placeholder="Enter location"
-                    id="location"
+                    placeholder="Enter address"
+                    id="address"
                   />
                   <span className={styles.error}>
-                    {errors.location?.message}
+                    {errors.address?.message}
                   </span>
                 </div>
 
