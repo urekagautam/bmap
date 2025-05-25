@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import Button from "../../component/Button";
 import InputField from "../../component/InputField";
 import RadioGroup from "../../component/RadioGroup";
@@ -21,97 +23,87 @@ import styles from "./PostJob.module.css";
 import ToggleSwitch from "../../component/ToggleSwitch.jsx";
 import MultiSelect from "../../component/MultiSelect.jsx";
 import TextArea from "../../component/TextArea.jsx";
+
 export default function PostJob() {
-  //TOGGLE BUTTONS
-  const [isExperienceRequired, setIsExperienceRequired] = useState(false);
-  const handleIsExperienceRequired = (name, value) => {
-    setIsExperienceRequired(value);
-    console.log(`Toggled ${name} to ${value}`);
-  };
 
-  const [isSalaryRequired, setIsSalaryRequired] = useState(false);
-  const handleIsSalaryRequired = (name, value) => {
-    setIsSalaryRequired(value);
-    console.log(`Toggled ${name} to ${value}`);
-  };
+  const navigate = useNavigate();
 
-  const [isSkillsRequired, setIsSkillsRequired] = useState(false);
-  const handleIsSkillsRequired = (name, value) => {
-    setIsSkillsRequired(value);
-    console.log(`Toggled ${name} to ${value}`);
-  };
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    setValue,
+    clearErrors,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      jobTitle: "",
+      reqEmployees: "",
+      department: "",
+      jobByTime: "full_time",
+      jobByLocation: "on_site",
+      jobLevel: "mid_level",
+      salaryDisclosure: "fixed",
+      minValue: "",
+      maxValue: "",
+      salaryType: "monthly",
+      isSalaryRequired: false,
+      experienceCriteria: "",
+      experience: "",
+      isExperienceRequired: false,
+      specialities: [],
+      isSkillsRequired: false,
+      jobDescription: "",
+      applicationDeadline: "",
+      additionalInfo: "",
+    },
+  });
 
-  //SALARY AND DICLOSURE OPTIONS
-  const sizeOptions = [
-    { value: "fixed", label: "Fixed" },
-    { value: "range", label: "Range" },
-  ];
+  const salaryDisclosure = watch("salaryDisclosure");
+  const specialities = watch("specialities") || [];
 
-  const [salaryDisclosure, setSalaryDisclosure] = useState("fixed");
-  const [minValue, setMinValue] = useState("");
-  const [maxValue, setMaxValue] = useState("");
 
-  const handleSalaryDisclosureChange = (value) => {
-    setSalaryDisclosure(value);
-    if (value === "fixed") {
-      setMaxValue("");
-    }
-  };
-
-  //SELECT AND MULTI SELECT OPTIONS
-  const [multipleValues, setMultipleValues] = useState([]);
-  const handleMultipleSelect = (options) => {
-    setMultipleValues(options);
-    console.log("Selected options:", options);
-  };
-
-  const [department, setDepartment] = useState("");
-  const [criteria, setCriteria] = useState("");
-  const [experience, setExperience] = useState("");
-
-  //INPUT FIELDS
-  const [jobTitle, setJobTitle] = useState("");
-  const [reqEmployees, setReqEmployees] = useState("");
-
-  //RADIO BOXES
-  const [jobByTime, setJobByTime] = useState("full_time");
-  const [jobByLocation, setJobByLocation] = useState("on_site");
-  const [jobLevel, setJobLevel] = useState("mid_level");
-  const [salaryType, setSalaryType] = useState("monthly");
-
-  //TEXT AREA
-  const [jobDescription, setJobDescription] = useState("");
-  const [additionalInfo, setAdditionalInfo] = useState("");
-
+  //additional info ko numbering include garera
   const handleAdditionalInfo = (e) => {
     const raw = e.target.value;
     const lines = raw.split("\n");
 
-    // Adding numbering
     const numbered = lines.map(
       (line, i) => `${i + 1}. ${line.replace(/^\d+\.\s*/, "")}`
     );
-    setAdditionalInfo(numbered.join("\n"));
+    setValue("additionalInfo", numbered.join("\n"));
   };
 
-  // To get the actual array without numbers:
-  const additionalInfoArray = additionalInfo
+  const additionalInfoArray = watch("additionalInfo")
     .split("\n")
     .map((line) => line.replace(/^\d+\.\s*/, "").trim())
     .filter((line) => line.length > 0);
-    
+
+  //handling submit
+  const onSubmit = (data) => {
+    console.log("Form data:", data);
+    toast.success("Job posted successfully!");
+      setTimeout(() => {
+    navigate("/cmpprofile");
+  }, 1000);
+
+    reset();
+  };
+
   return (
     <section className={styles.postjobSection}>
-      <span className={styles.backBtn}>
+      <Link to="/cmpprofile" className={styles.backBtn}>
         <IconBack /> Back
-      </span>
+      </Link>
       <div className={styles.formContainer}>
         <div className={styles.pageTitle}>
           <h1>Create New Job Posting</h1>
           <p>Fill in the details to create a new job vacancy</p>
         </div>
 
-        <form>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className={styles.jobDetails}>
             <h2>Job Details</h2>
             <div className={styles.jd_container}>
@@ -121,10 +113,18 @@ export default function PostJob() {
                     Job Title<span className={styles.requiredAsterisk}>*</span>
                   </label>
                   <InputField
-                    value={jobTitle}
-                    onChange={(e) => setJobTitle(e.target.value)}
+                    {...register("jobTitle", {
+                      required: "Job title is required",
+                      minLength: {
+                        value: 3,
+                        message: "Job title must be at least 3 characters long",
+                      },
+                    })}
                     placeholder="e.g Senior Developer"
                   />
+                  <span className={styles.error}>
+                    {errors.jobTitle?.message}
+                  </span>
                 </div>
 
                 <div className={styles.inputField}>
@@ -133,23 +133,48 @@ export default function PostJob() {
                   </label>
                   <InputField
                     type="number"
-                    value={reqEmployees}
-                    onChange={(e) => setReqEmployees(e.target.value)}
+                    {...register("reqEmployees", {
+                      required: "Number of employees is required",
+                      pattern: {
+                        value: /^[0-9]*$/,
+                        message: "Please enter a valid number",
+                      },
+                      min: {
+                        value: 1,
+                        message: "Number must be at least 1",
+                      },
+                    })}
                     placeholder="eg. 1"
                     layout="sm"
                   />
+                  <span className={styles.error}>
+                    {errors.reqEmployees?.message}
+                  </span>
                 </div>
 
                 <div className={styles.inputField}>
                   <label className={styles.fieldLabel}>
                     Department<span className={styles.requiredAsterisk}>*</span>
                   </label>
-                  <Select
-                    options={DEPARTMENT_OPTIONS}
-                    placeholder="Select department"
-                    onChange={setDepartment}
-                    defaultValue={department}
+                  <Controller
+                    name="department"
+                    control={control}
+                    rules={{ required: "Department is required" }}
+                    render={({ field }) => (
+                      <Select
+                        options={DEPARTMENT_OPTIONS}
+                        placeholder="Select department"
+                        onChange={(value) => {
+                          field.onChange(value);
+                          clearErrors("department");
+                        }}
+                        value={field.value || null}
+                      />
+                    )}
                   />
+                  <span className={styles.error}>
+                    {errors.department?.message}
+                  </span>
                 </div>
               </div>
 
@@ -157,11 +182,17 @@ export default function PostJob() {
                 <label className={styles.fieldLabel}>
                   Job Type <span className={styles.subLabel}>(by time)</span>
                 </label>
-                <RadioGroup
-                  options={JOB_BY_TIME}
+                <Controller
                   name="jobByTime"
-                  selectedValue={jobByTime}
-                  onChange={setJobByTime}
+                  control={control}
+                  render={({ field }) => (
+                    <RadioGroup
+                      options={JOB_BY_TIME}
+                      name="jobByTime"
+                      selectedValue={field.value}
+                      onChange={(value) => field.onChange(value)}
+                    />
+                  )}
                 />
               </div>
 
@@ -169,21 +200,33 @@ export default function PostJob() {
                 <label className={styles.fieldLabel}>
                   <span className={styles.subLabel}>(by location)</span>
                 </label>
-                <RadioGroup
-                  options={JOB_BY_LOCATION}
+                <Controller
                   name="jobByLocation"
-                  selectedValue={jobByLocation}
-                  onChange={setJobByLocation}
+                  control={control}
+                  render={({ field }) => (
+                    <RadioGroup
+                      options={JOB_BY_LOCATION}
+                      name="jobByLocation"
+                      selectedValue={field.value}
+                      onChange={(value) => field.onChange(value)}
+                    />
+                  )}
                 />
               </div>
 
               <div className={styles.inputRow}>
                 <label className={styles.fieldLabel}>Job Level</label>
-                <RadioGroup
-                  options={JOB_BY_LEVEL}
+                <Controller
                   name="jobLevel"
-                  selectedValue={jobLevel}
-                  onChange={setJobLevel}
+                  control={control}
+                  render={({ field }) => (
+                    <RadioGroup
+                      options={JOB_BY_LEVEL}
+                      name="jobLevel"
+                      selectedValue={field.value}
+                      onChange={(value) => field.onChange(value)}
+                    />
+                  )}
                 />
               </div>
             </div>
@@ -194,11 +237,20 @@ export default function PostJob() {
             <div className={styles.sd_container}>
               <div className={styles.companySize}>
                 <label className={styles.inputLabel}>Salary Offered Type</label>
-                <RadioGroup
-                  options={sizeOptions}
+                <Controller
                   name="salaryDisclosure"
-                  selectedValue={salaryDisclosure}
-                  onChange={handleSalaryDisclosureChange}
+                  control={control}
+                  render={({ field }) => (
+                    <RadioGroup
+                      options={[
+                        { value: "fixed", label: "Fixed" },
+                        { value: "range", label: "Range" },
+                      ]}
+                      name="salaryDisclosure"
+                      selectedValue={field.value}
+                      onChange={(value) => field.onChange(value)}
+                    />
+                  )}
                 />
 
                 <div className={styles.minmax}>
@@ -209,24 +261,58 @@ export default function PostJob() {
                     </label>
                     <InputField
                       layout="sm"
-                      value={minValue}
-                      onChange={(e) => setMinValue(e.target.value)}
+                      {...register("minValue", {
+                        required: "Minimum salary is required",
+                        pattern: {
+                          value: /^[0-9]+$/,
+                          message: "Please enter a valid number",
+                        },
+                        validate: (value) =>
+                          Number.parseInt(value) > 0 ||
+                          "Salary must be greater than 0",
+                      })}
                       placeholder="eg. 10000"
                     />
+                    <span className={styles.error}>
+                      {errors.minValue?.message}
+                    </span>
                   </div>
 
                   <div className={styles.inputWrapper}>
                     <label className={styles.inputLabel}>Maximum</label>
                     <InputField
                       layout="sm"
-                      value={maxValue}
-                      onChange={(e) => setMaxValue(e.target.value)}
+                      {...register("maxValue", {
+                        validate: {
+                          required: (value) =>
+                            salaryDisclosure !== "range" ||
+                            value.trim() !== "" ||
+                            "Maximum salary is required",
+                          greaterThanMin: (value) => {
+                            if (salaryDisclosure !== "range") return true;
+                            const min = watch("minValue");
+                            return (
+                              !min ||
+                              !value ||
+                              Number.parseInt(value) > Number.parseInt(min) ||
+                              "Maximum must be greater than minimum"
+                            );
+                          },
+                        },
+                        pattern: {
+                          value: /^[0-9]*$/,
+                          message: "Please enter a valid number",
+                        },
+                      })}
                       placeholder="eg. 20000"
                       disabled={salaryDisclosure === "fixed"}
                       className={
                         salaryDisclosure === "fixed" ? styles.disabledInput : ""
                       }
                     />
+                    <span className={styles.error}>
+                      {errors.maxValue?.message}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -234,21 +320,33 @@ export default function PostJob() {
               <div className={styles.rightSide}>
                 <div className={styles.inputRow}>
                   <label className={styles.fieldLabel}>Salary Type</label>
-                  <RadioGroup
-                    options={SALARY_TYPE}
+                  <Controller
                     name="salaryType"
-                    selectedValue={salaryType}
-                    onChange={setSalaryType}
+                    control={control}
+                    render={({ field }) => (
+                      <RadioGroup
+                        options={SALARY_TYPE}
+                        name="salaryType"
+                        selectedValue={field.value}
+                        onChange={(value) => field.onChange(value)}
+                      />
+                    )}
                   />
                 </div>
 
                 <div className={styles.hideSalary}>
                   <label className={styles.fieldLabel}>Hide Salary</label>
                   <div className={styles.hideSwitch}>
-                    <ToggleSwitch
-                      isOn={isSalaryRequired}
-                      onToggle={handleIsSalaryRequired}
+                    <Controller
                       name="isSalaryRequired"
+                      control={control}
+                      render={({ field }) => (
+                        <ToggleSwitch
+                          isOn={field.value}
+                          onToggle={(name, value) => field.onChange(value)}
+                          name="isSalaryRequired"
+                        />
+                      )}
                     />
                     <span>
                       Select this option if you prefer not to display the salary
@@ -269,27 +367,53 @@ export default function PostJob() {
                     Experience Criteria
                     <span className={styles.requiredAsterisk}>*</span>
                   </label>
-                  <Select
-                    searchable={false}
-                    options={EXPERIENCE_CRITERIA_OPTIONS}
-                    placeholder="Select education"
-                    onChange={setCriteria}
-                    defaultValue={criteria}
+                  <Controller
+                    name="experienceCriteria"
+                    control={control}
+                    rules={{ required: "Experience criteria is required" }}
+                    render={({ field }) => (
+                      <Select
+                        searchable={false}
+                        options={EXPERIENCE_CRITERIA_OPTIONS}
+                        placeholder="Select education"
+                        onChange={(value) => {
+                          field.onChange(value);
+                          clearErrors("experienceCriteria");
+                        }}
+                        value={field.value || null}
+                      />
+                    )}
                   />
+                  <span className={styles.error}>
+                    {errors.experienceCriteria?.message}
+                  </span>
                 </div>
 
                 <div className={styles.inputField}>
                   <label className={styles.fieldLabel}>
                     Experience<span className={styles.requiredAsterisk}>*</span>
                   </label>
-                  <Select
-                    searchable={false}
-                    layout="sm"
-                    options={EXPERIENCE_OPTIONS}
-                    placeholder="Select experience"
-                    onChange={setExperience}
-                    defaultValue={experience}
+                  <Controller
+                    name="experience"
+                    control={control}
+                    rules={{ required: "Experience is required" }}
+                    render={({ field }) => (
+                      <Select
+                        searchable={false}
+                        layout="sm"
+                        options={EXPERIENCE_OPTIONS}
+                        placeholder="Select experience"
+                        onChange={(value) => {
+                          field.onChange(value);
+                          clearErrors("experience");
+                        }}
+                        value={field.value || null}
+                      />
+                    )}
                   />
+                  <span className={styles.error}>
+                    {errors.experience?.message}
+                  </span>
                 </div>
 
                 <div className={styles.hideSalary}>
@@ -297,10 +421,16 @@ export default function PostJob() {
                     Is experience mandatory to apply for this job ?{" "}
                   </label>
                   <div className={styles.hideSwitch}>
-                    <ToggleSwitch
-                      isOn={isExperienceRequired}
-                      onToggle={handleIsExperienceRequired}
+                    <Controller
                       name="isExperienceRequired"
+                      control={control}
+                      render={({ field }) => (
+                        <ToggleSwitch
+                          isOn={field.value}
+                          onToggle={(name, value) => field.onChange(value)}
+                          name="isExperienceRequired"
+                        />
+                      )}
                     />
                     <span>Turn the button on if required.</span>
                   </div>
@@ -314,30 +444,54 @@ export default function PostJob() {
                     <span className={styles.requiredAsterisk}>*</span>
                   </label>
 
-                  <MultiSelect
-                    options={SKILL_OPTIONS}
-                    placeholder="Select skills"
-                    onChange={handleMultipleSelect}
-                    defaultValues={multipleValues}
+                  <Controller
+                    name="specialities"
+                    control={control}
+                    rules={{
+                      required: "At least one speciality is required",
+                      validate: {
+                        minThree: (value) =>
+                          value.length >= 3 ||
+                          "At least 3 specialities are required",
+                        maxFive: (value) =>
+                          value.length <= 5 || "Maximum 5 specialities allowed",
+                      },
+                    }}
+                    render={({ field }) => (
+                      <MultiSelect
+                        options={SKILL_OPTIONS}
+                        placeholder="Select skills"
+                        onChange={(options) => {
+                          field.onChange(options);
+                          clearErrors("specialities");
+                        }}
+                        defaultValues={field.value}
+                      />
+                    )}
                   />
+                  <span className={styles.error}>
+                    {errors.specialities?.message}
+                  </span>
                 </div>
 
                 <div className={styles.selectedTags}>
                   <h2>Selected Specialities</h2>
                   <div className={styles.tagsContainer}>
-                    {multipleValues.length > 0 ? (
-                      multipleValues.map((option) => (
+                    {specialities.length > 0 ? (
+                      specialities.map((option) => (
                         <span key={option.value} className={styles.tag}>
                           {option.label}
                           <button
+                            type="button"
                             className={styles.removeBtn}
-                            onClick={() =>
-                              setMultipleValues((prev) =>
-                                prev.filter(
+                            onClick={() => {
+                              setValue(
+                                "specialities",
+                                specialities.filter(
                                   (item) => item.value !== option.value
                                 )
-                              )
-                            }
+                              );
+                            }}
                           >
                             <IconCross />
                           </button>
@@ -359,10 +513,16 @@ export default function PostJob() {
                 </div>
 
                 <div className={styles.mark}>
-                  <ToggleSwitch
-                    isOn={isSkillsRequired}
-                    onToggle={handleIsSkillsRequired}
+                  <Controller
                     name="isSkillsRequired"
+                    control={control}
+                    render={({ field }) => (
+                      <ToggleSwitch
+                        isOn={field.value}
+                        onToggle={(name, value) => field.onChange(value)}
+                        name="isSkillsRequired"
+                      />
+                    )}
                   />
                   <span>Mark this skill as required.</span>
                 </div>
@@ -374,12 +534,27 @@ export default function PostJob() {
                     Job Description
                     <span className={styles.requiredAsterisk}>*</span>
                   </label>
-                  <TextArea
-                    value={jobDescription}
-                    onChange={(e) => setJobDescription(e.target.value)}
-                    placeholder="Describe the roles, responsibilities and requirements."
-                    rows={4}
+                  <Controller
+                    name="jobDescription"
+                    control={control}
+                    rules={{
+                      required: "Job description is required",
+                      minLength: {
+                        value: 50,
+                        message: "Description should be at least 50 characters",
+                      },
+                    }}
+                    render={({ field }) => (
+                      <TextArea
+                        {...field}
+                        placeholder="Describe the roles, responsibilities and requirements."
+                        rows={4}
+                      />
+                    )}
                   />
+                  <span className={styles.error}>
+                    {errors.jobDescription?.message}
+                  </span>
                 </div>
 
                 <div className={styles.docXdeadline}>
@@ -399,10 +574,24 @@ export default function PostJob() {
                     <InputField
                       type="date"
                       layout="sm"
-                      value={jobTitle}
-                      onChange={(e) => setJobTitle(e.target.value)}
-                      placeholder="e.g Senior Developer"
+                      {...register("applicationDeadline", {
+                        required: "Application deadline is required",
+                        validate: {
+                          futureDate: (value) => {
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            const selectedDate = new Date(value);
+                            return (
+                              selectedDate >= today ||
+                              "Date must be in the future"
+                            );
+                          },
+                        },
+                      })}
                     />
+                    <span className={styles.error}>
+                      {errors.applicationDeadline?.message}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -412,22 +601,43 @@ export default function PostJob() {
                   Additional Information
                   <span className={styles.requiredAsterisk}>*</span>
                 </label>
-                <TextArea
-                  value={additionalInfo}
-                  onChange={(e) => handleAdditionalInfo(e)}
-                  placeholder="1. Describe the benefits of your company
+                <Controller
+                  name="additionalInfo"
+                  control={control}
+                  rules={{
+                    required: "Additional information is required",
+                  }}
+                  render={({ field }) => (
+                    <TextArea
+                      {...field}
+                      onChange={(e) => {
+                        handleAdditionalInfo(e);
+                      }}
+                      placeholder="1. Describe the benefits of your company
 2. Describe the perks"
-                  rows={4}
+                      rows={4}
+                    />
+                  )}
                 />
+                <span className={styles.error}>
+                  {errors.additionalInfo?.message}
+                </span>
               </div>
             </div>
           </div>
 
           <div className={styles.buttons}>
-            <Button layout="sm" fill="outline" color="neutralLight">
+            <Button
+              type="button"
+              layout="sm"
+              fill="outline"
+              color="neutralLight"
+            >
               Cancel
             </Button>
-            <Button layout="sm">Save Changes</Button>
+            <Button type="submit" layout="sm">
+              Save Changes
+            </Button>
           </div>
         </form>
       </div>

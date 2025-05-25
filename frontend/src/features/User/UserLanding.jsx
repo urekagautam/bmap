@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import UserNavbar from "../../component/UserNavbar";
 import NearbyJobs from "./landing/NearbyJobs";
 import styles from "./UserLanding.module.css";
@@ -11,6 +12,7 @@ export default function UserLanding() {
             </div>
     <section className={styles.sectionWrapper}>
            <NearbyJobs />
+           <Link to="/cmpprofile">Organization Profile</Link>
     </section>
     </>
   )

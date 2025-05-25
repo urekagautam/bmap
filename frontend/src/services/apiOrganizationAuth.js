@@ -1,8 +1,8 @@
 import axios from "axios"
 
-export const apiSignup = async (userData) => {
+export const apiOrganizationSignup = async (orgData) => {
   try {
-    const response = await axios.post("http://localhost:5000/users/api/v1/auth/signup", userData)
+    const response = await axios.post("http://localhost:5000/org/api/v1/auth/signup", orgData)
     return response.data
   } catch (error) {
     if (error.response) {
@@ -14,13 +14,13 @@ export const apiSignup = async (userData) => {
   }
 }
 
-export const apiLogin = async ({ email, password }) => {
+/* export const apiLogin = async ({ email, password }) => {
   const response = await axios.post("http://localhost:5000/api/auth/login", {
     email,
     password,
   });
   return response.data;
-};
+}; */
 
 /* export const apiLogin = async (loginData) => {
   try {

@@ -10,17 +10,15 @@ const ImageUpload = ({
   onChange,
   className,
   shape = "default",
-  imgFile: controlledImgFile, // received from parent
+  imgFile: controlledImgFile, 
 }) => {
   const [imgFile, setImgFile] = useState(controlledImgFile || null);
   const [preview, setPreview] = useState(null);
 
-  // Update local imgFile when parent-controlled file changes
   useEffect(() => {
     setImgFile(controlledImgFile || null);
   }, [controlledImgFile]);
 
-  // Generate preview URL
   useEffect(() => {
     if (imgFile) {
       const objectUrl = URL.createObjectURL(imgFile);
@@ -34,7 +32,7 @@ const ImageUpload = ({
   const handleChange = (e) => {
     const file = e.target.files?.[0] || null;
     setImgFile(file);
-    onChange?.(file); // notify parent
+    onChange?.(file); 
   };
 
   return (

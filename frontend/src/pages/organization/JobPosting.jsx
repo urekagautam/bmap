@@ -1,6 +1,11 @@
-import React from 'react'
-import PostJob from '../../features/Organization/PostJob'
+import CToaster from "../../component/Toaster";
+import PostJob from "../../features/Organization/PostJob";
 
 export default function JobPosting() {
-  return <PostJob />
+  return (
+    <>
+     <CToaster/>
+      <PostJob />
+    </>
+  );
 }
