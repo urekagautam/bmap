@@ -4,6 +4,7 @@ import NearbyJobs from "./landing/NearbyJobs";
 import styles from "./UserLanding.module.css";
 
 export default function UserLanding() {
+  const id="683fefafdbf50496e0b4d71b";
   return (
    <>
     <UserNavbar />
@@ -12,7 +13,7 @@ export default function UserLanding() {
             </div>
     <section className={styles.sectionWrapper}>
            <NearbyJobs />
-           <Link to="/cmpprofile">Organization Profile</Link>
+           <Link to={`/cmpprofile/${id}`}>Organization Profile</Link>
     </section>
     </>
   )

@@ -42,7 +42,7 @@ export const SKILL_OPTIONS = [
   { value: "branding6", label: "Branding6" },
   { value: "branding7", label: "Branding7" },
   { value: "branding8", label: "Branding8" },
-  { value: "branding8", label: "Branding8" },
+  { value: "branding9", label: "Branding9" },
   { value: "branding339", label: "Braefewending8" },
   { value: "branding48", label: "Brandrering8" },
   { value: "branding85", label: "Branding8" },
@@ -54,57 +54,6 @@ export const SKILL_OPTIONS = [
 
 // Department uses Field of Expertise options
 export const DEPARTMENT_OPTIONS = FIELD_OF_EXPERTISE_OPTIONS;
-
-// Experience Criteria
-export const EXPERIENCE_CRITERIA_OPTIONS = [
-  { value: "less", label: "Less Than" },
-  { value: "more", label: "More Than" },
-  { value: "more_equal", label: "More than or equal to" },
-  { value: "less_equal", label: "Less than or equal to" },
-  { value: "equal", label: "Equal to" },
-];
-
-// Experience Criteria
-export const EXPERIENCE_OPTIONS = [
-  { value: "1", label: "1 year" },
-  { value: "2", label: "2 years" },
-  { value: "3", label: "3 years" },
-  { value: "4", label: "4 years" },
-  { value: "5", label: "5 years" },
-];
-
-//Job Type By Time
-export const JOB_BY_TIME = [
-  { value: "full_time", label: "Full-time" },
-  { value: "part_time", label: "Part-time" },
-  { value: "contract", label: "Contract" },
-  { value: "internship", label: "Internship" },
-  { value: "freelance", label: "Freelance" },
-];
-
-//Job Type By Location
-export const JOB_BY_LOCATION = [
-  { value: "on_site", label: "On-site/In-Office" },
-  { value: "remote", label: "Remote" },
-  { value: "hybrid", label: "Hybrid" },
-  { value: "none", label: "None" },
-];
-
-//Job Level
-export const JOB_BY_LEVEL = [
-  { value: "intern", label: "Intern" },
-  { value: "mid_level", label: "Mid-level" },
-  { value: "senior", label: "Senior" },
-];
-
-//Job Level
-export const SALARY_TYPE = [
-  { value: "hourly", label: "Hourly" },
-  { value: "daily", label: "Daily" },
-  { value: "weekly", label: "Weekly" },
-  { value: "monthly", label: "Monthly" },
-  { value: "yearly", label: "Yearly" },
-];
 
 // Districts of Nepal
 export const DISTRICT_OPTIONS = [
@@ -187,3 +136,53 @@ export const DISTRICT_OPTIONS = [
   { value: "terhathum", label: "Terhathum" },
   { value: "udayapur", label: "Udayapur" }
 ];
+
+// Updated constants to match your Mongoose model exactly
+
+export const JOB_BY_TIME = [
+  { value: "fulltime", label: "Full Time" },
+  { value: "parttime", label: "Part Time" },
+  { value: "contract", label: "Contract" },
+  { value: "internship", label: "Internship" },
+  { value: "freelance", label: "Freelance" },
+]
+
+export const JOB_BY_LOCATION = [
+  { value: "on_site", label: "On Site" },
+  { value: "remote", label: "Remote" },
+  { value: "hybrid", label: "Hybrid" },
+  { value: "none", label: "Not Specified" },
+]
+
+export const JOB_BY_LEVEL = [
+  { value: "intern", label: "Intern" },
+  { value: "mid-level", label: "Mid Level" },
+  { value: "senior", label: "Senior" },
+]
+
+export const SALARY_TYPE = [
+  { value: "hourly", label: "Hourly" },
+  { value: "daily", label: "Daily" },
+  { value: "weekly", label: "Weekly" },
+  { value: "monthly", label: "Monthly" },
+  { value: "yearly", label: "Yearly" },
+]
+
+export const EXPERIENCE_CRITERIA_OPTIONS = [
+  { value: "more_than", label: "More than" },
+  { value: "less_than", label: "Less than" },
+  { value: "more_than_or_equal_to", label: "More than or equal to" },
+  { value: "less_than_or_equal_to", label: "Less than or equal to" },
+  { value: "equal_to", label: "Equal to" },
+]
+
+export const EXPERIENCE_OPTIONS = [
+  { value: "1year", label: "1 Year" },
+  { value: "2years", label: "2 Years" },
+  { value: "3years", label: "3 Years" },
+  { value: "4years", label: "4 Years" },
+  { value: "5+years", label: "5+ Years" },
+]
+
+
+

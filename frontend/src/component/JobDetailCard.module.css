@@ -1,0 +1,132 @@
+.cardWrapper {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 16px;
+  padding: 1.6rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  width: 100%;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.8rem;
+}
+
+.cardHeader > h1 {
+  color: var(--neutral90);
+  font-size: 1.8rem;
+  font-weight: 500;
+}
+
+.viewCount {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--neutral50);
+  font-size: 16px;
+}
+
+.viewCount > svg {
+  font-size: 2.4rem;
+}
+
+.viewCount > span {
+  font-size: 1.2rem;
+}
+
+.tagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-bottom: 1.6rem;
+}
+
+.detailsContainer {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 0.8rem;
+}
+
+.detailItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--neutral60);
+}
+
+.detailItem > span {
+  font-size: 1.2rem;
+}
+
+.detailItem > svg {
+  font-size: 2rem;
+}
+
+.tabsContainer {
+  display: flex;
+  gap: 8px;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tabButton {
+  padding: 12px 24px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.activeTab {
+  color: #0f3d23;
+  border-bottom: 2px solid #0f3d23;
+  background-color: #e6f0eb;
+  border-radius: 8px 8px 0 0;
+}
+
+.contentContainer {
+  padding: 16px 0;
+}
+
+.contentTitle {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+
+.contentText {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #4b5563;
+}
+
+.bottomLWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding-top: 0.6rem;
+}
+
+.bottomLWrapper > h3 {
+  color: var(--accent);
+}
+
+.bottomLWrapper > svg {
+  font-size: 2.2rem;
+}
+
+.bottomLWrapper {
+  color: var(--accent);
+}
+
+.bottomLWrapper > h3 {
+  font-weight: 500;
+  font-size: 1.4rem;
+}

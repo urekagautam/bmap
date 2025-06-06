@@ -22,12 +22,10 @@ const organizationSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
-      select: false,
+      required: true
     },
     phoneNo: {
       type: String,
-      select: false,
       unique: true,
       sparse: true,
     },
@@ -40,15 +38,14 @@ const organizationSchema = new mongoose.Schema(
     panCard: { type: String },
     vatCard: { type: String }, */
     location: {
-      lat: {
-        type: Number,
-        select: false,
-      },
-      lng: {
-        type: Number,
-        select: false,
-      },
+    type: {
+      type: String,
+      enum: ['Point'],
     },
+    coordinates: {
+      type: [Number],  
+    }
+  },
     address: {
       type: String,
     },
@@ -91,8 +88,7 @@ const organizationSchema = new mongoose.Schema(
       },
     },
     refreshToken: {
-      type: String,
-      select: false,
+      type: String
     },
   },
   { timestamps: true }

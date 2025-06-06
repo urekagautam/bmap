@@ -69,3 +69,35 @@ export const apiOrganizationGetProfile = async (orgId) => {
   }
 };
 
+// Get organization details by ID
+export const apiGetOrganizationDetails = async (orgId) => {
+  const token = localStorage.getItem("orgAccessToken");
+  
+  if (!token) {
+    throw new Error("No access token found. Please log in first.");
+  }
+
+  if (!orgId) {
+    throw new Error("Organization ID is required.");
+  }
+
+  try {
+    const response = await axios.get(
+      `http://localhost:5000/org/api/v1/getOrganizationDetails/${orgId}`,
+      {
+        headers: {
+          /* Authorization: `Bearer ${token}`, */
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error("Error response from backend:", error.response);
+      throw error;
+    } else {
+      throw new Error("Network error or server is down");
+    }
+  }
+};

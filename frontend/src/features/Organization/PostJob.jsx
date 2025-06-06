@@ -1,13 +1,13 @@
-import { useForm, Controller } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
-import Button from "../../component/Button";
-import InputField from "../../component/InputField";
-import RadioGroup from "../../component/RadioGroup";
-import Select from "../../component/Select";
-import { IconBack } from "../../component/icons/IconBack";
-import { IconCross } from "../../component/icons/IconCross";
-import { IconInvalid } from "../../component/icons/IconInvalid";
+import { useForm, Controller } from "react-hook-form"
+import { Link, useNavigate } from "react-router-dom"
+import toast from "react-hot-toast"
+import Button from "../../component/Button"
+import InputField from "../../component/InputField"
+import RadioGroup from "../../component/RadioGroup"
+import Select from "../../component/Select"
+import { IconBack } from "../../component/icons/IconBack"
+import { IconCross } from "../../component/icons/IconCross"
+import { IconInvalid } from "../../component/icons/IconInvalid"
 import {
   DEPARTMENT_OPTIONS,
   SKILL_OPTIONS,
@@ -17,16 +17,20 @@ import {
   JOB_BY_LOCATION,
   JOB_BY_LEVEL,
   SALARY_TYPE,
-} from "../../constants/constants.js";
+} from "../../constants/constants.js"
+import { apiPostVacancy } from "../../services/apiVacancy.js"
+import useOrgAuth from "../../hooks/useOrgAuth.js"
 
-import styles from "./PostJob.module.css";
-import ToggleSwitch from "../../component/ToggleSwitch.jsx";
-import MultiSelect from "../../component/MultiSelect.jsx";
-import TextArea from "../../component/TextArea.jsx";
+import styles from "./PostJob.module.css"
+import ToggleSwitch from "../../component/ToggleSwitch.jsx"
+import MultiSelect from "../../component/MultiSelect.jsx"
+import TextArea from "../../component/TextArea.jsx"
+import { useState } from "react"
 
 export default function PostJob() {
-
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+  const { orgId } = useOrgAuth()
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const {
     register,
@@ -42,9 +46,9 @@ export default function PostJob() {
       jobTitle: "",
       reqEmployees: "",
       department: "",
-      jobByTime: "full_time",
-      jobByLocation: "on_site",
-      jobLevel: "mid_level",
+      jobByTime: "fulltime",
+      jobByLocation: "on_site", 
+      jobLevel: "mid-level",
       salaryDisclosure: "fixed",
       minValue: "",
       maxValue: "",
@@ -59,38 +63,75 @@ export default function PostJob() {
       applicationDeadline: "",
       additionalInfo: "",
     },
-  });
+  })
 
-  const salaryDisclosure = watch("salaryDisclosure");
-  const specialities = watch("specialities") || [];
-
+  const salaryDisclosure = watch("salaryDisclosure")
+  const specialities = watch("specialities") || []
 
   //additional info ko numbering include garera
   const handleAdditionalInfo = (e) => {
-    const raw = e.target.value;
-    const lines = raw.split("\n");
+    const raw = e.target.value
+    const lines = raw.split("\n")
 
-    const numbered = lines.map(
-      (line, i) => `${i + 1}. ${line.replace(/^\d+\.\s*/, "")}`
-    );
-    setValue("additionalInfo", numbered.join("\n"));
-  };
+    const numbered = lines.map((line, i) => `${i + 1}. ${line.replace(/^\d+\.\s*/, "")}`)
+    setValue("additionalInfo", numbered.join("\n"))
+  }
 
   const additionalInfoArray = watch("additionalInfo")
     .split("\n")
     .map((line) => line.replace(/^\d+\.\s*/, "").trim())
-    .filter((line) => line.length > 0);
+    .filter((line) => line.length > 0)
 
   //handling submit
-  const onSubmit = (data) => {
-    console.log("Form data:", data);
-    toast.success("Job posted successfully!");
-      setTimeout(() => {
-    navigate("/cmpprofile");
-  }, 1000);
+  const onSubmit = async (data) => {
+    try {
+      setIsSubmitting(true)
 
-    reset();
-  };
+      const vacancyData = {
+        title: data.jobTitle,
+        description: data.jobDescription,
+        deadline: data.applicationDeadline,
+        department: typeof data.department === "object" ? data.department.value : data.department,
+        additionalInfo: additionalInfoArray.join(", "),
+        skillsRequired: data.specialities.map((skill) => skill.value),
+        isSkillsRequired: data.isSkillsRequired,
+        jobByTime: data.jobByTime,
+        jobByLocation: data.jobByLocation,
+        jobLevel: data.jobLevel,
+      
+        salary: {
+          type: data.salaryDisclosure,
+          min: data.minValue ? Number.parseInt(data.minValue) : undefined,
+          max: data.salaryDisclosure === "range" && data.maxValue ? Number.parseInt(data.maxValue) : undefined,
+        },
+        salaryPeriod: data.salaryType,
+        hideSalary: data.isSalaryRequired,
+        experienceCriteria:
+          typeof data.experienceCriteria === "object" ? data.experienceCriteria.value : data.experienceCriteria,
+        experience: typeof data.experience === "object" ? data.experience.value : data.experience,
+        isExperienceRequired: data.isExperienceRequired,
+        requiredEmployees: Number.parseInt(data.reqEmployees) || 1,
+        orgId: orgId, 
+      }
+
+      console.log("Formatted vacancy data:", vacancyData)
+      const response = await apiPostVacancy(vacancyData)
+      console.log("API Response:", response)
+
+      toast.success("Job posted successfully!")
+      setTimeout(() => {
+        navigate("/cmpprofile")
+      }, 1000)
+
+      reset()
+    } catch (error) {
+      console.error("Error posting job:", error)
+      const errorMessage = error.response?.data?.message || error.response?.data?.error?.message || "Failed to post job"
+      toast.error(errorMessage)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   return (
     <section className={styles.postjobSection}>
@@ -122,15 +163,11 @@ export default function PostJob() {
                     })}
                     placeholder="e.g Senior Developer"
                   />
-                  <span className={styles.error}>
-                    {errors.jobTitle?.message}
-                  </span>
+                  <span className={styles.error}>{errors.jobTitle?.message}</span>
                 </div>
 
                 <div className={styles.inputField}>
-                  <label className={styles.fieldLabel}>
-                    Req No. of Employees.
-                  </label>
+                  <label className={styles.fieldLabel}>Req No. of Employees.</label>
                   <InputField
                     type="number"
                     {...register("reqEmployees", {
@@ -147,9 +184,7 @@ export default function PostJob() {
                     placeholder="eg. 1"
                     layout="sm"
                   />
-                  <span className={styles.error}>
-                    {errors.reqEmployees?.message}
-                  </span>
+                  <span className={styles.error}>{errors.reqEmployees?.message}</span>
                 </div>
 
                 <div className={styles.inputField}>
@@ -165,16 +200,14 @@ export default function PostJob() {
                         options={DEPARTMENT_OPTIONS}
                         placeholder="Select department"
                         onChange={(value) => {
-                          field.onChange(value);
-                          clearErrors("department");
+                          field.onChange(value)
+                          clearErrors("department")
                         }}
                         value={field.value || null}
                       />
                     )}
                   />
-                  <span className={styles.error}>
-                    {errors.department?.message}
-                  </span>
+                  <span className={styles.error}>{errors.department?.message}</span>
                 </div>
               </div>
 
@@ -267,15 +300,11 @@ export default function PostJob() {
                           value: /^[0-9]+$/,
                           message: "Please enter a valid number",
                         },
-                        validate: (value) =>
-                          Number.parseInt(value) > 0 ||
-                          "Salary must be greater than 0",
+                        validate: (value) => Number.parseInt(value) > 0 || "Salary must be greater than 0",
                       })}
                       placeholder="eg. 10000"
                     />
-                    <span className={styles.error}>
-                      {errors.minValue?.message}
-                    </span>
+                    <span className={styles.error}>{errors.minValue?.message}</span>
                   </div>
 
                   <div className={styles.inputWrapper}>
@@ -285,18 +314,16 @@ export default function PostJob() {
                       {...register("maxValue", {
                         validate: {
                           required: (value) =>
-                            salaryDisclosure !== "range" ||
-                            value.trim() !== "" ||
-                            "Maximum salary is required",
+                            salaryDisclosure !== "range" || value.trim() !== "" || "Maximum salary is required",
                           greaterThanMin: (value) => {
-                            if (salaryDisclosure !== "range") return true;
-                            const min = watch("minValue");
+                            if (salaryDisclosure !== "range") return true
+                            const min = watch("minValue")
                             return (
                               !min ||
                               !value ||
                               Number.parseInt(value) > Number.parseInt(min) ||
                               "Maximum must be greater than minimum"
-                            );
+                            )
                           },
                         },
                         pattern: {
@@ -306,13 +333,9 @@ export default function PostJob() {
                       })}
                       placeholder="eg. 20000"
                       disabled={salaryDisclosure === "fixed"}
-                      className={
-                        salaryDisclosure === "fixed" ? styles.disabledInput : ""
-                      }
+                      className={salaryDisclosure === "fixed" ? styles.disabledInput : ""}
                     />
-                    <span className={styles.error}>
-                      {errors.maxValue?.message}
-                    </span>
+                    <span className={styles.error}>{errors.maxValue?.message}</span>
                   </div>
                 </div>
               </div>
@@ -348,10 +371,7 @@ export default function PostJob() {
                         />
                       )}
                     />
-                    <span>
-                      Select this option if you prefer not to display the salary
-                      to jobseekers.
-                    </span>
+                    <span>Select this option if you prefer not to display the salary to jobseekers.</span>
                   </div>
                 </div>
               </div>
@@ -375,18 +395,16 @@ export default function PostJob() {
                       <Select
                         searchable={false}
                         options={EXPERIENCE_CRITERIA_OPTIONS}
-                        placeholder="Select education"
+                        placeholder="Select criteria"
                         onChange={(value) => {
-                          field.onChange(value);
-                          clearErrors("experienceCriteria");
+                          field.onChange(value)
+                          clearErrors("experienceCriteria")
                         }}
                         value={field.value || null}
                       />
                     )}
                   />
-                  <span className={styles.error}>
-                    {errors.experienceCriteria?.message}
-                  </span>
+                  <span className={styles.error}>{errors.experienceCriteria?.message}</span>
                 </div>
 
                 <div className={styles.inputField}>
@@ -404,22 +422,18 @@ export default function PostJob() {
                         options={EXPERIENCE_OPTIONS}
                         placeholder="Select experience"
                         onChange={(value) => {
-                          field.onChange(value);
-                          clearErrors("experience");
+                          field.onChange(value)
+                          clearErrors("experience")
                         }}
                         value={field.value || null}
                       />
                     )}
                   />
-                  <span className={styles.error}>
-                    {errors.experience?.message}
-                  </span>
+                  <span className={styles.error}>{errors.experience?.message}</span>
                 </div>
 
                 <div className={styles.hideSalary}>
-                  <label className={styles.fieldLabel}>
-                    Is experience mandatory to apply for this job ?{" "}
-                  </label>
+                  <label className={styles.fieldLabel}>Is experience mandatory to apply for this job ? </label>
                   <div className={styles.hideSwitch}>
                     <Controller
                       name="isExperienceRequired"
@@ -450,11 +464,8 @@ export default function PostJob() {
                     rules={{
                       required: "At least one speciality is required",
                       validate: {
-                        minThree: (value) =>
-                          value.length >= 3 ||
-                          "At least 3 specialities are required",
-                        maxFive: (value) =>
-                          value.length <= 5 || "Maximum 5 specialities allowed",
+                        minThree: (value) => value.length >= 3 || "At least 3 specialities are required",
+                        maxFive: (value) => value.length <= 5 || "Maximum 5 specialities allowed",
                       },
                     }}
                     render={({ field }) => (
@@ -462,16 +473,14 @@ export default function PostJob() {
                         options={SKILL_OPTIONS}
                         placeholder="Select skills"
                         onChange={(options) => {
-                          field.onChange(options);
-                          clearErrors("specialities");
+                          field.onChange(options)
+                          clearErrors("specialities")
                         }}
                         defaultValues={field.value}
                       />
                     )}
                   />
-                  <span className={styles.error}>
-                    {errors.specialities?.message}
-                  </span>
+                  <span className={styles.error}>{errors.specialities?.message}</span>
                 </div>
 
                 <div className={styles.selectedTags}>
@@ -487,10 +496,8 @@ export default function PostJob() {
                             onClick={() => {
                               setValue(
                                 "specialities",
-                                specialities.filter(
-                                  (item) => item.value !== option.value
-                                )
-                              );
+                                specialities.filter((item) => item.value !== option.value),
+                              )
                             }}
                           >
                             <IconCross />
@@ -507,9 +514,7 @@ export default function PostJob() {
               <div className={styles.isSkillRequired}>
                 <div className={styles.mandatory}>
                   <IconInvalid />
-                  <span>
-                    Enter up to 5 primary skills required for this position
-                  </span>
+                  <span>Enter up to 5 primary skills required for this position</span>
                 </div>
 
                 <div className={styles.mark}>
@@ -552,9 +557,7 @@ export default function PostJob() {
                       />
                     )}
                   />
-                  <span className={styles.error}>
-                    {errors.jobDescription?.message}
-                  </span>
+                  <span className={styles.error}>{errors.jobDescription?.message}</span>
                 </div>
 
                 <div className={styles.docXdeadline}>
@@ -578,20 +581,15 @@ export default function PostJob() {
                         required: "Application deadline is required",
                         validate: {
                           futureDate: (value) => {
-                            const today = new Date();
-                            today.setHours(0, 0, 0, 0);
-                            const selectedDate = new Date(value);
-                            return (
-                              selectedDate >= today ||
-                              "Date must be in the future"
-                            );
+                            const today = new Date()
+                            today.setHours(0, 0, 0, 0)
+                            const selectedDate = new Date(value)
+                            return selectedDate >= today || "Date must be in the future"
                           },
                         },
                       })}
                     />
-                    <span className={styles.error}>
-                      {errors.applicationDeadline?.message}
-                    </span>
+                    <span className={styles.error}>{errors.applicationDeadline?.message}</span>
                   </div>
                 </div>
               </div>
@@ -611,7 +609,7 @@ export default function PostJob() {
                     <TextArea
                       {...field}
                       onChange={(e) => {
-                        handleAdditionalInfo(e);
+                        handleAdditionalInfo(e)
                       }}
                       placeholder="1. Describe the benefits of your company
 2. Describe the perks"
@@ -619,28 +617,21 @@ export default function PostJob() {
                     />
                   )}
                 />
-                <span className={styles.error}>
-                  {errors.additionalInfo?.message}
-                </span>
+                <span className={styles.error}>{errors.additionalInfo?.message}</span>
               </div>
             </div>
           </div>
 
           <div className={styles.buttons}>
-            <Button
-              type="button"
-              layout="sm"
-              fill="outline"
-              color="neutralLight"
-            >
+            <Button type="button" layout="sm" fill="outline" color="neutralLight">
               Cancel
             </Button>
-            <Button type="submit" layout="sm">
-              Save Changes
+            <Button type="submit" layout="sm" disabled={isSubmitting}>
+              {isSubmitting ? "Posting..." : "Save Changes"}
             </Button>
           </div>
         </form>
       </div>
     </section>
-  );
+  )
 }

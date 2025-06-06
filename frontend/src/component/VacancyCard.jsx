@@ -7,15 +7,16 @@ import Tag from "./Tag.jsx";
 import { Link } from "react-router-dom";
 
 export default function VacancyCard({
+  id,
   deadline,
   views,
   vacancyTitle,
   vacancyCompany,
   skills = [],
 }) {
-  const id="1234";
+
   return (
-     <Link to={`/jobdescription/${id}`}> 
+    <Link to={`/jobdescription/${id}`}>
     <div className={styles.mainWrapper}>
       <div className={styles.shrinkWrapper}>
         <div className={styles.topMainWrapper}>
@@ -34,7 +35,7 @@ export default function VacancyCard({
               <IconLightBulb />
               <h3>Key Skills:</h3>
               {skills.slice(0, 3).map((skill, index) => (
-                <Tag key={index} skill={skill} />
+                <Tag key={index} data={skill} />
               ))}
             </div>
           </div>
