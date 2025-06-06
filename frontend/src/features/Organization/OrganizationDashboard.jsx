@@ -1,8 +1,10 @@
-import InputField from "../../component/InputField";
+
 import OrganizationNavbar from "../../component/OrganizationNavbar";
 import styles from './OrganizationDashboard.module.css'
+import useOrgAuth from "../../hooks/useOrgAuth.js"
 
 export default function OrganizationDashboard() {
+     const { orgId } = useOrgAuth()
   return (
 
 
@@ -21,7 +23,7 @@ export default function OrganizationDashboard() {
       </label> */}
 
       <section className={styles.mainWrapper}>
-          
+         idd : {orgId}
       </section>
     </>
   )

@@ -20,7 +20,7 @@ export default function OrganizationNavbar({ className = "" }) {
       </div>
 
       <div className={styles.navActions}>
-      <Link to="/jobs" className={styles.navItem}>
+      <Link to="/org" className={styles.navItem}>
           <IconBag />
           <span className={styles.navItemText}>DashBoard</span>
         </Link>

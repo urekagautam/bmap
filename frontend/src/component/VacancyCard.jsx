@@ -4,15 +4,19 @@ import { IconHourglass } from "./icons/IconHourglass.jsx";
 import { IconLightBulb } from "./icons/IconLightBulb.jsx";
 import styles from "./VacancyCard.module.css";
 import Tag from "./Tag.jsx";
+import { Link } from "react-router-dom";
 
 export default function VacancyCard({
+  id,
   deadline,
   views,
   vacancyTitle,
   vacancyCompany,
   skills = [],
 }) {
+
   return (
+    <Link to={`/jobdescription/${id}`}>
     <div className={styles.mainWrapper}>
       <div className={styles.shrinkWrapper}>
         <div className={styles.topMainWrapper}>
@@ -31,7 +35,7 @@ export default function VacancyCard({
               <IconLightBulb />
               <h3>Key Skills:</h3>
               {skills.slice(0, 3).map((skill, index) => (
-                <Tag key={index} skill={skill} />
+                <Tag key={index} data={skill} />
               ))}
             </div>
           </div>
@@ -50,5 +54,6 @@ export default function VacancyCard({
         </div>
       </div>
     </div>
+    </Link>
   );
 }

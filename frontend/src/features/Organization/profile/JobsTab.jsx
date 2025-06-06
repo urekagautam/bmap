@@ -4,7 +4,7 @@ import JobCard from "../../../component/JobCard.jsx"
 import { Link } from "react-router-dom"
 
 export default function JobsTab() {
-
+  
   const jobListings = [
     {
       id: 1,
