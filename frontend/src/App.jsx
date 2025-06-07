@@ -12,9 +12,9 @@ import CompanyProfileView from "./pages/organization/CompanyProfileView";
 import JobPosting from "./pages/organization/JobPosting";
 import Search from "./features/User/Search/Search";
 import OrganizationSignup from "./pages/organization/OrganizationSignup";
+import JobDescription from "./pages/organization/JobDescription";
 
 function App() {
-
 
   return (
     <>
@@ -30,10 +30,12 @@ function App() {
 
           {/* ORGANIZATION */}
           <Route path="/org" element={<DashboardPage />} />
-           <Route path="/org/signup" element={<OrganizationSignup />} />
+          <Route path="/org/signup" element={<OrganizationSignup />} />
           <Route path="/orgprofile" element={<ProfilePage />} />
-          <Route path="/cmpprofile" element={<CompanyProfileView />} />
+          <Route path="/cmpprofile/:id" element={<CompanyProfileView />} />
+          {/* <Route path="/cmpprofile" element={<CompanyProfileView />} /> */}
           <Route path="/postjob" element={<JobPosting />} />
+          <Route path="/jobdescription/:id" element={<JobDescription />} />
 
           {/* NOT FOUND */}
           <Route path="*" element={<NotFound />} />

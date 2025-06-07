@@ -10,7 +10,7 @@ const organizationSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    name: {
+    orgName: {
       type: String,
       trim: true,
     },
@@ -22,28 +22,30 @@ const organizationSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
-      select: false,
+      required: true
     },
     phoneNo: {
       type: String,
-      select: false,
       unique: true,
       sparse: true,
     },
-    image: {
+     image: {
       type: [String],
-    },
+    }, 
+/*   || LS || ownersPhoto: { type: String },
+    citizenshipFront: { type: String },
+    citizenshipBack: { type: String },
+    panCard: { type: String },
+    vatCard: { type: String }, */
     location: {
-      lat: {
-        type: Number,
-        select: false,
-      },
-      lng: {
-        type: Number,
-        select: false,
-      },
+    type: {
+      type: String,
+      enum: ['Point'],
     },
+    coordinates: {
+      type: [Number],  
+    }
+  },
     address: {
       type: String,
     },
@@ -86,8 +88,7 @@ const organizationSchema = new mongoose.Schema(
       },
     },
     refreshToken: {
-      type: String,
-      select: false,
+      type: String
     },
   },
   { timestamps: true }
@@ -120,7 +121,7 @@ organizationSchema.methods.generateAccessToken = function () {
       role: "organization",
     },
     config.accessTokenKey,
-    { expiresIn: config.accessTokenExpiry || "1h" }
+    { expiresIn: config.accessTokenExpiry || "7d" }
   );
 };
 
@@ -134,7 +135,7 @@ organizationSchema.methods.generateRefreshToken = function () {
       role: "organization",
     },
     config.refreshTokenKey,
-    { expiresIn: config.REFRESH_TOKEN_EXPIRY || "7d" }
+    { expiresIn: config.refreshTokenExpiry || "7d" }
   );
 };
 

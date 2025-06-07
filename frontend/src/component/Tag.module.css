@@ -8,20 +8,29 @@
   gap: 0.4rem;
   background-color: var(--neutral5);
   color: var(--neutral70);
+  align-items: center;
+}
+
+.tagWrapper >svg{
+  font-size: 2rem ;
 }
 
 .green {
-  background-color:rgba(82, 191, 131, 0.30);
-  color: rgba(82, 191, 131, 0.90);
+  background-color: rgba(82, 191, 131, 0.3);
+  color: rgba(82, 191, 131, 0.9);
 }
 
-.blue{
-      background-color:rgba(0, 147, 168, 0.30);
-  color: rgba(0, 147, 168, 0.90);
+.blue {
+  background-color: rgba(0, 147, 168, 0.3);
+  color: rgba(0, 147, 168, 0.9);
 }
 
 .tagWrapper > h2 {
   color: inherit;
   font-size: 1rem;
   font-weight: 500;
+}
+
+.md{
+  font-size:1.2rem !important;
 }

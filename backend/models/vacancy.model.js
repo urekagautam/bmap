@@ -2,33 +2,64 @@ import mongoose from "mongoose";
 
 const vacancySchema = new mongoose.Schema(
   {
-    title: {
+    title: String,
+    description: String,
+    deadline: Date,
+    department: String,
+    additionalInfo: String,
+    skillsRequired: [String],
+    isSkillsRequired: { type: Boolean, default: true },
+    jobByTime: {
       type: String,
-      required: true,
+      enum: ["fulltime", "parttime", "contract", "internship", "freelance"],
+      default: "fulltime",
     },
-    description: {
+    jobByLocation: {
       type: String,
-      required: true,
+      enum: ["on_site", "remote", "hybrid", "none"],
+      default: "on_site",
     },
-    isVacancyOver: {
-      type: Boolean,
-      default: false,
+    jobLevel: {
+      type: String,
+      enum: ["senior", "mid-level", "intern"],
+      default: "mid-level",
     },
-    valid_date: {
-      type: Date,
+    salary: {
+      type: {
+        type: String,
+        enum: ["fixed", "range"],
+        default: "fixed",
+      },
+      min: Number,
+      max: Number,
     },
-    org_id: {
+    salaryPeriod: {
+      type: String,
+      enum: ["hourly", "daily", "weekly", "monthly", "yearly"],
+      default: "monthly",
+    },
+    hideSalary: { type: Boolean, default: false },
+    experienceCriteria: {
+      type: String,
+      enum: [
+        "more_than",
+        "less_than",
+        "more_than_or_equal_to",
+        "less_than_or_equal_to",
+        "equal_to",
+      ],
+    },
+    experience: {
+      type: String,
+      enum: ["1year", "2years", "3years", "4years", "5+years"],
+    },
+    isExperienceRequired: { type: Boolean, default: false },
+    requiredEmployees: Number,
+    orgId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Organization",
       required: true,
     },
-    skills_required: [
-      {
-        type: String,
-        trim: true,
-      },
-    ],
-    //+ experience required (laterr)
   },
   { timestamps: true }
 );

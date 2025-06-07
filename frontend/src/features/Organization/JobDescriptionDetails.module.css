@@ -1,0 +1,408 @@
+.heroSection {
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+  background-color: var(--bg);
+}
+
+.imagesSection {
+  width: 100%;
+  position: relative;
+  margin-top: var(--nav-height);
+}
+
+.coverImage > img,
+.profileImage > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.coverImage {
+  position: relative;
+  width: 100%;
+  height: 36.5rem;
+}
+
+.profileImage {
+  position: absolute;
+  left: 12%;
+  bottom: -4rem;
+  overflow: hidden;
+  border-radius: 50%;
+  width: 10rem;
+  height: 10rem;
+}
+
+.mainWrapper,
+.jobsSection {
+  max-width: var(--max-width);
+  width: 100%;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.headerDivison {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+}
+
+.header {
+  margin-bottom: 2.4rem;
+}
+
+.header > h1 {
+  font-size: var(--l);
+  font-weight: bold;
+  margin: 0 0 0.8rem 0;
+}
+
+.headerDivison > button {
+  margin-bottom: 0.8rem;
+}
+
+.companyInfo {
+  display: flex;
+  align-items: center;
+  font-size: 1.4rem;
+  color: var(--neutral65);
+}
+
+.dot {
+  margin: 0 0.8rem;
+}
+
+.buttons {
+  display: flex;
+  gap: 1.2rem;
+}
+
+/*  about tab ko css haru */
+
+.aboutContent {
+  padding-top: 2.4rem;
+  width: 100%;
+  display: flex;
+  gap: 3.2rem;
+  justify-content: space-between;
+  margin-bottom: 10rem;
+}
+
+.jobsSection {
+  width: 100%;
+}
+
+.jobDescriptionWrapper {
+  max-width: 85.2rem;
+  width: 100%;
+  height: fit-content;
+  padding: 1.6rem;
+  border: 1px solid var(--neutral10);
+  border-radius: 1.6rem;
+}
+
+.infoAndHiring {
+  max-width: 36rem;
+  width: 100%;
+}
+
+.companyOtherInfo,
+.jobsSection {
+  border: 1px solid var(--neutral10);
+  border-radius: 0.8rem;
+  padding: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.companyOtherInfo > h2,
+.jobsSection > h2 {
+  color: var(--neutral95);
+  font-weight: 600;
+}
+
+.companyOtherInfo .infoList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  font-size: 1.4rem;
+  color: var(--neutral);
+}
+
+.showLocation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.showLocation > button {
+  font-size: 1.2rem;
+}
+
+.infoList > span,
+.locationDetails {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.infoList > span > svg,
+.locationDetails > svg {
+  font-size: 2.4rem;
+  color: var(--neutral70);
+}
+
+.socialInfo > h4 {
+  font-weight: 400;
+  color: var(--neutral70);
+  border-top: 1px solid var(--neutral10);
+  padding: 0.8rem 0;
+}
+
+.socialsList > a > svg {
+  font-size: 2.4rem;
+  color: var(--neutral80);
+}
+
+.socialsList {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.jobsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.jobCard {
+  border-bottom: 1px solid var(--neutral10);
+  padding-bottom: 1.6rem;
+}
+
+.jobTitle {
+  font-size: var(--sm);
+  font-weight: 500;
+  padding-bottom: 0.8rem;
+}
+
+.jobLocation {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: var(--neutral65);
+  font-size: 1.4rem;
+  padding-bottom: 1.6rem;
+}
+
+.jobLocation > svg {
+  color: var(--neutral70);
+  font-size: 2.4rem;
+}
+
+/* Job description card area */
+.cardWrapper {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  width: 100%;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.8rem;
+}
+
+.cardHeader > h1 {
+  color: var(--neutral90);
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.viewCount {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--neutral50);
+  font-size: 16px;
+}
+
+.viewCount > svg {
+  font-size: 2.4rem;
+}
+
+.viewCount > span {
+  font-size: 1.2rem;
+}
+
+.tagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-bottom: 1.6rem;
+}
+
+.detailsContainer {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 0.8rem;
+}
+
+.detailItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--neutral60);
+}
+
+.detailItem > span {
+  font-size: 1.2rem;
+}
+
+.detailItem > svg {
+  font-size: 2rem;
+}
+
+.tabsContainer {
+  display: flex;
+  gap: 8px;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tabButton {
+  padding: 12px 24px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.activeTab {
+  color: #0f3d23;
+  border-bottom: 2px solid #0f3d23;
+  background-color: #e6f0eb;
+  border-radius: 8px 8px 0 0;
+}
+
+.contentContainer {
+  padding: 16px 0;
+}
+
+.contentTitle {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+
+.contentText {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #4b5563;
+}
+
+.bottomLWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding-top: 0.6rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--neutral10);
+}
+
+.bottomLWrapper > h3 {
+  color: var(--accent);
+}
+
+.bottomLWrapper > svg {
+  font-size: 2.2rem;
+}
+
+.bottomLWrapper {
+  color: var(--accent);
+}
+
+.bottomLWrapper > h3 {
+  font-weight: 500;
+  font-size: 1.4rem;
+}
+
+.socialsList > span {
+  color: var(--neutral40);
+}
+
+.jobInfo{
+  padding-top:1.6rem;
+}
+
+.tabs {
+  width: fit-content;
+  display: flex;
+  gap: 0.8rem;
+  background-color: var(--neutral10);
+  padding: 0.4rem;
+  border-radius: 0.4rem;
+}
+
+.tab {
+  /* width: */
+  padding: 0.6rem 0.8rem;
+  font-size: 1.2rem;
+  background-color: transparent;
+  color: var(--neutral50);
+  border: none;
+  border-radius: 0.4rem;
+  cursor: pointer;
+}
+
+.activeTab {
+  background-color: var(--primary);
+  color: var(--bg);
+  font-weight: 500;
+}
+
+.description >h3 , .requirement >h3{
+  padding-top:1.4rem;
+  padding-bottom: 0.8rem;
+  font-weight: 500;
+  color:var(--neutral90);
+}
+
+.requirementsList{
+  padding-left:2.4rem;
+  padding-bottom: 0.8rem;
+}
+
+.skillsContainer, .skillsTags, .skillsHeader{
+  display: flex;
+  gap:0.8rem;
+  align-items: center;
+}
+
+.skillsHeader{
+  gap:0.4rem;
+}
+
+.skillsHeader >svg{
+  font-size: 2rem;
+}
+
+.skillsHeader >h4{
+  font-size: 1.2rem;
+  font-weight: 400;
+}
+
+.para{
+  color:var(--neutral90);
+  font-size: 1.4rem;
+  letter-spacing: 0.7;
+}
+
