@@ -132,6 +132,7 @@ gap:1.6rem;
 }
 
 .companyOtherInfo {
+  min-width: 37.3rem;
   border: 1px solid var(--neutral10);
   border-radius: 0.8rem;
   padding: 1.6rem;
@@ -165,6 +166,7 @@ gap:1.6rem;
 .infoList > span,
 .locationDetails {
   display: flex;
+    align-items: center;
   gap: 0.8rem;
 }
 

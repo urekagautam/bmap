@@ -18,7 +18,7 @@ import { IconHourglass } from "../../component/icons/IconHourglass"
 import TextArea from "../../component/TextArea"
 import Button from "../../component/Button"
 import { IconWeb } from "../../component/icons/IconWeb"
-import { apiGetUserDataForApplication, apiUpdateUserProfile, apiSubmitJobApplication } from "../../services/apiAuth"
+import { apiGetUserDataForApplication, apiUpdateUserProfileForApplication, apiSubmitJobApplication } from "../../services/apiAuth"
 import { apiGetJobDetailsForApplication } from "../../services/apiVacancy"
 import useUserAuth from "../../hooks/useUserAuth"
 
@@ -93,7 +93,6 @@ export default function JobApplicationDetails() {
     fetchUserData()
   }, [userId, setValue])
 
-  // Fetching job details
   useEffect(() => {
     const fetchJobDetails = async () => {
       if (!jobId) {
@@ -157,7 +156,6 @@ export default function JobApplicationDetails() {
     try {
       setIsSubmitting(true)
 
-      // Updating user profile with the form data
       const profileData = {
         firstName: data.firstName,
         lastName: data.lastName,
@@ -169,9 +167,8 @@ export default function JobApplicationDetails() {
       }
 
       console.log("Updating profile with:", profileData)
-      await apiUpdateUserProfile(userId, profileData)
+      await apiUpdateUserProfileForApplication(userId, profileData)
 
-      // Step 2: Submitting the job application
       const applicationData = {
         userId: userId,
         jobId: jobId,
