@@ -1,5 +1,12 @@
-import CompanyProfile from "../../features/Organization/CompanyProfile"
+import CompanyProfile from "../../features/Organization/CompanyProfile";
+import CToaster from "../../component/Toaster.jsx";
+
 
 export default function CompanyProfileView() {
-  return <CompanyProfile />
+  return (
+    <>
+      <CToaster />
+      <CompanyProfile />
+    </>
+  );
 }

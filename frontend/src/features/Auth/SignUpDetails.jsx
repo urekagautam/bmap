@@ -32,15 +32,26 @@ export default function SignUpDetails() {
     }
 
     try {
-      const user = await apiSignup({
+      const response = await apiSignup({
         name: `${data.firstname} ${data.lastname}`,
         email: data.email,
         password: data.password,
         confirmpassword: data.confirmpassword,
       })
 
-      console.log("Signup successful!", user)
+      console.log("Signup successful!", response.data)
       toast.success("Signup successful!")
+      
+      if (response.data.accessToken && response.data.user) {
+        localStorage.setItem("userAccessToken", response.data.accessToken)
+        localStorage.setItem("userRefreshToken", response.data.refreshToken)
+        localStorage.setItem("userId", response.data.user._id)
+
+        console.log("Stored User Auth Data:", {
+          userId: localStorage.getItem("userId"),
+          token: localStorage.getItem("userAccessToken")?.slice(0, 10) + "...",
+        })
+      }
 
       setTimeout(() => {
         navigate("/")
@@ -57,7 +68,7 @@ export default function SignUpDetails() {
       console.error("Signup failed", error)
       const errorMessage = error.response?.data?.message || "Something went wrong during signup."
       setError(errorMessage)
-      toast.error("Signup failed. Please try again.")
+      toast.error(errorMessage)
     } finally {
       setIsSubmitting(false)
     }

@@ -108,3 +108,23 @@ export const apiGetVacancyDetails = async (vacancyId) => {
     }
   }
 }
+
+// Fetching Job details in posting job application page
+export const apiGetJobDetailsForApplication = async (jobId) => {
+  try {
+    const response = await axios.get(`http://localhost:5000/api/v1/job-details/${jobId}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    if (error.response) {
+      console.error("Error response from backend:", error.response)
+      throw error
+    } else {
+      throw new Error("Network error or server is down")
+    }
+  }
+}

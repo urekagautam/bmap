@@ -56,6 +56,7 @@ const organizationSchema = new mongoose.Schema(
       type: String,
     },
     specialities: [String],
+    benefits: [String],
     department: {
       type: String,
     },

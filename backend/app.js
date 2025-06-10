@@ -15,6 +15,8 @@ app.use(cors({
 import userRouter from "./routes/user.routes.js"
 import organizationRouter from "./routes/organization.routes.js"
 import vacancyRouter from "./routes/vacancy.routes.js"
+import applicationRouter from "./routes/application.routes.js"
+
 
 //routes declaration
 
@@ -35,5 +37,8 @@ app.use("/org/api/v1/", organizationRouter)
 
 //VACANCY
 app.use("/api/v1/", vacancyRouter) 
+
+//APPLICATION
+app.use("/applications/api/v1", applicationRouter);
 
 export {app} 

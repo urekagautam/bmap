@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import styles from "./JobDescriptionDetails.module.css";
 import Button from "../../component/Button.jsx";
@@ -268,14 +268,14 @@ export default function JobDescriptionDetails() {
   } = companyInfo;
 
   //benefits lai into two columnss ma split garne if enough is available
-  const benefitsList = orgData?.benefits
+  /* const benefitsList = orgData?.benefits
     ? orgData.benefits.split(",").map((benefit) => benefit.trim())
-    : [];
+    : []; */
 
   const coverImageUrl = "/CoverImage.jpg";
   const profileImageUrl = "/CompanyProfileImage.png";
 
-/*   const jobs = [
+  /*   const jobs = [
     {
       title: "Software Engineer",
       locationType: "Remote",
@@ -435,6 +435,10 @@ export default function JobDescriptionDetails() {
                   Requirements
                 </button>
               </div>
+
+              <Link to={`/jobapplication/${jobId}`}>
+                <Button>Apply Now</Button>
+              </Link>
 
               {activeTab === "description" && (
                 <div className={styles.description}>

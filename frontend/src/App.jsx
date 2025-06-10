@@ -12,6 +12,7 @@ import CompanyProfileView from "./pages/organization/CompanyProfileView";
 import JobPosting from "./pages/organization/JobPosting";
 import OrganizationSignup from "./pages/organization/OrganizationSignup";
 import JobDescription from "./pages/organization/JobDescription";
+import JobApplication from "./pages/user/JobApplication";
 
 function App() {
 
@@ -25,6 +26,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/test" element={<Test />} />
+          <Route path="/jobapplication/:id" element={<JobApplication />} />
+          {/* <Route path="/jobapplication" element={<JobApplication />} /> */}
 
           {/* ORGANIZATION */}
           <Route path="/org" element={<DashboardPage />} />
@@ -34,6 +37,7 @@ function App() {
           {/* <Route path="/cmpprofile" element={<CompanyProfileView />} /> */}
           <Route path="/postjob" element={<JobPosting />} />
           <Route path="/jobdescription/:id" element={<JobDescription />} />
+          
 
           {/* NOT FOUND */}
           <Route path="*" element={<NotFound />} />
