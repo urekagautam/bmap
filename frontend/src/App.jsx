@@ -13,6 +13,7 @@ import JobPosting from "./pages/organization/JobPosting";
 import OrganizationSignup from "./pages/organization/OrganizationSignup";
 import JobDescription from "./pages/organization/JobDescription";
 import JobApplication from "./pages/user/JobApplication";
+import UserProfile from "./pages/user/UserProfile";
 
 function App() {
 
@@ -25,6 +26,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/userprofile" element={<UserProfile />} />
           <Route path="/test" element={<Test />} />
           <Route path="/jobapplication/:id" element={<JobApplication />} />
           {/* <Route path="/jobapplication" element={<JobApplication />} /> */}
