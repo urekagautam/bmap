@@ -5,6 +5,7 @@ import styles from "./UserLanding.module.css";
 
 export default function UserLanding() {
   const id="683fefafdbf50496e0b4d71b";
+  const jobId="";
   return (
    <>
     <UserNavbar />
@@ -14,6 +15,7 @@ export default function UserLanding() {
     <section className={styles.sectionWrapper}>
            <NearbyJobs />
            <Link to={`/cmpprofile/${id}`}>Organization Profile</Link>
+           <Link to={`/jobapplication/${jobId}`}>Job Application</Link>
     </section>
     </>
   )

@@ -3,7 +3,8 @@ import {
   postVacancyDetails,
   getVacancyDetails,
   getNearbyVacancies,
-  getAllVacancies
+  getAllVacancies,
+  getJobDetailsForApplication
 } from "../controllers/vacancy.controller.js";
 import { verifyOrgJWT } from "../middlewares/verifyOrgJWT.middleware.js";
 
@@ -20,5 +21,6 @@ router.route("/getAllvacancies/:id").get(getAllVacancies);
 
 // Get nearby vacancies (uses query parameters)
 router.route("/nearbyVacancies").get(getNearbyVacancies);
+router.get("/job-details/:id", getJobDetailsForApplication)
 
 export default router;

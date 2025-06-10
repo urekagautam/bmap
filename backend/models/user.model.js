@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { config } from "../config/config.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -56,6 +57,26 @@ const userSchema = new mongoose.Schema(
           trim: true,
         },
       ],
+    },
+      socialProfile: {
+      insta: {
+        type: String,
+      },
+      x: {
+        type: String,
+      },
+      fb: {
+        type: String,
+      },
+      github: {
+        type: String,
+      },
+      linkedin: {
+        type: String,
+      },
+      portfolio: {
+        type: String,
+      },
     },
     followed: [
       {

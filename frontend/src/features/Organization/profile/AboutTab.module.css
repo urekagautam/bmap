@@ -48,9 +48,13 @@
 }
 
 .aboutText p {
+  display: flex;
+  flex-wrap: wrap;
   line-height: 1.5;
   text-align: justify;
   padding-bottom: 0.4rem;
+  width: 100%;
+  text-wrap: wrap;
 }
 
 .specialitySection > h3 {

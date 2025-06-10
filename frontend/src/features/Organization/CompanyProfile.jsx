@@ -46,8 +46,8 @@ export default function CompanyProfile() {
     }
   }
 
-  const companyName = orgData?.orgName || "Company Name"
-  const industry = orgData?.industry || "Technology"
+  const companyName = orgData?.orgName || "Company XYZ"
+  const industry = orgData?.industry || "Not Specified"
   const employeeCount = formatCompanySize(orgData)
   const foundedYear = orgData?.foundedYear || "N/A"
   const address = orgData?.address || "Address not specified"

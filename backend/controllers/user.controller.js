@@ -1,29 +1,29 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
-import {ApiResponse } from "../utils/ApiResponse.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 
-const genarateAccessAndRefreshTokens = async (userId) =>{
-try{
-const user = await User.findById(userId)
-const accessToken = user.genarateAccessToken
-const refreshToken = user.genarateRefreshToken
+const generateAccessAndRefreshTokens = async (userId) => {
+  try {
+    const user = await User.findById(userId)
+    const accessToken = user.generateAccessToken() 
+    const refreshToken = user.generateRefreshToken() 
 
-user.refreshToken = refreshToken
-await user.save({ validateBeforeSave: false})
+    user.refreshToken = refreshToken
+    await user.save({ validateBeforeSave: false })
 
-return {accessToken, refreshToken}
+    return { accessToken, refreshToken }
 
-}catch(error){
-  return next(new ApiError(500, "Something went wrong while genarating refresh and access tokens"));
-}
+  } catch (error) {
+    throw new ApiError(500, "Something went wrong while generating refresh and access tokens")
+  }
 }
 
 const registerUser = asyncHandler(async (req, res, next) => {
-  //get user details front frontend
+
   const { name, email, password, confirmpassword } = req.body;
 
-  if (!name|| !email || !password || !confirmpassword) {
+  if (!name || !email || !password || !confirmpassword) {
     return next(new ApiError(400, "All fields are required"));
   }
 
@@ -31,88 +31,194 @@ const registerUser = asyncHandler(async (req, res, next) => {
     return next(new ApiError(400, "Email is already used"));
   }
 
-  const user = await User.create({name, email, password});
+  const newUser = await User.create({ name, email, password });
 
-  const createdUser = await User.findById(user._id).select("-password -refreshToken")
-  if(!createdUser){
-  return next(new ApiError(500, "Something went wrong while regsitering the user!"));
-  }
+  const accessToken = newUser.generateAccessToken()
+  const refreshToken = newUser.generateRefreshToken()
 
-  return res
-  .status(201)
-  .json(
+  newUser.refreshToken = refreshToken
+  await newUser.save({ validateBeforeSave: false })
+
+  res.status(201).json(
     new ApiResponse(
-      201, 
-      createdUser, 
-      "User Registered Successfully (backend talking)")
+      201,
+      {
+        accessToken,
+        refreshToken,
+        user: {
+          _id: newUser._id,
+          name: newUser.name,
+          email: newUser.email
+        },
+      },
+      "User registered successfully",
+    ),
   )
 });
 
 const loginUser = asyncHandler(async (req, res, next) => {
-  const {email, password} = req.body;
+  const { email, password } = req.body;
 
-  if(!email || !password){
+  if (!email || !password) {
     return next(new ApiError(400, "All fields are required"));
   }
 
-  const user = User.findOne({email});
-  if(!user){
-    return next(new ApiError(400, "User doesnt exist"));
+  const user = await User.findOne({ email }); 
+  if (!user) {
+    return next(new ApiError(400, "User doesn't exist"));
   }
   
   const isPasswordCorrect = await user.isPasswordCorrect(password);
-  if(!isPasswordCorrect){
+  if (!isPasswordCorrect) {
     return next(new ApiError(401, "Incorrect Password"));
   }
 
-  const{accessToken, refreshToken} = await genarateAccessAndRefreshTokens(user._id);
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
   
-  //get logged in user
   const loggedInUser = await User.findById(user._id)
-  .select("-password -refreshToken")
+    .select("-password -refreshToken")
 
-  //sending cookies
   const options = {
     httpOnly: true,
     secure: true
   }
 
   return res
-  .status(200)
-  .cookie("accessToken", accessToken, options)
-  .cookie("refreshToken", refreshToken, options)
-  .json(
-    new ApiResponse(200,
-      {
-        user : loggedInUser, accessToken,refreshToken
-      },
-      "User Logged In Successfully !"
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new ApiResponse(200,
+        {
+          user: loggedInUser, 
+          accessToken, 
+          refreshToken
+        },
+        "User Logged In Successfully!"
+      )
     )
-  )
 });
 
-const logoutUser = asyncHandler(async(req, res)=>{
-await User.findByIdAndUpdate(
-  req.user._id,
-  {
-    $set: {
-      refreshToken: undefined
+//GET USER PROFILE FOR JOB APPLICATION
+
+const getUserProfileData = asyncHandler(async (req, res, next) => {
+  try {
+    // const userId = req.user._id; 
+    const userId = req.params.id;
+    
+    const userData = await User.findById(userId).select(
+      'name email phone socialProfile.linkedin socialProfile.github socialProfile.portfolio'
+    );
+    
+    if (!userData) {
+      return next(new ApiError(404, "User not found"));
     }
-  },
-  {
-    new: true
-  },
-)
+    
+    const responseData = {
+      name: userData.name,
+      email: userData.email,
+      phoneNo: userData.phone || "",
+      socialProfile: {
+        linkedin: userData.socialProfile?.linkedin || "",
+        github: userData.socialProfile?.github || "",
+        portfolio: userData.socialProfile?.portfolio || "",
+      }
+    };
+    
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        responseData,
+        "User profile data retrieved successfully"
+      )
+    );
+    
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    return next(new ApiError(500, "Something went wrong while fetching user data"));
+  }
+});
 
-const options = {
-  httpOnly: true,
-  secure: true
-}
+//UPDATE USER PROFILE FROM APPLICATION
 
-return res.status(200)
-.clearCookie("accessToken", options)
-.clearCookie("refreshToken", options)
-.json(new ApiResponse(200, {}, "User logged out successfully"))
+const updateUserProfile = asyncHandler(async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    const { firstName, lastName, email, phoneNo, linkedin, github, portfolio } = req.body;
+
+    // Combining first and last name
+    const fullName = `${firstName} ${lastName}`.trim();
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        name: fullName,
+        email: email,
+        phone: phoneNo,
+        socialProfile: {
+          linkedin: linkedin || "",
+          github: github || "",
+          portfolio: portfolio || "",
+        }
+      },
+      { 
+        new: true, 
+        runValidators: true 
+      }
+    ).select('name email phone socialProfile.linkedin socialProfile.github socialProfile.portfolio');
+
+    if (!updatedUser) {
+      return next(new ApiError(404, "User not found"));
+    }
+
+    const responseData = {
+      name: updatedUser.name,
+      email: updatedUser.email,
+      phoneNo: updatedUser.phone || "",
+      socialProfile: {
+        linkedin: updatedUser.socialProfile?.linkedin || "",
+        github: updatedUser.socialProfile?.github || "",
+        portfolio: updatedUser.socialProfile?.portfolio || "",
+      }
+    };
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        responseData,
+        "User profile updated successfully"
+      )
+    );
+
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    return next(new ApiError(500, "Something went wrong while updating user profile"));
+  }
+});
+
+//Logout user
+const logoutUser = asyncHandler(async (req, res) => {
+  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        refreshToken: undefined
+      }
+    },
+    {
+      new: true
+    },
+  )
+
+  const options = {
+    httpOnly: true,
+    secure: true
+  }
+
+  return res.status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "User logged out successfully"))
 })
 
-export { registerUser, loginUser, logoutUser };
+export { registerUser, loginUser, getUserProfileData, updateUserProfile, logoutUser };
