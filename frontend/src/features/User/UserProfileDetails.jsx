@@ -17,6 +17,7 @@ import { IconStar } from "../../component/icons/IconStar.jsx";
 import { IconHome } from "../../component/icons/IconHome.jsx";
 import { apiGetUserProfile } from "../../services/apiAuth.js";
 import useUserAuth from "../../hooks/useUserAuth.js";
+import EditInformation from "./profile/EditInformation.jsx"
 
 export default function UserProfileDetails() {
   const { userId } = useUserAuth();
@@ -136,9 +137,15 @@ export default function UserProfileDetails() {
               </span>
             </div>
           </div>
-          <Button layout="xs" color="neutral">
-            <IconPencil style={{ fontSize: "2rem" }} /> Edit Profile
-          </Button>
+            <Button
+              className={cns(styles.edittab, activeTab === "edittab" && styles.activeEditTab)}
+              onClick={() => setActiveTab("edittab")}
+              fill="outline"
+              layout="xs"
+              color="neutral"
+            >
+              <IconPencil style={{ fontSize: "2rem" }}/> Edit Profile
+            </Button>
         </div>
 
         <div className={styles.tabs}>
@@ -174,6 +181,7 @@ export default function UserProfileDetails() {
           </button>
         </div>
 
+         {activeTab != "edittab" &&(
         <div className={styles.mainContainer}>
           {activeTab === "about" && (
             <div className={styles.aboutUserWrapper}>
@@ -312,6 +320,9 @@ export default function UserProfileDetails() {
             </div>
           </div>
         </div>
+         )}
+
+             {activeTab === "edittab" && <EditInformation />}
       </div>
     </section>
   );
