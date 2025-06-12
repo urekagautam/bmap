@@ -14,6 +14,7 @@ import OrganizationSignup from "./pages/organization/OrganizationSignup";
 import JobDescription from "./pages/organization/JobDescription";
 import JobApplication from "./pages/user/JobApplication";
 import UserProfile from "./pages/user/UserProfile";
+import UpdateJob from "./pages/organization/UpdateJob";
 
 function App() {
 
@@ -29,7 +30,8 @@ function App() {
           <Route path="/userprofile" element={<UserProfile />} />
           <Route path="/test" element={<Test />} />
           <Route path="/jobapplication/:id" element={<JobApplication />} />
-          {/* <Route path="/jobapplication" element={<JobApplication />} /> */}
+          <Route path="/updatevacancy/:id" element={<UpdateJob />} />
+        
 
           {/* ORGANIZATION */}
           <Route path="/org" element={<DashboardPage />} />

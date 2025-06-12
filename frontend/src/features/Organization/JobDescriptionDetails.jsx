@@ -334,9 +334,11 @@ export default function JobDescriptionDetails() {
           </div>
 
           <div className={styles.buttons}>
+            <Link to={`/updatevacancy/${jobId}`}>
             <Button className={styles.updateBtn} layout="xs">
               Update
             </Button>
+            </Link>
             <Button
               className={styles.updateBtn}
               layout="sm"
