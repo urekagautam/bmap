@@ -1,5 +1,5 @@
-html{
-    background-color: var(--bg);
+html {
+  background-color: var(--bg);
 }
 
 .userProfileSection {
@@ -84,6 +84,45 @@ html{
   border-radius: 1.6rem;
 }
 
+.aboutUserWrapper:first-child{
+margin-bottom: 1.8rem;
+}
+
+.allItems{
+  display: flex;
+  flex-direction: column;
+  gap:1.4rem;
+}
+
+.topItems, .bottomItems{
+  display: flex;
+  justify-content: space-between;
+}
+
+.item {
+display: flex;
+flex-direction: column;
+min-width: 18.3rem;
+}
+
+.item > span:last-child{
+  color:var(--neutral60);
+  font-size: 1.2rem;
+}
+
+.itemTitle{
+display: flex;
+align-items: center;
+gap:0.4rem;
+font-size:1.4rem;
+color:var(--neutral80);
+}
+
+.itemTitle > svg{
+  color:var(--neutral70);
+  font-size: 2.4rem;
+}
+
 .aboutUserWrapper > h2 {
   font-weight: 600;
   font-size: 2rem;
@@ -138,9 +177,10 @@ html{
 
 .companyOtherInfo {
   min-width: 37.3rem;
+  height: fit-content;
   border: 1px solid var(--neutral10);
   border-radius: 0.8rem;
-  padding: 1.6rem;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   gap: 1.6rem;
@@ -196,4 +236,69 @@ html{
 .socialsList {
   display: flex;
   gap: 0.8rem;
+}
+
+.applicationCards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  width: 82rem;
+  
+}
+
+.userResumeWrapper .title {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 1.6rem;
+}
+
+.userApplicationsWrapper > h2,
+.userResumeWrapper
+.title > h2 {
+  padding-bottom: 0.6rem;
+  font-size: 1.8rem;
+}
+
+.userResumeWrapper,
+.title > h2 {
+  color: var(--neutral80);
+}
+
+.userResumeWrapper > .container {
+  width: 82rem;
+  border: 1px solid var(--neutral10);
+  border-radius: 0.8rem;
+  padding: 1.6rem;
+}
+
+.userApplicationsWrapper > p {
+  color: var(--neutral60);
+  padding-bottom: 1.6rem;
+  font-size: 1.2rem;
+}
+
+.filename{
+  display: flex;
+  gap:0.4rem;
+  align-items: center;
+}
+
+.filename > svg{
+  font-size: 2.4rem;
+}
+
+.filename > p{
+   font-size: 1.4rem;
+}
+
+.userResumeWrapper > .container > p{
+color:var(--neutral80);
+font-size: 1.4rem;
+padding-top:0.8rem;
+}
+
+.userResumeWrapper > .container > .buttons{
+  display: flex;
+  gap:0.8rem;
+  padding-top:1.6rem;
 }

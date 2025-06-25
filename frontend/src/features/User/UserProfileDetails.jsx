@@ -1,11 +1,15 @@
 import styles from "./UserProfileDetails.module.css";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { cns } from "../../utils/classNames.js";
 import Tag from "../../component/Tag.jsx";
 import Button from "../../component/Button.jsx";
 import { IconOrganizationBuilding } from "../../component/icons/IconOrganizationBuilding.jsx";
 import { IconPencil } from "../../component/icons/IconPencil";
+import { IconChartBar } from "../../component/icons/IconChartBar";
+import { IconLocationPinned } from "../../component/icons/IconLocationPinned";
 import { IconPhone } from "../../component/icons/IconPhone";
+import { IconFile } from "../../component/icons/IconFile";
 import { IconEnvelope } from "../../component/icons/IconEnvelope";
 import { IconInstagram } from "../../component/icons/IconInstagram";
 import { IconFacebook } from "../../component/icons/IconFacebook";
@@ -17,7 +21,10 @@ import { IconStar } from "../../component/icons/IconStar.jsx";
 import { IconHome } from "../../component/icons/IconHome.jsx";
 import { apiGetUserProfile } from "../../services/apiAuth.js";
 import useUserAuth from "../../hooks/useUserAuth.js";
-import EditInformation from "./profile/EditInformation.jsx"
+import EditInformation from "./profile/EditInformation.jsx";
+import ApplicationCard from "../../component/ApplicationCard.jsx";
+import { IconUpload } from "../../component/icons/IconUpload.jsx";
+import { IconUserList } from "../../component/icons/IconUserList.jsx";
 
 export default function UserProfileDetails() {
   const { userId } = useUserAuth();
@@ -38,7 +45,9 @@ export default function UserProfileDetails() {
 
         const transformedData = {
           fullName: response.data.name || "Unknown User",
-          jobTitle: response.data.job_preference?.title || "Preferred Industry not specified",
+          jobTitle:
+            response.data.job_preference?.title ||
+            "Preferred Industry not specified",
           employeeCount: "1 (Individual)",
           address: response.data.address || "Address not provided",
           district: "Kathmandu",
@@ -137,15 +146,18 @@ export default function UserProfileDetails() {
               </span>
             </div>
           </div>
-            <Button
-              className={cns(styles.edittab, activeTab === "edittab" && styles.activeEditTab)}
-              onClick={() => setActiveTab("edittab")}
-              fill="outline"
-              layout="xs"
-              color="neutral"
-            >
-              <IconPencil style={{ fontSize: "2rem" }}/> Edit Profile
-            </Button>
+          <Button
+            className={cns(
+              styles.edittab,
+              activeTab === "edittab" && styles.activeEditTab
+            )}
+            onClick={() => setActiveTab("edittab")}
+            fill="outline"
+            layout="xs"
+            color="neutral"
+          >
+            <IconPencil style={{ fontSize: "2rem" }} /> Edit Profile
+          </Button>
         </div>
 
         <div className={styles.tabs}>
@@ -181,148 +193,223 @@ export default function UserProfileDetails() {
           </button>
         </div>
 
-         {activeTab != "edittab" &&(
-        <div className={styles.mainContainer}>
-          {activeTab === "about" && (
-            <div className={styles.aboutUserWrapper}>
-              <h2>About {firstName}</h2>
-              <p>{userData.aboutUser}</p>
+        {activeTab != "edittab" && (
+          <div className={styles.mainContainer}>
+            {activeTab === "about" && (
+              <div>
+                <div className={styles.aboutUserWrapper}>
+                  <div className={styles.allItems}>
+                    <div className={styles.topItems}>
+                      <div className={styles.item}>
+                        <span className={styles.itemTitle}>
+                          <IconUserList />
+                          Preferrred Job Title
+                        </span>
+                        <span>Junior Software Developer</span>
+                      </div>
 
-              <div className={styles.skillsContainer}>
-                <div className={styles.skillsHeader}>
-                  <IconOrganizationBuilding />
-                  <h4>Key Skills:</h4>
+                      <div className={styles.item}>
+                        <span className={styles.itemTitle}>
+                          <IconChartBar />
+                          Job Level
+                        </span>
+                        <span>Mid Level</span>
+                      </div>
+                    </div>
+                
+
+                  <div className={styles.bottomItems}>
+                      <div className={styles.item}>
+                   <span className={styles.itemTitle}>
+                    <IconOrganizationBuilding />
+                   Job Type (by location)
+                   </span>
+                   <span>On-site/In-Office</span>
+                   </div>
+                     <div className={styles.item}>
+                   <span className={styles.itemTitle}>
+                    <IconLocationPinned />
+                   (by time)
+                   </span>
+                   <span>Part-Time</span>
+                   </div>
+                  </div>
+                    </div>
                 </div>
-                <div className={styles.skillsTags}>
-                  {userData.skills && Array.isArray(userData.skills) ? (
-                    userData.skills.length > 0 ? (
-                      userData.skills.map((skill, index) => (
-                        <Tag
-                          key={index}
-                          data={skill}
-                          layout="primary"
-                          color="neutral"
-                          size="md"
-                        />
-                      ))
-                    ) : (
-                      <p className={styles.notAvailable}>Not provided</p>
-                    )
-                  ) : (
-                    <p className={styles.notAvailable}>Not provided</p>
-                  )}
+                <div className={styles.aboutUserWrapper}>
+                  <h2>About {firstName}</h2>
+                  <p>{userData.aboutUser}</p>
+
+                  <div className={styles.skillsContainer}>
+                    <div className={styles.skillsHeader}>
+                      <IconOrganizationBuilding />
+                      <h4>Key Skills:</h4>
+                    </div>
+                    <div className={styles.skillsTags}>
+                      {userData.skills && Array.isArray(userData.skills) ? (
+                        userData.skills.length > 0 ? (
+                          userData.skills.map((skill, index) => (
+                            <Tag
+                              key={index}
+                              data={skill}
+                              layout="primary"
+                              color="neutral"
+                              size="md"
+                            />
+                          ))
+                        ) : (
+                          <p className={styles.notAvailable}>Not provided</p>
+                        )
+                      ) : (
+                        <p className={styles.notAvailable}>Not provided</p>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-          {activeTab === "resume" && (
-            <div className={styles.userResumeWrapper}>
-              THIS IS RESUME CONTAINER
-            </div>
-          )}
-          {activeTab === "application" && (
-            <div className={styles.userApplicationsWrapper}>
-              THIS IS APPLICATIONS CONTAINER
-            </div>
-          )}
+            )}
+            {activeTab === "resume" && (
+              <div className={styles.userResumeWrapper}>
+                <div className={styles.title}>
+                  <h2>Resume</h2>
+                  <Button color="neutralLight" fill="outline" layout="xs">
+                    <IconUpload />
+                    Upload
+                  </Button>
+                </div>
 
-          <div className={styles.companyOtherInfo}>
-            <h2>User Information</h2>
-            <div className={styles.infoList}>
-              <span>
-                <IconStar />
-                {userData.jobTitle}
-              </span>
-              <span className={styles.showLocation}>
-                <span className={styles.locationDetails}>
-                  <IconHome />
-                  {userData.address}
+                <div className={styles.container}>
+                  <div className={styles.filename}>
+                    <IconFile />
+                    <p>Ureka_Gautam.pdf</p>
+                  </div>
+
+                  <p>Uploaded on May 15, 2023 . 2.4 MB</p>
+
+                  <div className={styles.buttons}>
+                    <Link to="/">
+                      <Button layout="xs">Preview</Button>
+                    </Link>
+                    <Link to="/">
+                      {" "}
+                      <Button layout="xs" fill="outline" color="neutralLight">
+                        Delete
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
+            {activeTab === "application" && (
+              <div className={styles.userApplicationsWrapper}>
+                <h2>Applications</h2>
+                <p>Stay organized with your job hunt</p>
+
+                <div className={styles.applicationCards}>
+                  <ApplicationCard />
+                  <ApplicationCard />
+                  <ApplicationCard />
+                </div>
+              </div>
+            )}
+
+            <div className={styles.companyOtherInfo}>
+              <h2>User Information</h2>
+              <div className={styles.infoList}>
+                <span>
+                  <IconStar />
+                  {userData.jobTitle}
                 </span>
-              </span>
-              <span>
-                <IconPhone />
-                {userData.phoneNum}
-              </span>
-              <span>
-                <IconEnvelope />
-                {userData.email}
-              </span>
-            </div>
+                <span className={styles.showLocation}>
+                  <span className={styles.locationDetails}>
+                    <IconHome />
+                    {userData.address}
+                  </span>
+                </span>
+                <span>
+                  <IconPhone />
+                  {userData.phoneNum}
+                </span>
+                <span>
+                  <IconEnvelope />
+                  {userData.email}
+                </span>
+              </div>
 
-            <div className={styles.socialInfo}>
-              <h4>Social Media</h4>
-              <div className={styles.socialsList}>
-                {userData?.socialProfile?.insta && (
-                  <a
-                    href={userData.socialProfile.insta}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <IconInstagram platform="instagram" />
-                  </a>
-                )}
-                {userData?.socialProfile?.fb && (
-                  <a
-                    href={userData.socialProfile.fb}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <IconFacebook platform="facebook" />
-                  </a>
-                )}
-                {userData?.socialProfile?.x && (
-                  <a
-                    href={userData.socialProfile.x}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <IconX platform="x" />
-                  </a>
-                )}
-                {userData?.socialProfile?.portfolio && (
-                  <a
-                    href={userData.socialProfile.portfolio}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <IconWeb platform="portfolio" />
-                  </a>
-                )}
-                {userData?.socialProfile?.github && (
-                  <a
-                    href={userData.socialProfile.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <IconGithub platform="github" />
-                  </a>
-                )}
-                {userData?.socialProfile?.linkedin && (
-                  <a
-                    href={userData.socialProfile.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <IconLinkedIn platform="linkedin" />
-                  </a>
-                )}
-                {!userData?.socialProfile?.insta &&
-                  !userData?.socialProfile?.fb &&
-                  !userData?.socialProfile?.x &&
-                  !userData?.socialProfile?.portfolio &&
-                  !userData?.socialProfile?.github &&
-                  !userData?.socialProfile?.linkedin && (
-                    <span className={styles.notAvailable}>
-                      No information available
-                    </span>
+              <div className={styles.socialInfo}>
+                <h4>Social Media</h4>
+                <div className={styles.socialsList}>
+                  {userData?.socialProfile?.insta && (
+                    <a
+                      href={userData.socialProfile.insta}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <IconInstagram platform="instagram" />
+                    </a>
                   )}
+                  {userData?.socialProfile?.fb && (
+                    <a
+                      href={userData.socialProfile.fb}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <IconFacebook platform="facebook" />
+                    </a>
+                  )}
+                  {userData?.socialProfile?.x && (
+                    <a
+                      href={userData.socialProfile.x}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <IconX platform="x" />
+                    </a>
+                  )}
+                  {userData?.socialProfile?.portfolio && (
+                    <a
+                      href={userData.socialProfile.portfolio}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <IconWeb platform="portfolio" />
+                    </a>
+                  )}
+                  {userData?.socialProfile?.github && (
+                    <a
+                      href={userData.socialProfile.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <IconGithub platform="github" />
+                    </a>
+                  )}
+                  {userData?.socialProfile?.linkedin && (
+                    <a
+                      href={userData.socialProfile.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <IconLinkedIn platform="linkedin" />
+                    </a>
+                  )}
+                  {!userData?.socialProfile?.insta &&
+                    !userData?.socialProfile?.fb &&
+                    !userData?.socialProfile?.x &&
+                    !userData?.socialProfile?.portfolio &&
+                    !userData?.socialProfile?.github &&
+                    !userData?.socialProfile?.linkedin && (
+                      <span className={styles.notAvailable}>
+                        No information available
+                      </span>
+                    )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-         )}
+        )}
 
-             {activeTab === "edittab" && <EditInformation />}
+        {activeTab === "edittab" && <EditInformation />}
       </div>
     </section>
   );
