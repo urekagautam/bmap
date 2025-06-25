@@ -1,0 +1,66 @@
+.container {
+  width: 82rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--neutral10);
+  padding: 0.8rem;
+  border-radius: 0.8rem;
+}
+
+
+.topPart, .leftPart {
+  display: flex;
+  gap: 1.4rem;
+}
+
+.leftPart{
+    flex-direction: column;
+}
+
+.userDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.userDetails > span:first-child {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.userDetails > span:last-child {
+  font-size: 1.2rem;
+  color: var(--neutral65);
+}
+
+.userImage {
+  position: relative;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+}
+
+.userImage > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.bottomPart {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap:0.8rem;
+}
+
+.lastApplied {
+  font-size: 1.2rem;
+  color: var(--neutral60);
+}
+
+.container >a >svg{
+font-size: 2.4rem;
+color:var(--neutral70);
+}
