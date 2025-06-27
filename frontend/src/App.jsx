@@ -15,6 +15,7 @@ import JobDescription from "./pages/organization/JobDescription";
 import JobApplication from "./pages/user/JobApplication";
 import UserProfile from "./pages/user/UserProfile";
 import UpdateJob from "./pages/organization/UpdateJob";
+import JoinAs from "./pages/JoinAs";
 
 function App() {
 
@@ -24,7 +25,7 @@ function App() {
         <Routes>
 
           {/* USER ///MODIFY LATER WITH NAVBARS AND STUFF WRAPPING MAYBE*/}
-          <Route path="/bmap" element={<HomePage />} />
+          <Route path="/bmap" element={<JoinAs />} />
 
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />

@@ -31,7 +31,7 @@
   }
   
   .neutral {
-    --color: var(--neutral90);
+    --color: var(--neutral);
   }
 
   .neutralLight {
