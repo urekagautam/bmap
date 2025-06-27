@@ -298,3 +298,59 @@ export const getNearbyVacancies = asyncHandler(async (req, res, next) => {
 
   res.status(200).json(new ApiResponse(200, { jobs }, "Nearby vacancies fetched successfully"))
 })
+
+
+export const getFilteredVacancies = asyncHandler(async (req, res) => {
+  const {
+    jobLevel,
+    jobByTime,
+    jobByLocation,
+    minSalary,
+    maxSalary,
+    searchQuery,
+  } = req.query;
+
+  const filter = {};
+
+  // Job level
+  if (jobLevel) {
+    filter.jobLevel = { $in: Array.isArray(jobLevel) ? jobLevel : [jobLevel] };
+  }
+
+  // Job type (by time)
+  if (jobByTime) {
+    filter.jobByTime = { $in: Array.isArray(jobByTime) ? jobByTime : [jobByTime] };
+  }
+
+  // Job mode (by location)
+  if (jobByLocation) {
+    filter.jobByLocation = {
+      $in: Array.isArray(jobByLocation) ? jobByLocation : [jobByLocation],
+    };
+  }
+
+  // Salary filter
+  if (minSalary || maxSalary) {
+    filter["salary.min"] = {};
+    if (minSalary) filter["salary.min"].$gte = parseInt(minSalary);
+    if (maxSalary) filter["salary.min"].$lte = parseInt(maxSalary);
+  }
+
+  // Text search on title, description, department
+  if (searchQuery) {
+    filter.$or = [
+      { title: { $regex: searchQuery, $options: "i" } },
+      { description: { $regex: searchQuery, $options: "i" } },
+      { department: { $regex: searchQuery, $options: "i" } },
+    ];
+  }
+
+  const vacancies = await Vacancy.find(filter)
+    .sort({ createdAt: -1 })
+    .populate("orgId", "name location") // optional
+    .exec();
+
+  res.status(200).json(
+    new ApiResponse(200, { vacancies }, "Vacancies fetched successfully")
+  );
+});

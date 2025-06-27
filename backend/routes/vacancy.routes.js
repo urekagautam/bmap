@@ -5,7 +5,8 @@ import {
   updateVacancyDetails,
   getNearbyVacancies,
   getAllVacancies,
-  getJobDetailsForApplication
+  getJobDetailsForApplication,
+  getFilteredVacancies
 } from "../controllers/vacancy.controller.js";
 import { verifyOrgJWT } from "../middlewares/verifyOrgJWT.middleware.js";
 
@@ -24,5 +25,8 @@ router.route("/vacancy/:id").put(updateVacancyDetails)
 // Get nearby vacancies (uses query parameters)
 router.route("/nearbyVacancies").get(getNearbyVacancies);
 router.get("/job-details/:id", getJobDetailsForApplication)
+
+//Get filtered vacancies based on various criteria
+router.route("/vacancy").get(getFilteredVacancies);
 
 export default router;
