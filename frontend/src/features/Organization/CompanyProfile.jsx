@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useParams, useSearchParams } from "react-router-dom"
 import styles from "./CompanyProfile.module.css"
 import Button from "../../component/Button.jsx"
 import { cns } from "../../utils/classNames.js"
@@ -6,14 +7,35 @@ import { IconPencil } from "../../component/icons/IconPencil.jsx"
 import AboutTab from "./profile/AboutTab.jsx"
 import EditTab from "./profile/EditTab.jsx"
 import JobsTab from "./profile/JobsTab.jsx"
-import { useParams } from "react-router-dom"
 import { useOrgData } from "../../hooks/useOrgData.js"
 
 export default function CompanyProfile() {
   const { id: orgId } = useParams()
-  const [activeTab, setActiveTab] = useState("about")
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // Getting initial tab from URL params, default to "about"
+  const initialTab = searchParams.get("tab") || "about"
+  const [activeTab, setActiveTab] = useState(initialTab)
 
   const { orgData, isLoading, error } = useOrgData(orgId)
+
+  // Updating URL when tab changes
+  const handleTabChange = (newTab) => {
+    setActiveTab(newTab)
+    if (newTab === "about") {
+      // Removing tab param for default tab
+      searchParams.delete("tab")
+    } else {
+      searchParams.set("tab", newTab)
+    }
+    setSearchParams(searchParams)
+  }
+
+  // Updating activeTab when URL changes (browser back/forward)
+  useEffect(() => {
+    const tabFromUrl = searchParams.get("tab") || "about"
+    setActiveTab(tabFromUrl)
+  }, [searchParams])
 
   // console.log("OrgData in CompanyProfile:", orgData)
 
@@ -51,7 +73,7 @@ export default function CompanyProfile() {
   const employeeCount = formatCompanySize(orgData)
   const foundedYear = orgData?.foundedYear || "N/A"
   const address = orgData?.address || "Address not specified"
-  const phonenum = orgData?.phoneNo || "Phone not specified" 
+  const phonenum = orgData?.phoneNo || "Phone not specified"
   const email = orgData?.email || "Email not specified"
   const socials = parseSocialProfiles(orgData)
   const description = orgData?.description || ""
@@ -122,7 +144,7 @@ export default function CompanyProfile() {
 
             <Button
               className={cns(styles.edittab, activeTab === "edittab" && styles.activeEditTab)}
-              onClick={() => setActiveTab("edittab")}
+              onClick={() => handleTabChange("edittab")}
               fill="outline"
               layout="sm"
               color="neutralLight"
@@ -136,14 +158,14 @@ export default function CompanyProfile() {
               <button
                 type="button"
                 className={cns(styles.tab, activeTab === "about" && styles.activeTab)}
-                onClick={() => setActiveTab("about")}
+                onClick={() => handleTabChange("about")}
               >
                 About
               </button>
               <button
                 type="button"
                 className={cns(styles.tab, activeTab === "jobs" && styles.activeTab)}
-                onClick={() => setActiveTab("jobs")}
+                onClick={() => handleTabChange("jobs")}
               >
                 Jobs
               </button>
@@ -153,7 +175,7 @@ export default function CompanyProfile() {
 
           {activeTab === "about" && (
             <AboutTab
-              setActiveTab={setActiveTab}
+              setActiveTab={handleTabChange}
               orgData={orgData}
               companyInfo={{
                 companyName,

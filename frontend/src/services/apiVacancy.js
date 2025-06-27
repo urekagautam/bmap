@@ -55,18 +55,62 @@ export const apiGetOrgVacancies = async (orgId) => {
   }
 }
 
-// Get a specific vacancy by ID
-export const apiGetVacancyById = async (vacancyId) => {
-  // const token = localStorage.getItem("orgAccessToken")
+//get vacancy for a particular id
+export const apiGetVacancyDetails = async (vacancyId) => {
+  try {
+    console.log("Fetching vacancy details for ID:", vacancyId)
+    const response = await axios.get(`http://localhost:5000/api/v1/getvacancy/${vacancyId}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
 
-  /* if (!token) {
+    return response.data
+  } catch (error) {
+    console.error("API Error Details:", error.response?.data || error.message)
+    if (error.response) {
+      throw error
+    } else {
+      throw new Error("Network error or server is down")
+    }
+  }
+}
+
+//update vacancy for an id
+// Update an existing job vacancy - NEW FUNCTION
+export const apiUpdateVacancy = async (vacancyId, vacancyData) => {
+  try {
+    console.log("Updating vacancy with ID:", vacancyId)
+    console.log("Sending update data:", vacancyData)
+    const response = await axios.put(`http://localhost:5000/api/v1/vacancy/${vacancyId}`, vacancyData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.error("API Error Details:", error.response?.data || error.message)
+    if (error.response) {
+      throw error
+    } else {
+      throw new Error("Network error or server is down")
+    }
+  }
+}
+
+// Get a specific vacancy by ID
+/* export const apiGetVacancyById = async (vacancyId) => {
+   const token = localStorage.getItem("orgAccessToken")
+
+   if (!token) {
     throw new Error("No access token found. Please log in first.")
-  } */
+  } 
 
   try {
     const response = await axios.get(`http://localhost:5000/api/v1/vacancy/${vacancyId}`, {
       headers: {
-        /* Authorization: `Bearer ${token}`, */
+        Authorization: `Bearer ${token}`, 
         "Content-Type": "application/json",
       },
     })
@@ -80,20 +124,20 @@ export const apiGetVacancyById = async (vacancyId) => {
       throw new Error("Network error or server is down")
     }
   }
-}
+} */
 
 // Get vacancy details by ID
-export const apiGetVacancyDetails = async (vacancyId) => {
+/* export const apiGetVacancyDetails = async (vacancyId) => {
   // const token = localStorage.getItem("orgAccessToken")
 
-  /* if (!token) {
+ if (!token) {
     throw new Error("No access token found. Please log in first.")
-  } */
+  } 
 
   try {
     const response = await axios.get(`http://localhost:5000/api/v1/getvacancy/${vacancyId}`, {
       headers: {
-        /* Authorization: `Bearer ${token}`, */
+        /* Authorization: `Bearer ${token}`, 
         "Content-Type": "application/json",
       },
     })
@@ -107,7 +151,7 @@ export const apiGetVacancyDetails = async (vacancyId) => {
       throw new Error("Network error or server is down")
     }
   }
-}
+} */
 
 // Fetching Job details in posting job application page
 export const apiGetJobDetailsForApplication = async (jobId) => {

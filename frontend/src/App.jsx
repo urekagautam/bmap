@@ -24,6 +24,8 @@ function App() {
         <Routes>
 
           {/* USER ///MODIFY LATER WITH NAVBARS AND STUFF WRAPPING MAYBE*/}
+          <Route path="/bmap" element={<HomePage />} />
+
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
