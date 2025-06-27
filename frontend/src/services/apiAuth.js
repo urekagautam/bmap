@@ -14,6 +14,20 @@ export const apiSignup = async (userData) => {
   }
 }
 
+export const apiGetUserProfile = async (userId) => {
+  try {
+    const response = await axios.get(`http://localhost:5000/users/api/v1/userprofile/${userId}`);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error("Error response from backend:", error.response);
+      throw error;
+    } else {
+      throw new Error("Network error or server is down");
+    }
+  }
+};
+
 export const apiLogin = async ({ email, password }) => {
   const response = await axios.post("http://localhost:5000/api/auth/login", {
     email,
@@ -39,7 +53,28 @@ export const apiGetUserDataForApplication = async (userId) => {
   }
 };
 
+
+
 export const apiUpdateUserProfile = async (userId, userData) => {
+  try {
+    const response = await axios.put(
+      `http://localhost:5000/users/api/v1/userprofile/${userId}`,
+      userData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          // Authorization: `Bearer ${token}`
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    throw error;
+  }
+};
+
+export const apiUpdateUserProfileForApplication = async (userId, userData) => {
   try {
     const response = await axios.put(
       `http://localhost:5000/users/api/v1/profile-data/${userId}`,

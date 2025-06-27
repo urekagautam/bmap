@@ -139,9 +139,98 @@ const getUserProfileData = asyncHandler(async (req, res, next) => {
   }
 });
 
+//GET USER DETAILS FOR PROFILE
+const getUserProfile = asyncHandler(async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await User.findById(userId).select(
+      "name email address phone experience_level job_preference socialProfile"
+    );
+
+    if (!user) {
+      return next(new ApiError(404, "User not found"));
+    }
+
+    return res.status(200).json(
+      new ApiResponse(200, user, "User profile fetched successfully")
+    );
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    return next(new ApiError(500, "Something went wrong while fetching user profile"));
+  }
+});
+
+//UPDATE USER PFORILE FROM PROFILE
+export const updateUserProfile = asyncHandler(async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+
+    const {
+      name,
+      email,
+      address,
+      phone,
+      image,
+      experience_level,
+      location,
+      job_preference,
+      socialProfile
+    } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        name: name,
+        email: email,
+        address: address,
+        phone: phone,
+        image: image,
+        experience_level: experience_level,
+        location: {
+          lat: location?.lat || null,
+          lng: location?.lng || null,
+        },
+        job_preference: {
+          title: job_preference?.title || "",
+          skills: job_preference?.skills || [],
+        },
+        socialProfile: {
+          insta: socialProfile?.insta || "",
+          x: socialProfile?.x || "",
+          fb: socialProfile?.fb || "",
+          github: socialProfile?.github || "",
+          linkedin: socialProfile?.linkedin || "",
+          portfolio: socialProfile?.portfolio || "",
+        }
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!updatedUser) {
+      return next(new ApiError(404, "User not found"));
+    }
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        updatedUser,
+        "User profile updated successfully"
+      )
+    );
+
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    return next(new ApiError(500, "Something went wrong while updating user profile"));
+  }
+});
+
 //UPDATE USER PROFILE FROM APPLICATION
 
-const updateUserProfile = asyncHandler(async (req, res, next) => {
+const updateUserProfileForApplication = asyncHandler(async (req, res, next) => {
   try {
     const userId = req.params.id;
     const { firstName, lastName, email, phoneNo, linkedin, github, portfolio } = req.body;
@@ -221,4 +310,4 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User logged out successfully"))
 })
 
-export { registerUser, loginUser, getUserProfileData, updateUserProfile, logoutUser };
+export { registerUser, loginUser,  getUserProfileData, updateUserProfileForApplication, getUserProfile, logoutUser };
