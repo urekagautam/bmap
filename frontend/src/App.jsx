@@ -15,6 +15,7 @@ import JobDescription from "./pages/organization/JobDescription";
 import JobApplication from "./pages/user/JobApplication";
 import UserProfile from "./pages/user/UserProfile";
 import UpdateJob from "./pages/organization/UpdateJob";
+import Testing from "./pages/testing";
 import JoinAs from "./pages/JoinAs";
 import OrganizationLogin from "./pages/organization/OrganizationLogin";
 
@@ -34,6 +35,7 @@ function App() {
           <Route path="/search" element={<Search/>}/>
           <Route path="/userprofile" element={<UserProfile />} />
           <Route path="/test" element={<Test />} />
+         <Route path="/testing" element={<Testing />} />
           <Route path="/jobapplication/:id" element={<JobApplication />} />
           <Route path="/updatevacancy/:id" element={<UpdateJob />} />
         
