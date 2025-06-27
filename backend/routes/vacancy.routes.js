@@ -2,6 +2,7 @@ import { Router } from "express";
 import { 
   postVacancyDetails,
   getVacancyDetails,
+  updateVacancyDetails,
   getNearbyVacancies,
   getAllVacancies,
   getJobDetailsForApplication
@@ -18,6 +19,7 @@ router.route("/getvacancy/:id").get(getVacancyDetails);
 
 // Get specific details of all vacancies by an organization
 router.route("/getAllvacancies/:id").get(getAllVacancies);
+router.route("/vacancy/:id").put(updateVacancyDetails)
 
 // Get nearby vacancies (uses query parameters)
 router.route("/nearbyVacancies").get(getNearbyVacancies);

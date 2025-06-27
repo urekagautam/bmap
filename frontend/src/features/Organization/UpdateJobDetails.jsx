@@ -1,16 +1,14 @@
-
-
-import { useForm, Controller } from "react-hook-form"
-import { Link, useNavigate } from "react-router-dom"
-import { useState } from "react"
-import toast from "react-hot-toast"
-import Button from "../../component/Button"
-import InputField from "../../component/InputField"
-import RadioGroup from "../../component/RadioGroup"
-import Select from "../../component/Select"
-import { IconBack } from "../../component/icons/IconBack"
-import { IconCross } from "../../component/icons/IconCross"
-import { IconInvalid } from "../../component/icons/IconInvalid"
+import { useForm, Controller } from "react-hook-form";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import Button from "../../component/Button";
+import InputField from "../../component/InputField";
+import RadioGroup from "../../component/RadioGroup";
+import Select from "../../component/Select";
+import { IconBack } from "../../component/icons/IconBack";
+import { IconCross } from "../../component/icons/IconCross";
+import { IconInvalid } from "../../component/icons/IconInvalid";
 import {
   DEPARTMENT_OPTIONS,
   SKILL_OPTIONS,
@@ -20,16 +18,23 @@ import {
   JOB_BY_LOCATION,
   JOB_BY_LEVEL,
   SALARY_TYPE,
-} from "../../constants/constants.js"
+} from "../../constants/constants.js";
+import {
+  apiGetVacancyDetails,
+  apiUpdateVacancy,
+} from "../../services/apiVacancy.js";
 
-import styles from "./PostJob.module.css"
-import ToggleSwitch from "../../component/ToggleSwitch.jsx"
-import MultiSelect from "../../component/MultiSelect.jsx"
-import TextArea from "../../component/TextArea.jsx"
+import styles from "./PostJob.module.css";
+import ToggleSwitch from "../../component/ToggleSwitch.jsx";
+import MultiSelect from "../../component/MultiSelect.jsx";
+import TextArea from "../../component/TextArea.jsx";
 
-export default function UpdateJob() {
-  const navigate = useNavigate()
-  const [isSubmitting, setIsSubmitting] = useState(false)
+export default function UpdateJobDetails() {
+  const navigate = useNavigate();
+  const { id: jobId } = useParams();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [orgId, setOrgId] = useState(null);
 
   const {
     register,
@@ -61,46 +66,226 @@ export default function UpdateJob() {
       applicationDeadline: "",
       additionalInfo: "",
     },
-  })
+  });
 
-  const salaryDisclosure = watch("salaryDisclosure")
-  const specialities = watch("specialities") || []
+  const salaryDisclosure = watch("salaryDisclosure");
+  const specialities = watch("specialities") || [];
+
+  // FETCH AND LOAD EXISTING JOB DATA
+  useEffect(() => {
+    const fetchJobDetails = async () => {
+      try {
+        setIsLoading(true);
+        console.log("Fetching job details for ID:", jobId);
+
+        const response = await apiGetVacancyDetails(jobId);
+        console.log("API Response:", response);
+
+        if (!response || !response.data || !response.data.vacancy) {
+          throw new Error("Invalid response structure");
+        }
+
+        const jobData = response.data.vacancy;
+        console.log("Job Data:", jobData);
+
+        // FORMATTING DATE (YYYY-MM-DD)
+        const formatDate = (dateString) => {
+          if (!dateString) return "";
+          const date = new Date(dateString);
+          return date.toISOString().split("T")[0];
+        };
+
+        const formattedSkills =
+          jobData.skillsRequired?.map((skill) => {
+            const skillOption = SKILL_OPTIONS.find(
+              (option) => option.value === skill
+            );
+            return skillOption || { value: skill, label: skill };
+          }) || [];
+
+        const departmentOption = DEPARTMENT_OPTIONS.find(
+          (option) => option.value === jobData.department
+        );
+
+        const experienceCriteriaOption = EXPERIENCE_CRITERIA_OPTIONS.find(
+          (option) => option.value === jobData.experienceCriteria
+        );
+
+        const experienceOption = EXPERIENCE_OPTIONS.find(
+          (option) => option.value === jobData.experience
+        );
+
+        const formatAdditionalInfo = (info) => {
+          if (!info) return "";
+          if (typeof info === "string") {
+            const items = info.split(", ");
+            return items
+              .map((item, index) => `${index + 1}. ${item}`)
+              .join("\n");
+          }
+          return "";
+        };
+
+        console.log("Setting form values...");
+        console.log("Required Employees from API:", jobData.requiredEmployees);
+
+        setValue("jobTitle", jobData.title || "");
+
+        const reqEmployeesValue = jobData.requiredEmployees?.toString() || "1";
+        console.log("Setting reqEmployees to:", reqEmployeesValue);
+        setValue("reqEmployees", reqEmployeesValue);
+        setValue("department", departmentOption || "");
+        setValue("jobByTime", jobData.jobByTime || "fulltime");
+        setValue("jobByLocation", jobData.jobByLocation || "on_site");
+        setValue("jobLevel", jobData.jobLevel || "mid-level");
+        setValue("salaryDisclosure", jobData.salary?.type || "fixed");
+        setValue("minValue", jobData.salary?.min?.toString() || "");
+        setValue("maxValue", jobData.salary?.max?.toString() || "");
+        setValue("salaryType", jobData.salaryPeriod || "monthly");
+        setValue("isSalaryRequired", jobData.hideSalary || false);
+        setValue("experienceCriteria", experienceCriteriaOption || "");
+        setValue("experience", experienceOption || "");
+        setValue("isExperienceRequired", jobData.isExperienceRequired || false);
+        setValue("specialities", formattedSkills);
+        setValue("isSkillsRequired", jobData.isSkillsRequired || false);
+        setValue("jobDescription", jobData.description || "");
+        setValue("applicationDeadline", formatDate(jobData.deadline));
+        setValue(
+          "additionalInfo",
+          formatAdditionalInfo(jobData.additionalInfo)
+        );
+
+        setOrgId(jobData.orgId);
+
+        console.log("Form values set successfully!");
+        toast.success("Job details loaded successfully!");
+      } catch (error) {
+        console.error("Error fetching job details:", error);
+        toast.error("Failed to load job details");
+        navigate(orgId ? `/cmpprofile/${orgId}` : "/cmpprofile");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (jobId) {
+      fetchJobDetails();
+    } else {
+      console.error("No job ID found in URL");
+      toast.error("No job ID provided");
+      navigate(`/jobdescription/${jobId}`);
+    }
+  }, [jobId, setValue, navigate, orgId]);
 
   //additional info ko numbering include garera
   const handleAdditionalInfo = (e) => {
-    const raw = e.target.value
-    const lines = raw.split("\n")
+    const raw = e.target.value;
+    const lines = raw.split("\n");
 
-    const numbered = lines.map((line, i) => `${i + 1}. ${line.replace(/^\d+\.\s*/, "")}`)
-    setValue("additionalInfo", numbered.join("\n"))
-  }
+    const numbered = lines.map(
+      (line, i) => `${i + 1}. ${line.replace(/^\d+\.\s*/, "")}`
+    );
+    setValue("additionalInfo", numbered.join("\n"));
+  };
 
   const additionalInfoArray = watch("additionalInfo")
     .split("\n")
     .map((line) => line.replace(/^\d+\.\s*/, "").trim())
-    .filter((line) => line.length > 0)
+    .filter((line) => line.length > 0);
 
-  //handling submit
   const onSubmit = async (data) => {
     try {
-      setIsSubmitting(true)
+      setIsSubmitting(true);
+      console.log("Form data to be submitted:", data);
 
-      // Just log the data for now - you'll replace this with your API call
-      console.log("Form data to be submitted:", data)
+      console.log("Raw reqEmployees value:", data.reqEmployees);
+      console.log("Type of reqEmployees:", typeof data.reqEmployees);
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const requiredEmployeesNumber = Number.parseInt(data.reqEmployees, 10);
+      console.log("Converted reqEmployees number:", requiredEmployeesNumber);
 
-      toast.success("Job updated successfully!")
+      if (isNaN(requiredEmployeesNumber) || requiredEmployeesNumber < 1) {
+        toast.error("Please enter a valid number of required employees");
+        return;
+      }
+
+      const vacancyData = {
+        title: data.jobTitle,
+        description: data.jobDescription,
+        deadline: data.applicationDeadline,
+        department:
+          typeof data.department === "object"
+            ? data.department.value
+            : data.department,
+        additionalInfo: additionalInfoArray.join(", "),
+        skillsRequired: data.specialities.map((skill) => skill.value),
+        isSkillsRequired: data.isSkillsRequired,
+        jobByTime: data.jobByTime,
+        jobByLocation: data.jobByLocation,
+        jobLevel: data.jobLevel,
+        salary: {
+          type: data.salaryDisclosure,
+          min: data.minValue ? Number.parseInt(data.minValue, 10) : undefined,
+          max:
+            data.salaryDisclosure === "range" && data.maxValue
+              ? Number.parseInt(data.maxValue, 10)
+              : undefined,
+        },
+        salaryPeriod: data.salaryType,
+        hideSalary: data.isSalaryRequired,
+        experienceCriteria:
+          data.isExperienceRequired && data.experienceCriteria
+            ? typeof data.experienceCriteria === "object"
+              ? data.experienceCriteria.value
+              : data.experienceCriteria
+            : undefined,
+        experience:
+          data.isExperienceRequired && data.experience
+            ? typeof data.experience === "object"
+              ? data.experience.value
+              : data.experience
+            : undefined,
+        isExperienceRequired: data.isExperienceRequired,
+        requiredEmployees: requiredEmployeesNumber,
+      };
+
+      console.log("Sending update data to API:", vacancyData);
+      console.log(
+        "Final requiredEmployees value being sent:",
+        vacancyData.requiredEmployees
+      );
+
+      const response = await apiUpdateVacancy(jobId, vacancyData);
+      console.log("Update API response:", response);
+
+      toast.success("Job updated successfully!");
       setTimeout(() => {
-        navigate("/cmpprofile")
-      }, 1000)
+        navigate(`/jobdescription/${jobId}`);
+      }, 1500);
     } catch (error) {
-      console.error("Error updating job:", error)
-      toast.error("Failed to update job")
+      console.error("Error updating job:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        error.response?.data?.error?.message ||
+        "Failed to update job";
+      toast.error(errorMessage);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
+  };
+
+  // LOADING STATE
+  if (isLoading) {
+    return (
+      <section className={styles.postjobSection}>
+        <div className={styles.formContainer}>
+          <div className={styles.pageTitle}>
+            <h1>Loading job details...</h1>
+            <p>Job ID: {jobId}</p>
+          </div>
+        </div>
+      </section>
+    );
   }
 
   return (
@@ -133,28 +318,45 @@ export default function UpdateJob() {
                     })}
                     placeholder="e.g Senior Developer"
                   />
-                  <span className={styles.error}>{errors.jobTitle?.message}</span>
+                  <span className={styles.error}>
+                    {errors.jobTitle?.message}
+                  </span>
                 </div>
 
                 <div className={styles.inputField}>
-                  <label className={styles.fieldLabel}>Req No. of Employees.</label>
+                  <label className={styles.fieldLabel}>
+                    Req No. of Employees.
+                  </label>
                   <InputField
                     type="number"
                     {...register("reqEmployees", {
                       required: "Number of employees is required",
                       pattern: {
-                        value: /^[0-9]*$/,
-                        message: "Please enter a valid number",
+                        value: /^[1-9]\d*$/,
+                        message: "Please enter a valid positive number",
                       },
                       min: {
                         value: 1,
                         message: "Number must be at least 1",
                       },
+                      validate: {
+                        isPositiveInteger: (value) => {
+                          const num = Number.parseInt(value, 10);
+                          return (
+                            (!isNaN(num) && num > 0 && Number.isInteger(num)) ||
+                            "Please enter a valid positive integer"
+                          );
+                        },
+                      },
                     })}
                     placeholder="eg. 1"
                     layout="sm"
+                    min="1"
+                    step="1"
                   />
-                  <span className={styles.error}>{errors.reqEmployees?.message}</span>
+                  <span className={styles.error}>
+                    {errors.reqEmployees?.message}
+                  </span>
                 </div>
 
                 <div className={styles.inputField}>
@@ -170,14 +372,16 @@ export default function UpdateJob() {
                         options={DEPARTMENT_OPTIONS}
                         placeholder="Select department"
                         onChange={(value) => {
-                          field.onChange(value)
-                          clearErrors("department")
+                          field.onChange(value);
+                          clearErrors("department");
                         }}
                         value={field.value || null}
                       />
                     )}
                   />
-                  <span className={styles.error}>{errors.department?.message}</span>
+                  <span className={styles.error}>
+                    {errors.department?.message}
+                  </span>
                 </div>
               </div>
 
@@ -270,11 +474,15 @@ export default function UpdateJob() {
                           value: /^[0-9]+$/,
                           message: "Please enter a valid number",
                         },
-                        validate: (value) => Number.parseInt(value) > 0 || "Salary must be greater than 0",
+                        validate: (value) =>
+                          Number.parseInt(value, 10) > 0 ||
+                          "Salary must be greater than 0",
                       })}
                       placeholder="eg. 10000"
                     />
-                    <span className={styles.error}>{errors.minValue?.message}</span>
+                    <span className={styles.error}>
+                      {errors.minValue?.message}
+                    </span>
                   </div>
 
                   <div className={styles.inputWrapper}>
@@ -284,16 +492,19 @@ export default function UpdateJob() {
                       {...register("maxValue", {
                         validate: {
                           required: (value) =>
-                            salaryDisclosure !== "range" || value.trim() !== "" || "Maximum salary is required",
+                            salaryDisclosure !== "range" ||
+                            value.trim() !== "" ||
+                            "Maximum salary is required",
                           greaterThanMin: (value) => {
-                            if (salaryDisclosure !== "range") return true
-                            const min = watch("minValue")
+                            if (salaryDisclosure !== "range") return true;
+                            const min = watch("minValue");
                             return (
                               !min ||
                               !value ||
-                              Number.parseInt(value) > Number.parseInt(min) ||
+                              Number.parseInt(value, 10) >
+                                Number.parseInt(min, 10) ||
                               "Maximum must be greater than minimum"
-                            )
+                            );
                           },
                         },
                         pattern: {
@@ -303,9 +514,13 @@ export default function UpdateJob() {
                       })}
                       placeholder="eg. 20000"
                       disabled={salaryDisclosure === "fixed"}
-                      className={salaryDisclosure === "fixed" ? styles.disabledInput : ""}
+                      className={
+                        salaryDisclosure === "fixed" ? styles.disabledInput : ""
+                      }
                     />
-                    <span className={styles.error}>{errors.maxValue?.message}</span>
+                    <span className={styles.error}>
+                      {errors.maxValue?.message}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -341,7 +556,10 @@ export default function UpdateJob() {
                         />
                       )}
                     />
-                    <span>Select this option if you prefer not to display the salary to jobseekers.</span>
+                    <span>
+                      Select this option if you prefer not to display the salary
+                      to jobseekers.
+                    </span>
                   </div>
                 </div>
               </div>
@@ -367,14 +585,16 @@ export default function UpdateJob() {
                         options={EXPERIENCE_CRITERIA_OPTIONS}
                         placeholder="Select criteria"
                         onChange={(value) => {
-                          field.onChange(value)
-                          clearErrors("experienceCriteria")
+                          field.onChange(value);
+                          clearErrors("experienceCriteria");
                         }}
                         value={field.value || null}
                       />
                     )}
                   />
-                  <span className={styles.error}>{errors.experienceCriteria?.message}</span>
+                  <span className={styles.error}>
+                    {errors.experienceCriteria?.message}
+                  </span>
                 </div>
 
                 <div className={styles.inputField}>
@@ -392,18 +612,22 @@ export default function UpdateJob() {
                         options={EXPERIENCE_OPTIONS}
                         placeholder="Select experience"
                         onChange={(value) => {
-                          field.onChange(value)
-                          clearErrors("experience")
+                          field.onChange(value);
+                          clearErrors("experience");
                         }}
                         value={field.value || null}
                       />
                     )}
                   />
-                  <span className={styles.error}>{errors.experience?.message}</span>
+                  <span className={styles.error}>
+                    {errors.experience?.message}
+                  </span>
                 </div>
 
                 <div className={styles.hideSalary}>
-                  <label className={styles.fieldLabel}>Is experience mandatory to apply for this job ? </label>
+                  <label className={styles.fieldLabel}>
+                    Is experience mandatory to apply for this job ?{" "}
+                  </label>
                   <div className={styles.hideSwitch}>
                     <Controller
                       name="isExperienceRequired"
@@ -434,8 +658,11 @@ export default function UpdateJob() {
                     rules={{
                       required: "At least one speciality is required",
                       validate: {
-                        minThree: (value) => value.length >= 3 || "At least 3 specialities are required",
-                        maxFive: (value) => value.length <= 5 || "Maximum 5 specialities allowed",
+                        minThree: (value) =>
+                          value.length >= 3 ||
+                          "At least 3 specialities are required",
+                        maxFive: (value) =>
+                          value.length <= 5 || "Maximum 5 specialities allowed",
                       },
                     }}
                     render={({ field }) => (
@@ -443,14 +670,16 @@ export default function UpdateJob() {
                         options={SKILL_OPTIONS}
                         placeholder="Select skills"
                         onChange={(options) => {
-                          field.onChange(options)
-                          clearErrors("specialities")
+                          field.onChange(options);
+                          clearErrors("specialities");
                         }}
                         defaultValues={field.value}
                       />
                     )}
                   />
-                  <span className={styles.error}>{errors.specialities?.message}</span>
+                  <span className={styles.error}>
+                    {errors.specialities?.message}
+                  </span>
                 </div>
 
                 <div className={styles.selectedTags}>
@@ -466,8 +695,10 @@ export default function UpdateJob() {
                             onClick={() => {
                               setValue(
                                 "specialities",
-                                specialities.filter((item) => item.value !== option.value),
-                              )
+                                specialities.filter(
+                                  (item) => item.value !== option.value
+                                )
+                              );
                             }}
                           >
                             <IconCross />
@@ -484,7 +715,9 @@ export default function UpdateJob() {
               <div className={styles.isSkillRequired}>
                 <div className={styles.mandatory}>
                   <IconInvalid />
-                  <span>Enter up to 5 primary skills required for this position</span>
+                  <span>
+                    Enter up to 5 primary skills required for this position
+                  </span>
                 </div>
 
                 <div className={styles.mark}>
@@ -527,7 +760,9 @@ export default function UpdateJob() {
                       />
                     )}
                   />
-                  <span className={styles.error}>{errors.jobDescription?.message}</span>
+                  <span className={styles.error}>
+                    {errors.jobDescription?.message}
+                  </span>
                 </div>
 
                 <div className={styles.docXdeadline}>
@@ -551,15 +786,20 @@ export default function UpdateJob() {
                         required: "Application deadline is required",
                         validate: {
                           futureDate: (value) => {
-                            const today = new Date()
-                            today.setHours(0, 0, 0, 0)
-                            const selectedDate = new Date(value)
-                            return selectedDate >= today || "Date must be in the future"
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            const selectedDate = new Date(value);
+                            return (
+                              selectedDate >= today ||
+                              "Date must be in the future"
+                            );
                           },
                         },
                       })}
                     />
-                    <span className={styles.error}>{errors.applicationDeadline?.message}</span>
+                    <span className={styles.error}>
+                      {errors.applicationDeadline?.message}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -579,7 +819,7 @@ export default function UpdateJob() {
                     <TextArea
                       {...field}
                       onChange={(e) => {
-                        handleAdditionalInfo(e)
+                        handleAdditionalInfo(e);
                       }}
                       placeholder="1. Describe the benefits of your company
 2. Describe the perks"
@@ -587,7 +827,9 @@ export default function UpdateJob() {
                     />
                   )}
                 />
-                <span className={styles.error}>{errors.additionalInfo?.message}</span>
+                <span className={styles.error}>
+                  {errors.additionalInfo?.message}
+                </span>
               </div>
             </div>
           </div>
@@ -598,7 +840,9 @@ export default function UpdateJob() {
               layout="sm"
               fill="outline"
               color="neutralLight"
-              onClick={() => navigate("/cmpprofile")}
+              onClick={() =>
+                navigate(orgId ? `/cmpprofile/${orgId}` : "/cmpprofile")
+              }
             >
               Cancel
             </Button>
@@ -609,5 +853,5 @@ export default function UpdateJob() {
         </form>
       </div>
     </section>
-  )
+  );
 }

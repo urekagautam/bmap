@@ -91,6 +91,90 @@ export const getVacancyDetails = asyncHandler(async (req, res, next) => {
   res.status(200).json(new ApiResponse(200, { vacancy }, "Vacancy details fetched successfullyyyy"))
 })
 
+//UPDATE VACANCY DETAILS FOR AN ID
+export const updateVacancyDetails = asyncHandler(async (req, res, next) => {
+  const vacancyId = req.params.id
+
+  const {
+    title,
+    description,
+    deadline,
+    department,
+    additionalInfo,
+    skillsRequired,
+    isSkillsRequired,
+    jobByTime,
+    jobByLocation,
+    jobLevel,
+    salary,
+    salaryPeriod,
+    hideSalary,
+    experienceCriteria,
+    experience,
+    isExperienceRequired,
+    requiredEmployees,
+    orgId,
+  } = req.body
+
+  console.log("Updating vacancy with ID:", vacancyId)
+  console.log("Received update data:", req.body)
+
+  // Check if vacancy exists
+  const existingVacancy = await Vacancy.findById(vacancyId)
+  if (!existingVacancy) {
+    throw new ApiError(404, "Vacancy not found")
+  }
+
+  if (!title || !description || !deadline || !department) {
+    throw new ApiError(400, "Required fields: title, description, deadline, department")
+  }
+
+  const updateData = {
+    title,
+    description,
+    deadline: new Date(deadline),
+    department,
+    additionalInfo: additionalInfo || "",
+    skillsRequired: skillsRequired || [],
+    isSkillsRequired: isSkillsRequired !== false,
+    jobByTime: jobByTime || "fulltime",
+    jobByLocation: jobByLocation || "on_site",
+    jobLevel: jobLevel || "mid-level",
+    salary: {
+      type: salary?.type || "fixed",
+      min: salary?.min || undefined,
+      max: salary?.max || undefined,
+    },
+    salaryPeriod: salaryPeriod || "monthly",
+    hideSalary: hideSalary || false,
+    experienceCriteria: isExperienceRequired ? experienceCriteria : undefined,
+    experience: isExperienceRequired ? experience : undefined,
+    isExperienceRequired: isExperienceRequired || false,
+    requiredEmployees: requiredEmployees || 1,
+    updatedAt: new Date(),
+  }
+
+  console.log("Updating vacancy with data:", updateData)
+
+  const updatedVacancy = await Vacancy.findByIdAndUpdate(vacancyId, updateData, {
+    new: true,
+    runValidators: true,
+  })
+
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        vacancy: {
+          ...updatedVacancy.toObject(),
+          deadline: updatedVacancy.deadline.toISOString(),
+        },
+      },
+      "Vacancy updated successfully",
+    ),
+  )
+})
+
 // GET JOB DETAILS FOR APPLICATION 
 export const getJobDetailsForApplication = asyncHandler(async (req, res, next) => {
   const vacancyId = req.params.id
