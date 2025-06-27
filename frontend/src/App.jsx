@@ -16,6 +16,7 @@ import JobApplication from "./pages/user/JobApplication";
 import UserProfile from "./pages/user/UserProfile";
 import UpdateJob from "./pages/organization/UpdateJob";
 import JoinAs from "./pages/JoinAs";
+import OrganizationLogin from "./pages/organization/OrganizationLogin";
 
 function App() {
 
@@ -39,6 +40,7 @@ function App() {
           {/* ORGANIZATION */}
           <Route path="/org" element={<DashboardPage />} />
           <Route path="/org/signup" element={<OrganizationSignup />} />
+          <Route path="/org/login" element={<OrganizationLogin />} />
           <Route path="/orgprofile" element={<ProfilePage />} />
           <Route path="/cmpprofile/:id" element={<CompanyProfileView />} />
           {/* <Route path="/cmpprofile" element={<CompanyProfileView />} /> */}

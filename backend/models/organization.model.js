@@ -1,9 +1,8 @@
-import mongoose from "mongoose";
-import JWT from "jsonwebtoken";
-import bcrypt from "bcrypt";
-import { config } from "../config/config.js";
+import mongoose from "mongoose"
+import JWT from "jsonwebtoken"
+import bcrypt from "bcrypt"
+import { config } from "../config/config.js"
 
-// Define schema
 const organizationSchema = new mongoose.Schema(
   {
     ownersName: {
@@ -22,30 +21,26 @@ const organizationSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true
+      required: true,
+      select: false, 
     },
     phoneNo: {
       type: String,
       unique: true,
       sparse: true,
     },
-     image: {
+    image: {
       type: [String],
-    }, 
-/*   || LS || ownersPhoto: { type: String },
-    citizenshipFront: { type: String },
-    citizenshipBack: { type: String },
-    panCard: { type: String },
-    vatCard: { type: String }, */
-    location: {
-    type: {
-      type: String,
-      enum: ['Point'],
     },
-    coordinates: {
-      type: [Number],  
-    }
-  },
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+      },
+      coordinates: {
+        type: [Number],
+      },
+    },
     address: {
       type: String,
     },
@@ -89,32 +84,72 @@ const organizationSchema = new mongoose.Schema(
       },
     },
     refreshToken: {
-      type: String
+      type: String,
     },
+    passwordChangedAt: Date,
   },
-  { timestamps: true }
-);
+  { timestamps: true },
+)
 
-//
-// ➤ MIDDLEWARE - Password Hashing Before Save
-//
+// Hashing password before saving
 organizationSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
-});
+  if (!this.isModified("password")) return next()
 
-//
-// ➤ METHOD - Compare Password
-//
-organizationSchema.methods.isPasswordCorrect = async function (password) {
-  return await bcrypt.compare(password, this.password);
-};
+  try {
+    console.log("Hashing password for organization:", this.email)
+    this.password = await bcrypt.hash(this.password, 12)
+    this.passwordChangedAt = new Date(Date.now() - 1000)
+    console.log("Password hashed successfully")
+    next()
+  } catch (error) {
+    console.error("Password hashing error:", error)
+    next(error)
+  }
+})
 
-//
-// ➤ METHOD - Generate Access Token
-//
+// Comparing password 
+organizationSchema.methods.isPasswordCorrect = async function (candidatePassword) {
+  try {
+    console.log("Comparing organization passwords...")
+    console.log("Input password exists:", !!candidatePassword)
+    console.log("Input password type:", typeof candidatePassword)
+    console.log("Stored hash exists:", !!this.password)
+    console.log("Stored hash type:", typeof this.password)
 
+    // Validate inputs
+    if (!candidatePassword || typeof candidatePassword !== "string") {
+      console.error("Invalid candidate password:", candidatePassword)
+      return false
+    }
+
+    if (!this.password || typeof this.password !== "string") {
+      console.error("Invalid stored password hash:", this.password)
+      return false
+    }
+
+    // Ensuring password is a string and not empty
+    const passwordString = String(candidatePassword).trim()
+    const hashString = String(this.password).trim()
+
+    if (!passwordString || !hashString) {
+      console.error("Empty password or hash after conversion")
+      return false
+    }
+
+    console.log("Password length:", passwordString.length)
+    console.log("Hash length:", hashString.length)
+    console.log("Hash starts with $2b$:", hashString.startsWith("$2b$"))
+
+    const result = await bcrypt.compare(passwordString, hashString)
+    console.log("Organization password comparison result:", result)
+    return result
+  } catch (error) {
+    console.error("Organization password comparison error:", error)
+    return false
+  }
+}
+
+// Generating access token
 organizationSchema.methods.generateAccessToken = function () {
   return JWT.sign(
     {
@@ -122,13 +157,11 @@ organizationSchema.methods.generateAccessToken = function () {
       role: "organization",
     },
     config.accessTokenKey,
-    { expiresIn: config.accessTokenExpiry || "7d" }
-  );
-};
+    { expiresIn: config.accessTokenExpiry || "7d" },
+  )
+}
 
-//
-// ➤ METHOD - Generate Refresh Token
-//
+// Generating refresh token
 organizationSchema.methods.generateRefreshToken = function () {
   return JWT.sign(
     {
@@ -136,11 +169,8 @@ organizationSchema.methods.generateRefreshToken = function () {
       role: "organization",
     },
     config.refreshTokenKey,
-    { expiresIn: config.refreshTokenExpiry || "7d" }
-  );
-};
+    { expiresIn: config.refreshTokenExpiry || "7d" },
+  )
+}
 
-//
-// ➤ Export the Model
-//
-export const Organization = mongoose.model("Organization", organizationSchema);
+export const Organization = mongoose.model("Organization", organizationSchema)

@@ -2,11 +2,13 @@ import { useState } from "react"
 import Button from "../../component/Button"
 import InputField from "../../component/InputField"
 import PasswordField from "../../component/PasswordField"
+import Select from "../../component/Select"
 import styles from "./SignupDetails.module.css"
 import { apiSignup } from "../../services/apiAuth"
-import { useForm } from "react-hook-form"
+import { useForm, Controller } from "react-hook-form"
 import toast from "react-hot-toast"
 import { useNavigate } from "react-router-dom"
+import { FIELD_OF_EXPERTISE_OPTIONS } from "../../constants/constants.js"
 
 export default function SignUpDetails() {
   const {
@@ -14,8 +16,20 @@ export default function SignUpDetails() {
     handleSubmit,
     formState: { errors },
     getValues,
-    reset, 
-  } = useForm()
+    reset,
+    control,
+    setValue,
+    clearErrors,
+  } = useForm({
+    defaultValues: {
+      firstname: "",
+      lastname: "",
+      email: "",
+      fieldOfInterest: "",
+      password: "",
+      confirmpassword: "",
+    },
+  })
 
   const [error, setError] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -32,16 +46,20 @@ export default function SignUpDetails() {
     }
 
     try {
+      const fieldOfInterestValue =
+        typeof data.fieldOfInterest === "object" ? data.fieldOfInterest.value : data.fieldOfInterest
+
       const response = await apiSignup({
         name: `${data.firstname} ${data.lastname}`,
         email: data.email,
+        fieldOfInterest: fieldOfInterestValue,
         password: data.password,
         confirmpassword: data.confirmpassword,
       })
 
       console.log("Signup successful!", response.data)
       toast.success("Signup successful!")
-      
+
       if (response.data.accessToken && response.data.user) {
         localStorage.setItem("userAccessToken", response.data.accessToken)
         localStorage.setItem("userRefreshToken", response.data.refreshToken)
@@ -61,6 +79,7 @@ export default function SignUpDetails() {
         firstname: "",
         lastname: "",
         email: "",
+        fieldOfInterest: "",
         password: "",
         confirmpassword: "",
       })
@@ -85,7 +104,7 @@ export default function SignUpDetails() {
 
         <div className={styles.signupContainer}>
           <h1>Get started with BMAP</h1>
-          <p>Where business meets opportunity</p>
+          {/* <p>Where business meets opportunity</p> */}
 
           <form onSubmit={handleSubmit(signup)} className={styles.formContainer}>
             <div className={styles.namesContainer}>
@@ -153,6 +172,31 @@ export default function SignUpDetails() {
                 placeholder="Enter your e-mail"
               />
               <span className={styles.error}>{errors?.email?.message}</span>
+            </div>
+
+            <div className={styles.inputfield}>
+              <label htmlFor="fieldOfInterest">
+                Field of Interest<span className={styles.requiredAsterisk}>*</span>
+              </label>
+
+              <Controller
+                name="fieldOfInterest"
+                control={control}
+                rules={{ required: "Field of interest is required" }}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    options={FIELD_OF_EXPERTISE_OPTIONS}
+                    placeholder="Select your field of interest"
+                    onChange={(value) => {
+                      field.onChange(value)
+                      clearErrors("fieldOfInterest")
+                    }}
+                    value={field.value || null}
+                  />
+                )}
+              />
+              <span className={styles.error}>{errors?.fieldOfInterest?.message}</span>
             </div>
 
             <div className={styles.inputfield}>

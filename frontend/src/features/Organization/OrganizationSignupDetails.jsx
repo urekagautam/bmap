@@ -159,7 +159,7 @@ export default function SignUpDetails() {
 
           <p>
             Already have an account?{" "}
-            <a className={styles.signInLink} href="/login">
+            <a className={styles.signInLink} href="/org/login">
               Log In
             </a>
           </p>
