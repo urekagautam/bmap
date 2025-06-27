@@ -68,47 +68,79 @@ const registerUser = asyncHandler(async (req, res, next) => {
 })
 
 const loginUser = asyncHandler(async (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password } = req.body
+
+  console.log("Login attempt for:", email)
+  console.log("Password provided:", password ? "Yes" : "No")
 
   if (!email || !password) {
-    return next(new ApiError(400, "All fields are required"));
+    return next(new ApiError(400, "Email and password are required"))
   }
 
-  const user = await User.findOne({ email }); 
-  if (!user) {
-    return next(new ApiError(400, "User doesn't exist"));
-  }
-  
-  const isPasswordCorrect = await user.isPasswordCorrect(password);
-  if (!isPasswordCorrect) {
-    return next(new ApiError(401, "Incorrect Password"));
-  }
+  try {
+    const user = await User.findOne({ email }).select("+password")
+    console.log("User found:", user ? "Yes" : "No")
 
-  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
-  
-  const loggedInUser = await User.findById(user._id)
-    .select("-password -refreshToken")
+    if (!user) {
+      return next(new ApiError(400, "Invalid email or password"))
+    }
 
-  const options = {
-    httpOnly: true,
-    secure: true
-  }
+    console.log("Stored password hash exists:", user.password ? "Yes" : "No")
+    console.log("Password hash length:", user.password ? user.password.length : 0)
 
-  return res
-    .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
-    .json(
-      new ApiResponse(200,
-        {
-          user: loggedInUser, 
-          accessToken, 
-          refreshToken
-        },
-        "User Logged In Successfully!"
+    if (!user.password) {
+      console.error("No password hash found for user:", email)
+      return next(new ApiError(500, "User password not found. Please contact support."))
+    }
+
+    if (!password || typeof password !== "string") {
+      console.error("Invalid password format provided")
+      return next(new ApiError(400, "Invalid password format"))
+    }
+
+    if (!user.password || typeof user.password !== "string") {
+      console.error("Invalid password hash in database")
+      return next(new ApiError(500, "Invalid user data. Please contact support."))
+    }
+
+    const isPasswordCorrect = await user.isPasswordCorrect(password)
+    console.log("Password correct:", isPasswordCorrect)
+
+    if (!isPasswordCorrect) {
+      return next(new ApiError(401, "Invalid email or password"))
+    }
+
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id)
+
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
+
+    const options = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    }
+
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          {
+            user: loggedInUser,
+            accessToken,
+            refreshToken,
+          },
+          "User logged in successfully!",
+        ),
       )
-    )
-});
+  } catch (error) {
+    console.error("Login error:", error)
+    return next(new ApiError(500, error.message || "Internal server error during login"))
+  }
+})
 
 //GET USER PROFILE FOR JOB APPLICATION
 

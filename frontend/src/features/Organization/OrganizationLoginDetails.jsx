@@ -5,11 +5,11 @@ import toast from "react-hot-toast"
 import Button from "../../component/Button"
 import InputField from "../../component/InputField"
 import PasswordField from "../../component/PasswordField"
-import { apiLogin } from "../../services/apiAuth"
-import useUserAuth from "../../hooks/useUserAuth"
-import styles from "./LoginDetails.module.css"
+import { apiOrganizationLogin } from "../../services/apiOrganizationAuth"
+import useOrgAuth from "../../hooks/useOrgAuth"
+import styles from "../Auth/LoginDetails.module.css" 
 
-export default function LoginDetails() {
+export default function OrganizationLoginDetails() {
   const {
     register,
     handleSubmit,
@@ -25,11 +25,11 @@ export default function LoginDetails() {
   const [error, setError] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const navigate = useNavigate()
-  const { setAuth, isAuthenticated } = useUserAuth()
+  const { setAuth, isAuthenticated } = useOrgAuth()
 
   // Redirecting if already authenticated
-/*   if (isAuthenticated) {
-    navigate("/")
+  /*   if (isAuthenticated) {
+    navigate("/org")
     return null
   } */
 
@@ -38,36 +38,36 @@ export default function LoginDetails() {
     setIsSubmitting(true)
 
     try {
-      console.log("Attempting login with:", { email: data.email })
+      console.log("Attempting organization login with:", { email: data.email })
 
-      const response = await apiLogin({
+      const response = await apiOrganizationLogin({
         email: data.email,
         password: data.password,
       })
 
-      console.log("Login successful!", response)
+      console.log("Organization login successful!", response)
       toast.success("Login successful!")
 
       // Using the hook to set authentication data
-      if (response.data.accessToken && response.data.user) {
+      if (response.data.accessToken && response.data.organization) {
         setAuth({
-          user: response.data.user,
+          organization: response.data.organization,
           accessToken: response.data.accessToken,
           refreshToken: response.data.refreshToken,
         })
       }
 
-      // Resetting form
+      // Reset form
       reset({
         email: "",
         password: "",
       })
 
       setTimeout(() => {
-        navigate("/") 
+        navigate("/org") 
       }, 1000)
     } catch (error) {
-      console.error("Login failed", error)
+      console.error("Organization login failed", error)
       const errorMessage = error.response?.data?.message || "Invalid email or password"
       setError(errorMessage)
       toast.error(errorMessage)
@@ -86,7 +86,7 @@ export default function LoginDetails() {
         </div>
 
         <div className={styles.loginContainer}>
-          <h1>Log In</h1>
+          <h1>Organization Log In</h1>
           <p>Where business meets opportunity</p>
 
           <form onSubmit={handleSubmit(login)} className={styles.formContainer}>
@@ -104,7 +104,7 @@ export default function LoginDetails() {
                 })}
                 layout="fw"
                 id="email"
-                placeholder="Enter your e-mail"
+                placeholder="Enter your organization e-mail"
                 autoComplete="email"
               />
               <span className={styles.error}>{errors?.email?.message}</span>
@@ -130,12 +130,6 @@ export default function LoginDetails() {
               <span className={styles.error}>{errors?.password?.message}</span>
             </div>
 
-            {/* <div className={styles.forgotPassword}>
-              <Link to="/forgot-password" className={styles.forgotLink}>
-                Forgot Password?
-              </Link>
-            </div> */}
-
             {error && <p className={styles.error}>{error}</p>}
 
             <Button type="submit" layout="fw" disabled={isSubmitting}>
@@ -145,7 +139,7 @@ export default function LoginDetails() {
 
           <p>
             Don't have an account?{" "}
-            <Link className={styles.signUpLink} to="/signup">
+            <Link className={styles.signUpLink} to="/org/signup">
               Sign Up
             </Link>
           </p>

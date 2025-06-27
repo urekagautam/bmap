@@ -15,6 +15,30 @@ export const apiOrganizationSignup = async (orgData) => {
   }
 }
 
+//Organization Login
+export const apiOrganizationLogin = async ({ email, password }) => {
+  try {
+    const response = await axios.post(
+      "http://localhost:5000/org/api/v1/auth/login",
+      {
+        email,
+        password,
+      },
+      {
+        withCredentials: true, // Important for cookies
+      },
+    )
+    return response.data
+  } catch (error) {
+    if (error.response) {
+      console.error("Error response from backend:", error.response)
+      throw error
+    } else {
+      throw new Error("Network error or server is down")
+    }
+  }
+}
+
 // Set organization profile
 export const apiOrganizationSetup = async (setupData) => {
   const token = localStorage.getItem("orgAccessToken")

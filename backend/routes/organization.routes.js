@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { 
-  /* loginOrganization, */ 
+  loginOrganization, 
   registerOrganization, 
   setupOrganization,
  editOrganizationInfo, 
@@ -13,6 +13,7 @@ const router = Router();
 
 // Authenticate User
 router.route("/auth/signup").post(registerOrganization);
+router.route("/auth/login").post(loginOrganization);
 router.route("/setup").put(verifyOrgJWT, setupOrganization);
 router.put('/editOrganizationInfo/:id', editOrganizationInfo);
 router.route("/getOrganizationDetails/:id").get(getOrganizationDetails);

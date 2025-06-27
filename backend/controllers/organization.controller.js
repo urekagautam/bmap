@@ -3,6 +3,27 @@ import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { Organization } from "../models/organization.model.js"
 
+//generating access and refresh tokens
+const generateAccessAndRefreshTokens = async (orgId) => {
+  try {
+    const organization = await Organization.findById(orgId)
+    if (!organization) {
+      throw new ApiError(404, "Organization not found")
+    }
+
+    const accessToken = organization.generateAccessToken()
+    const refreshToken = organization.generateRefreshToken()
+
+    organization.refreshToken = refreshToken
+    await organization.save({ validateBeforeSave: false })
+
+    return { accessToken, refreshToken }
+  } catch (error) {
+    console.error("Token generation error:", error)
+    throw new ApiError(500, "Something went wrong while generating tokens")
+  }
+}
+
 // REGISTER ORGANIZATION
 export const registerOrganization = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body
@@ -31,6 +52,85 @@ export const registerOrganization = asyncHandler(async (req, res, next) => {
       "Organization registered successfully",
     ),
   )
+})
+
+// Login Organization
+export const loginOrganization = asyncHandler(async (req, res, next) => {
+  const { email, password } = req.body
+
+  console.log("Organization login attempt for:", email)
+  console.log("Password provided:", password ? "Yes" : "No")
+
+  if (!email || !password) {
+    return next(new ApiError(400, "Email and password are required"))
+  }
+
+  try {
+    const organization = await Organization.findOne({ email }).select("+password")
+    console.log("Organization found:", organization ? "Yes" : "No")
+
+    if (!organization) {
+      return next(new ApiError(400, "Invalid email or password"))
+    }
+
+    console.log("Stored password hash exists:", organization.password ? "Yes" : "No")
+    console.log("Password hash length:", organization.password ? organization.password.length : 0)
+
+    if (!organization.password) {
+      console.error("No password hash found for organization:", email)
+      return next(new ApiError(500, "Organization password not found. Please contact support."))
+    }
+
+    if (!password || typeof password !== "string") {
+      console.error("Invalid password format provided")
+      return next(new ApiError(400, "Invalid password format"))
+    }
+
+    if (!organization.password || typeof organization.password !== "string") {
+      console.error("Invalid password hash in database")
+      return next(new ApiError(500, "Invalid organization data. Please contact support."))
+    }
+
+    const isPasswordCorrect = await organization.isPasswordCorrect(password)
+    console.log("Password correct:", isPasswordCorrect)
+
+    if (!isPasswordCorrect) {
+      return next(new ApiError(401, "Invalid email or password"))
+    }
+
+    // Generate tokens
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(organization._id)
+
+    // Getting organization without sensitive data
+    const loggedInOrganization = await Organization.findById(organization._id).select("-password -refreshToken")
+
+    // Cookie options
+    const options = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    }
+
+    return res
+      .status(200)
+      .cookie("orgAccessToken", accessToken, options)
+      .cookie("orgRefreshToken", refreshToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          {
+            organization: loggedInOrganization,
+            accessToken,
+            refreshToken,
+          },
+          "Organization logged in successfully!",
+        ),
+      )
+  } catch (error) {
+    console.error("Organization login error:", error)
+    return next(new ApiError(500, error.message || "Internal server error during login"))
+  }
 })
 
 // SETUP ORGANIZATION
