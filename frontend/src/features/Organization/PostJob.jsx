@@ -17,7 +17,8 @@ import {
   JOB_BY_LOCATION,
   JOB_BY_LEVEL,
   SALARY_TYPE,
-} from "../../constants/constants.js"
+}
+from "../../constants/constants.js"
 import { apiPostVacancy } from "../../services/apiVacancy.js"
 import useOrgAuth from "../../hooks/useOrgAuth.js"
 

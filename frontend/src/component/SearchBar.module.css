@@ -43,3 +43,10 @@ border-right: 1px solid var(--neutral20) ;
 .md{
     width:20rem;
 }
+
+.icon{
+    font-size: 2rem;
+    color:var(--neutral60);
+    margin:1rem;
+    cursor: pointer;
+}

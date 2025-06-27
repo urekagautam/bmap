@@ -9,6 +9,7 @@ import ProfilePage from "./pages/organization/ProfilePage";
 import NotFound from "./pages/NotFound";
 import CompanyProfileView from "./pages/organization/CompanyProfileView";
 import JobPosting from "./pages/organization/JobPosting";
+import Search from "./features/User/Search/Search";
 import OrganizationSignup from "./pages/organization/OrganizationSignup";
 import JobDescription from "./pages/organization/JobDescription";
 import JobApplication from "./pages/user/JobApplication";
@@ -30,6 +31,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/search" element={<Search/>}/>
           <Route path="/userprofile" element={<UserProfile />} />
           <Route path="/test" element={<Test />} />
           <Route path="/jobapplication/:id" element={<JobApplication />} />

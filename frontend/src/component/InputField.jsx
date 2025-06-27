@@ -3,16 +3,17 @@ import styles from "./InputField.module.css";
 
 export default function InputField({
   className = "",
-  layout = "md", 
+  layout = "md",
   border,
   error,
+  placeholder = "", 
   ...props
 }) {
   return (
-    <div className={cns(styles.inputContainer, styles[layout])}> 
+    <div className={cns(styles.inputContainer, styles[layout])}>
       <input
         type="text"
-        placeholder=""
+        placeholder={placeholder} 
         className={cns(
           styles.input,
           className,
