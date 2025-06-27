@@ -118,3 +118,40 @@
     font-weight: 400;
     color: var(--neutral65);
   }
+
+  .followButton {
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.followButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.followButton.following {
+  background-color: var(--neutral);
+  border-color: var(--neutral);
+  color: white;
+}
+
+.followButton.following:hover {
+  /* background-color: var(--primary-dark); */
+  border-color: var(--primary-dark);
+}
+
+.followButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.followButton svg {
+  transition: transform 0.2s ease;
+}
+
+.followButton.following svg {
+  transform: rotate(45deg);
+}

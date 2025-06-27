@@ -28,8 +28,10 @@ export const apiGetUserProfile = async (userId) => {
   }
 };
 
+// Login user and store token
 export const apiLogin = async ({ email, password }) => {
   try {
+  
     const response = await axios.post(
       "http://localhost:5000/users/api/v1/auth/login",
       {
@@ -37,13 +39,27 @@ export const apiLogin = async ({ email, password }) => {
         password,
       },
       {
-        withCredentials: true, 
+        withCredentials: true,
       },
     )
+
+    console.log(" Login response structure:", response.data)
+
+    if (response.data?.data?.accessToken) {
+      localStorage.setItem("userAccessToken", response.data.data.accessToken)
+      localStorage.setItem("userRefreshToken", response.data.data.refreshToken)
+      console.log("Tokens stored in localStorage")
+      console.log("🔑 Access token preview:", response.data.data.accessToken.substring(0, 50) + "...")
+    } else {
+      console.error(" No access token in response")
+      console.error(" Response data:", response.data)
+    }
+
     return response.data
   } catch (error) {
+    console.error("Login error:", error)
     if (error.response) {
-      console.error("Error response from backend:", error.response)
+      console.error("Error response from backend:", error.response.data)
       throw error
     } else {
       throw new Error("Network error or server is down")
@@ -51,13 +67,22 @@ export const apiLogin = async ({ email, password }) => {
   }
 }
 
+// Getting current token
+export const getCurrentToken = () => {
+  return localStorage.getItem("userAccessToken")
+}
+
+// Checking if authenticated
+export const isAuthenticated = () => {
+  return !!localStorage.getItem("userAccessToken")
+}
 export const apiGetUserDataForApplication = async (userId) => {
   try {
     const response = await axios.get(
       `http://localhost:5000/users/api/v1/profile-data/${userId}`,
         {
         headers: {
-          // Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
       }
     );
@@ -67,8 +92,6 @@ export const apiGetUserDataForApplication = async (userId) => {
     throw error;
   }
 };
-
-
 
 export const apiUpdateUserProfile = async (userId, userData) => {
   try {
@@ -126,20 +149,6 @@ export const apiSubmitJobApplication = async (applicationData) => {
     throw error;
   }
 };
-
-/* export const apiLogin = async (loginData) => {
-  try {
-    const response = await axios.post("http://localhost:5000/users/api/v1/auth/login", loginData)
-    return response.data
-  } catch (error) {
-    if (error.response) {
-      console.error("Error response from backend:", error.response)
-      throw error
-    } else {
-      throw new Error("Network error or server is down")
-    }
-  }
-} */
 
 
 
