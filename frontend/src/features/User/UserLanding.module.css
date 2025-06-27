@@ -1,3 +1,5 @@
+
+
 .sectionWrapper{
     max-width: var(--max-width);
     margin:0 auto;
@@ -5,6 +7,42 @@
    margin-top:2.4rem;
   }
 
+  .companyInfo{
+    width: 4rem;
+    height: 4rem;
+    background-color: var(--secondary10);
+  }
+
+ .mainWrapper {
+    width: 100%;
+    max-width: var(--maxwidth);
+    margin: 0 auto;
+    cursor: pointer;
+    margin-top:1.8rem;
+  }
+  
+  .mainWrapper > header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 2rem;
+    background-color: var(--bg);
+    width: 100%;
+    height: 4rem;
+    padding:0.8rem;
+  }
+  
+  .mainWrapper > header > svg {
+    font-size: 2.4rem;
+    color: #C52233;
+  }
+  
+  .mainWrapper > header >h1 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--neutral80);
+    margin: 0;
+  }
   html{
     background-color: var(--neutral5);
   }

@@ -1,4 +1,3 @@
-// import { useState, useEffect } from 'react'
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Login from "./pages/Login";
@@ -36,24 +35,21 @@ function App() {
           <Route path="/jobapplication/:id" element={<JobApplication />} />
           <Route path="/updatevacancy/:id" element={<UpdateJob />} />
         
-
           {/* ORGANIZATION */}
           <Route path="/org" element={<DashboardPage />} />
           <Route path="/org/signup" element={<OrganizationSignup />} />
           <Route path="/org/login" element={<OrganizationLogin />} />
           <Route path="/orgprofile" element={<ProfilePage />} />
-          <Route path="/cmpprofile/:id" element={<CompanyProfileView />} />
+          <Route path="/view-orgprofile/:id" element={<CompanyProfileView />} />
           {/* <Route path="/cmpprofile" element={<CompanyProfileView />} /> */}
           <Route path="/postjob" element={<JobPosting />} />
           <Route path="/jobdescription/:id" element={<JobDescription />} />
-          
-
+        
           {/* NOT FOUND */}
           <Route path="*" element={<NotFound />} />
 
         </Routes>
       </BrowserRouter>
-      {/* <p>Backend says: {message}</p> */}
     </>
   );
 }

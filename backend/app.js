@@ -13,6 +13,7 @@ app.use(cors({
 
 //routes import
 import userRouter from "./routes/user.routes.js"
+import followRouter from "./routes/follow.routes.js"
 import organizationRouter from "./routes/organization.routes.js"
 import vacancyRouter from "./routes/vacancy.routes.js"
 import applicationRouter from "./routes/application.routes.js"
@@ -34,6 +35,9 @@ app.use((err, req, res, next) => {
 
 //ORGANIZATION
 app.use("/org/api/v1/", organizationRouter) 
+
+//FOLLOW ORG BY USER
+app.use("/users/api/v1/", followRouter) 
 
 //VACANCY
 app.use("/api/v1/", vacancyRouter) 
