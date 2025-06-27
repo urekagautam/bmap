@@ -4,7 +4,7 @@
     width: 100vw;
     height: 100vh;
     background-color: var(--bg);
-    overflow: hidden;
+    /* overflow: hidden; */
     position: relative;
     background: linear-gradient(to right, var(--primary80) 38.4%, var(--bg) 0);
     display: flex;
@@ -14,8 +14,9 @@
   
   .mainWrapper .logo {
     color: var(--bg);
-    font-size: 4.8rem;
+    font-size: 2.4rem;
     font-weight: 600;
+    padding-bottom: 0.8rem;
     letter-spacing: 1.44px;
     position: absolute;
     left: 52px;
@@ -40,15 +41,15 @@
   }
   
   .signupContainer > h1 {
-    padding-bottom: 1rem;
-    font-size: 3.2rem;
+    padding-bottom: 1.2rem;
+    font-size: 3rem;
     font-weight: 600;
     letter-spacing: 0.64px;
   }
   
   .signupContainer > p:first-of-type {
-    padding-bottom: var(--m);
-    font-size: 1.6rem;
+    padding-bottom: 1.2rem;
+    /* font-size: 1.6rem; */
     letter-spacing: 0.24px;
     color: var(--neutral70);
   }
@@ -75,11 +76,11 @@
     flex-direction: column;
     gap: 1.68rem;
     max-width:35.2rem;
-    padding-bottom: var(--m);
+    padding-bottom: 2.4rem;
   }
   
   .formContainer > button {
-    margin-top: 2.6rem;
+    margin-top: 1rem;
   }
   
   .inputfield {

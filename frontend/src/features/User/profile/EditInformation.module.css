@@ -1,0 +1,216 @@
+.editContainer {
+  width: 125.7rem;
+  padding: 1.6rem;
+  border: 1px solid var(--neutral10);
+  border-radius: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+}
+
+.requiredAsterisk {
+  color: var(--error);
+}
+
+.basicDetails,
+.userDetails,
+.jobDetails,
+.salaryDetails,
+.socialDetails,
+.docDetails {
+  border: 1px solid var(--neutral10);
+  border-radius: 0.8rem;
+  padding-bottom: 2rem;
+}
+
+.basicDetails > h2,
+.userDetails > h2,
+.jobDetails > h2,
+.salaryDetails > h2,
+.socialDetails > h2,
+.docDetails > h2 {
+  font-weight: 600;
+  font-size: 1.8rem;
+  background-color: var(--secondary20);
+  max-height: 3.5rem;
+  display: flex;
+  align-items: center;
+  padding: 1.4rem;
+  border-radius: 0.8rem 0.8rem 0 0;
+}
+
+.pageTitle > h1 {
+  font-weight: 600;
+  padding-bottom: 0.4rem;
+}
+
+.pageTitle > p {
+  color: var(--neutral70);
+  font-size: 1.8rem;
+}
+
+.bd_container,
+.ui_container,
+.jd_container,
+.sd_container,
+.so_container,
+.doc_container {
+  padding: 1.4rem;
+  padding-bottom: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+}
+.removeBtns {
+  margin-top: 1.2rem;
+}
+
+.logoContainer {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.addPhoto .rightSide {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.addPhoto > span {
+  color: var(--neutral65);
+  font-size: 1.2rem;
+  display: block;
+  padding-top: 1.6rem;
+  padding-left: 0.4rem;
+}
+
+.smallInputs {
+  width: 35.2rem;
+}
+.inputRow,
+.smallInputs,
+.inputRow2 {
+  display: flex;
+  gap: 3.2rem;
+}
+
+.inputRow > .inputField,
+.inputRow2 > .inputField {
+  width: 100%;
+  max-width: 35.2rem;
+}
+
+.companyInfo {
+  border: 1px solid var(--neutral10);
+  border-radius: 0.8rem;
+  padding-bottom: 2rem;
+}
+
+.ui_container > .top {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 3.2rem;
+}
+
+.selectedTags > h2 {
+  color: var(--neutral70);
+  font-size: 1.4rem;
+  font-weight: 500;
+  padding-bottom: 0.8rem;
+  overflow-y: auto;
+}
+
+.tagsContainer {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  height: 9.52rem;
+  overflow-y: auto;
+  padding-right: 0.4rem;
+  align-content: flex-start;
+}
+
+.tag {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+  background-color: var(--accent10);
+  color: var(--accent);
+  border-radius: 3.2rem;
+  user-select: none;
+  height: fit-content;
+  padding: 0.4rem;
+  font-size: 1.2rem;
+}
+
+.tag > button {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.tag > button > svg {
+  font-size: 1.4rem;
+}
+
+.tagsContainer::-webkit-scrollbar {
+  width: 1rem;
+}
+
+.tagsContainer::-webkit-scrollbar-track {
+  background: var(--secondary10);
+  border-radius: 0.8rem;
+}
+
+.tagsContainer::-webkit-scrollbar-thumb {
+  background: var(--neutral20);
+  border-radius: 0.8rem;
+  border: 3px solid #f0f0f0;
+}
+
+.tagsContainer::-webkit-scrollbar-thumb:hover {
+  background: var(--neutral30);
+}
+
+.jd_container > .top {
+  display: flex;
+  gap: 3.2rem;
+}
+
+.jobbyDetails > .inputField:first-child {
+  padding-bottom: 1.4rem;
+}
+
+.subTitle {
+  color: var(--neutral40);
+  font-size: 1.4rem;
+}
+
+.socialRow {
+  display: flex;
+  gap: 3.2rem;
+}
+
+.social {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.social > svg {
+  color: var(--neutral70);
+  font-size: 2.4rem;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 2rem;
+}

@@ -1,56 +1,155 @@
-import { asyncHandler } from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/ApiError.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
-import { Organization } from "../models/organization.model.js";
+import { asyncHandler } from "../utils/asyncHandler.js"
+import { ApiError } from "../utils/ApiError.js"
+import { ApiResponse } from "../utils/ApiResponse.js"
+import { Organization } from "../models/organization.model.js"
+
+//generating access and refresh tokens
+const generateAccessAndRefreshTokens = async (orgId) => {
+  try {
+    const organization = await Organization.findById(orgId)
+    if (!organization) {
+      throw new ApiError(404, "Organization not found")
+    }
+
+    const accessToken = organization.generateAccessToken()
+    const refreshToken = organization.generateRefreshToken()
+
+    organization.refreshToken = refreshToken
+    await organization.save({ validateBeforeSave: false })
+
+    return { accessToken, refreshToken }
+  } catch (error) {
+    console.error("Token generation error:", error)
+    throw new ApiError(500, "Something went wrong while generating tokens")
+  }
+}
 
 // REGISTER ORGANIZATION
-
 export const registerOrganization = asyncHandler(async (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password } = req.body
 
   const newOrg = await Organization.create({
     email,
     password,
-  });
-  
-  const accessToken = newOrg.generateAccessToken();
-  const refreshToken = newOrg.generateRefreshToken();
+  })
 
-  newOrg.refreshToken = refreshToken;
-  await newOrg.save({ validateBeforeSave: false });
+  const accessToken = newOrg.generateAccessToken()
+  const refreshToken = newOrg.generateRefreshToken()
+
+  newOrg.refreshToken = refreshToken
+  await newOrg.save({ validateBeforeSave: false })
 
   res.status(201).json(
     new ApiResponse(
       201,
-      { 
-        accessToken, 
+      {
+        accessToken,
         refreshToken,
         organization: {
-          _id: newOrg._id
-        }
+          _id: newOrg._id,
+        },
       },
-      "Organization registered successfully"
-    )
-  );
-});
+      "Organization registered successfully",
+    ),
+  )
+})
+
+// Login Organization
+export const loginOrganization = asyncHandler(async (req, res, next) => {
+  const { email, password } = req.body
+
+  console.log("Organization login attempt for:", email)
+  console.log("Password provided:", password ? "Yes" : "No")
+
+  if (!email || !password) {
+    return next(new ApiError(400, "Email and password are required"))
+  }
+
+  try {
+    const organization = await Organization.findOne({ email }).select("+password")
+    console.log("Organization found:", organization ? "Yes" : "No")
+
+    if (!organization) {
+      return next(new ApiError(400, "Invalid email or password"))
+    }
+
+    console.log("Stored password hash exists:", organization.password ? "Yes" : "No")
+    console.log("Password hash length:", organization.password ? organization.password.length : 0)
+
+    if (!organization.password) {
+      console.error("No password hash found for organization:", email)
+      return next(new ApiError(500, "Organization password not found. Please contact support."))
+    }
+
+    if (!password || typeof password !== "string") {
+      console.error("Invalid password format provided")
+      return next(new ApiError(400, "Invalid password format"))
+    }
+
+    if (!organization.password || typeof organization.password !== "string") {
+      console.error("Invalid password hash in database")
+      return next(new ApiError(500, "Invalid organization data. Please contact support."))
+    }
+
+    const isPasswordCorrect = await organization.isPasswordCorrect(password)
+    console.log("Password correct:", isPasswordCorrect)
+
+    if (!isPasswordCorrect) {
+      return next(new ApiError(401, "Invalid email or password"))
+    }
+
+    // Generate tokens
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(organization._id)
+
+    // Getting organization without sensitive data
+    const loggedInOrganization = await Organization.findById(organization._id).select("-password -refreshToken")
+
+    // Cookie options
+    const options = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    }
+
+    return res
+      .status(200)
+      .cookie("orgAccessToken", accessToken, options)
+      .cookie("orgRefreshToken", refreshToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          {
+            organization: loggedInOrganization,
+            accessToken,
+            refreshToken,
+          },
+          "Organization logged in successfully!",
+        ),
+      )
+  } catch (error) {
+    console.error("Organization login error:", error)
+    return next(new ApiError(500, error.message || "Internal server error during login"))
+  }
+})
 
 // SETUP ORGANIZATION
 export const setupOrganization = asyncHandler(async (req, res, next) => {
-  const org = req.org; 
+  const org = req.org
 
-  const { ownersName, orgName, phoneNo, district, address } = req.body;
+  const { ownersName, orgName, phoneNo, district, address } = req.body
 
   if (!ownersName || !orgName || !phoneNo || !district || !address) {
-    throw new ApiError(400, "All fields are required");
+    throw new ApiError(400, "All fields are required")
   }
 
-  org.ownersName = ownersName;
-  org.orgName = orgName;
-  org.phoneNo = phoneNo;
-  org.district = district;
-  org.address = address;
+  org.ownersName = ownersName
+  org.orgName = orgName
+  org.phoneNo = phoneNo
+  org.district = district
+  org.address = address
 
-  await org.save();
+  await org.save()
 
   res.status(200).json(
     new ApiResponse(
@@ -63,50 +162,139 @@ export const setupOrganization = asyncHandler(async (req, res, next) => {
           phoneNo: org.phoneNo,
           district: org.district,
           address: org.address,
-          email: org.email
-        }
+          email: org.email,
+        },
       },
-      "Organization setup completed successfully"
-    )
-  );
-});
+      "Organization setup completed successfully",
+    ),
+  )
+})
 
-//GET ORGANIZATION PROFILE
-export const getOrganizationProfile = async (req, res) => {
+export const editOrganizationInfo = asyncHandler(async (req, res, next) => {
   try {
-   const orgId = req.query.id;
-   console.log(orgId);
+    const orgId = req.params.id;
+    const org = await Organization.findById(orgId);
 
-   const org = await Organization.findById(orgId).select(
-      'ownersName orgName phoneNo address district email companySize'
+    if (!org) {
+      throw new ApiError(404, "Organization not found");
+    }
+
+    const {
+      orgName,
+      district,
+      address,
+      phoneNo,
+      email,
+      foundedYear,
+      ownersName,
+      specialities,
+      companySize,
+      minEmployees,
+      maxEmployees,
+      description,
+      benefits,
+      socialProfile,
+    } = req.body;
+
+    if (orgName !== undefined) org.orgName = orgName;
+    if (district !== undefined) org.district = district;
+    if (address !== undefined) org.address = address;
+    if (phoneNo !== undefined) org.phoneNo = phoneNo;
+    if (email !== undefined) org.email = email;
+    if (foundedYear !== undefined) org.foundedYear = foundedYear;
+    if (ownersName !== undefined) org.ownersName = ownersName;
+    if (specialities !== undefined) org.specialities = specialities; 
+    if (companySize !== undefined) org.companySize = companySize;
+    if (minEmployees !== undefined) org.minEmployees = minEmployees;
+    if (maxEmployees !== undefined) org.maxEmployees = maxEmployees;
+    if (description !== undefined) org.description = description;
+    if (benefits !== undefined) org.benefits = benefits; 
+
+    if (socialProfile) {
+      if (!org.socialProfile) {
+        org.socialProfile = {};
+      }
+      if (socialProfile.insta !== undefined) org.socialProfile.insta = socialProfile.insta;
+      if (socialProfile.fb !== undefined) org.socialProfile.fb = socialProfile.fb;
+      if (socialProfile.x !== undefined) org.socialProfile.x = socialProfile.x;
+    }
+
+    await org.save();
+
+    const updatedOrg = await Organization.findById(orgId).select(
+      "orgName district address phoneNo email foundedYear ownersName specialities companySize minEmployees maxEmployees description benefits socialProfile.insta socialProfile.x socialProfile.fb",
     );
 
+    res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          organization: updatedOrg,
+        },
+        "Organization information updated successfully",
+      ),
+    );
+  } catch (error) {
+    console.error("Error updating organization info:", error);
+    throw new ApiError(500, "Failed to update organization information");
+  }
+});
+
+
+// GET ORGANIZATION INFO FOR EDIT PROFILE
+export const getOrganizationProfileForEdit = async (req, res) => {
+  try {
+    const orgId = req.params.id
+
+    const org = await Organization.findById(orgId).select(
+      "orgName district address phoneNo email benefits foundedYear ownersName specialities companySize minEmployees maxEmployees description benefits socialProfile.insta socialProfile.x socialProfile.fb",
+    )
+
     if (!org) {
-      return res.status(404).json({ message: "Organization not found" });
+      return res.status(404).json({ message: "Organization not found" })
     }
 
-    res.status(200).json(org);
+    res.status(200).json(org)
   } catch (error) {
-    console.error("Error fetching organization profile:", error);
-    res.status(500).json({ message: "Server error" });
+    console.error("Error fetching organization profile:", error)
+    res.status(500).json({ message: "Server error" })
   }
-};
+}
 
-//GET ORGANIZATION DETAILS
+// GET ORGANIZATION PROFILE
+export const getOrganizationProfile = async (req, res) => {
+  try {
+    const orgId = req.query.id
+    console.log(orgId)
+
+    const org = await Organization.findById(orgId).select(
+      "ownersName orgName phoneNo address district email companySize",
+    )
+
+    if (!org) {
+      return res.status(404).json({ message: "Organization not found" })
+    }
+
+    res.status(200).json(org)
+  } catch (error) {
+    console.error("Error fetching organization profile:", error)
+    res.status(500).json({ message: "Server error" })
+  }
+}
+
+// GET ORGANIZATION DETAILS
 export const getOrganizationDetails = async (req, res) => {
   try {
-      const orgId = req.params.id;
-    const org = await Organization.findById(orgId) 
-    
+    const orgId = req.params.id
+    const org = await Organization.findById(orgId)
 
     if (!org) {
-      return res.status(404).json({ message: "Organization not found" });
+      return res.status(404).json({ message: "Organization not found" })
     }
 
-    res.status(200).json(org);
+    res.status(200).json(org)
   } catch (error) {
-    console.error("Error fetching organization profile:", error);
-    res.status(500).json({ message: "Server error" });
+    console.error("Error fetching organization profile:", error)
+    res.status(500).json({ message: "Server error" })
   }
-};
-
+}

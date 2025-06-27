@@ -28,6 +28,12 @@ export const EDUCATION_LEVEL_OPTIONS = [
   { value: "others", label: "Others" },
 ];
 
+export const GENDER_OPTIONS = [
+  { value: "M", label: "Male" },
+  { value: "F", label: "Female" },
+  { value: "X", label: "Others" },
+];
+
 // Skills
 export const SKILL_OPTIONS = [
   { value: "working_under_pressure", label: "Working Under Pressure" },
@@ -134,10 +140,19 @@ export const DISTRICT_OPTIONS = [
   { value: "tanahun", label: "Tanahun" },
   { value: "taplejung", label: "Taplejung" },
   { value: "terhathum", label: "Terhathum" },
-  { value: "udayapur", label: "Udayapur" }
+  { value: "udayapur", label: "Udayapur" },
 ];
 
-// Updated constants to match your Mongoose model exactly
+export const JOB_BY_TITLE = [
+  { value: "seniordeveloper", label: "Senior Developer" },
+  { value: "accountant", label: "Accountant" },
+  { value: "financialanalyst", label: "Financial Analyst" },
+  { value: "registerednurse", label: "Registered Nurse" },
+  { value: "marketingmanager", label: "Marketing Manager" },
+  { value: "hrspecialist", label: "HR Specialist" },
+  { value: "graphicdesigner", label: "Graphic Designer" },
+  { value: "datascientist", label: "Data Scientist" },
+];
 
 export const JOB_BY_TIME = [
   { value: "fulltime", label: "Full Time" },
@@ -145,20 +160,21 @@ export const JOB_BY_TIME = [
   { value: "contract", label: "Contract" },
   { value: "internship", label: "Internship" },
   { value: "freelance", label: "Freelance" },
-]
+];
 
 export const JOB_BY_LOCATION = [
-  { value: "on_site", label: "On Site" },
+  { value: "on_site", label: "On-Site / In-Office" },
   { value: "remote", label: "Remote" },
   { value: "hybrid", label: "Hybrid" },
   { value: "none", label: "Not Specified" },
-]
+];
 
 export const JOB_BY_LEVEL = [
   { value: "intern", label: "Intern" },
+  { value: "junior", label: "Junior" },
   { value: "mid-level", label: "Mid Level" },
   { value: "senior", label: "Senior" },
-]
+];
 
 export const SALARY_TYPE = [
   { value: "hourly", label: "Hourly" },
@@ -166,7 +182,7 @@ export const SALARY_TYPE = [
   { value: "weekly", label: "Weekly" },
   { value: "monthly", label: "Monthly" },
   { value: "yearly", label: "Yearly" },
-]
+];
 
 export const EXPERIENCE_CRITERIA_OPTIONS = [
   { value: "more_than", label: "More than" },
@@ -174,7 +190,7 @@ export const EXPERIENCE_CRITERIA_OPTIONS = [
   { value: "more_than_or_equal_to", label: "More than or equal to" },
   { value: "less_than_or_equal_to", label: "Less than or equal to" },
   { value: "equal_to", label: "Equal to" },
-]
+];
 
 export const EXPERIENCE_OPTIONS = [
   { value: "1year", label: "1 Year" },
@@ -182,7 +198,4 @@ export const EXPERIENCE_OPTIONS = [
   { value: "3years", label: "3 Years" },
   { value: "4years", label: "4 Years" },
   { value: "5+years", label: "5+ Years" },
-]
-
-
-
+];
