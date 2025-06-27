@@ -20,18 +20,28 @@ const generateAccessAndRefreshTokens = async (userId) => {
 }
 
 const registerUser = asyncHandler(async (req, res, next) => {
+  const { name, email, password, fieldOfInterest, confirmpassword } = req.body
 
-  const { name, email, password, confirmpassword } = req.body;
+  if (!name || !email || !password || !confirmpassword || !fieldOfInterest) {
+    return next(new ApiError(400, "All fields are required"))
+  }
 
-  if (!name || !email || !password || !confirmpassword) {
-    return next(new ApiError(400, "All fields are required"));
+  if (password !== confirmpassword) {
+    return next(new ApiError(400, "Passwords do not match"))
   }
 
   if (await User.findOne({ email })) {
-    return next(new ApiError(400, "Email is already used"));
+    return next(new ApiError(400, "Email is already used"))
   }
 
-  const newUser = await User.create({ name, email, password });
+  const newUser = await User.create({
+    name,
+    email,
+    password,
+    job_preference: {
+      title: fieldOfInterest, 
+    },
+  })
 
   const accessToken = newUser.generateAccessToken()
   const refreshToken = newUser.generateRefreshToken()
@@ -48,13 +58,14 @@ const registerUser = asyncHandler(async (req, res, next) => {
         user: {
           _id: newUser._id,
           name: newUser.name,
-          email: newUser.email
+          email: newUser.email,
+          fieldOfInterest: newUser.job_preference.title, 
         },
       },
       "User registered successfully",
     ),
   )
-});
+})
 
 const loginUser = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
