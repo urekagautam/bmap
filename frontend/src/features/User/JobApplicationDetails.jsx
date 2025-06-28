@@ -25,8 +25,6 @@ import useUserAuth from "../../hooks/useUserAuth"
 export default function JobApplicationDetails() {
   const { id: jobId } = useParams()
   const { userId } = useUserAuth()
-/*   console.log("JOB KO ID : " + jobId)
-  console.log("USER ID : " + userId) */
 
   const navigate = useNavigate()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -172,6 +170,7 @@ export default function JobApplicationDetails() {
       const applicationData = {
         userId: userId,
         jobId: jobId,
+        orgId: data.orgId,
         jobDescription: data.jobDescription,
         salaryExpectations: data.salaryExpectations ? Number.parseInt(data.salaryExpectations) : 0,
       }
@@ -221,7 +220,7 @@ export default function JobApplicationDetails() {
 
   return (
     <section className={styles.postjobSection}>
-      <Link to="/cmpprofile" className={styles.backBtn}>
+      <Link to={`/view-jobdescription/${jobId}`} className={styles.backBtn}>
         <IconBack /> Back
       </Link>
 
