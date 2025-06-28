@@ -203,6 +203,7 @@ export const getJobDetailsForApplication = asyncHandler(async (req, res, next) =
       salaryPeriod: vacancy.salaryPeriod,
       deadline: vacancy.deadline,
       organizationName: vacancy.orgId?.name,
+      orgId: vacancy.orgId?._id
     }
 
     res.status(200).json(new ApiResponse(200, jobDetails, "Job details fetched successfully"))
