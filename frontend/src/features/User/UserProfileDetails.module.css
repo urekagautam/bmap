@@ -127,14 +127,16 @@ color:var(--neutral80);
 }
 
 .aboutUserWrapper > p {
+  max-width: inherit;
+  width: 100%;
   text-align: justify;
   font-size: 1.4rem;
   padding-bottom: 1.6rem;
   color: var(--neutral95);
+  word-wrap: break-word
 }
 
 .tab {
-  /* width: */
   padding: 0.6rem 0.8rem;
   font-size: 1.2rem;
   background-color: transparent;

@@ -1,19 +1,18 @@
-import { asyncHandler } from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/ApiError.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
-import { User } from "../models/user.model.js";
+import { asyncHandler } from "../utils/asyncHandler.js"
+import { ApiError } from "../utils/ApiError.js"
+import { ApiResponse } from "../utils/ApiResponse.js"
+import { User } from "../models/user.model.js"
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
     const user = await User.findById(userId)
-    const accessToken = user.generateAccessToken() 
-    const refreshToken = user.generateRefreshToken() 
+    const accessToken = user.generateAccessToken()
+    const refreshToken = user.generateRefreshToken()
 
     user.refreshToken = refreshToken
     await user.save({ validateBeforeSave: false })
 
     return { accessToken, refreshToken }
-
   } catch (error) {
     throw new ApiError(500, "Something went wrong while generating refresh and access tokens")
   }
@@ -38,9 +37,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
     name,
     email,
     password,
-    job_preference: {
-      title: fieldOfInterest, 
-    },
+    field_of_interest: fieldOfInterest, 
   })
 
   const accessToken = newUser.generateAccessToken()
@@ -59,7 +56,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
           _id: newUser._id,
           name: newUser.name,
           email: newUser.email,
-          fieldOfInterest: newUser.job_preference.title, 
+          fieldOfInterest: newUser.field_of_interest,
         },
       },
       "User registered successfully",
@@ -79,6 +76,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
 
   try {
     const user = await User.findOne({ email }).select("+password")
+
     console.log("User found:", user ? "Yes" : "No")
 
     if (!user) {
@@ -104,6 +102,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
     }
 
     const isPasswordCorrect = await user.isPasswordCorrect(password)
+
     console.log("Password correct:", isPasswordCorrect)
 
     if (!isPasswordCorrect) {
@@ -143,20 +142,18 @@ const loginUser = asyncHandler(async (req, res, next) => {
 })
 
 //GET USER PROFILE FOR JOB APPLICATION
-
 const getUserProfileData = asyncHandler(async (req, res, next) => {
   try {
-    // const userId = req.user._id; 
-    const userId = req.params.id;
-    
+    const userId = req.params.id
+
     const userData = await User.findById(userId).select(
-      'name email phone socialProfile.linkedin socialProfile.github socialProfile.portfolio'
-    );
-    
+      "name email phone socialProfile.linkedin socialProfile.github socialProfile.portfolio",
+    )
+
     if (!userData) {
-      return next(new ApiError(404, "User not found"));
+      return next(new ApiError(404, "User not found"))
     }
-    
+
     const responseData = {
       name: userData.name,
       email: userData.email,
@@ -165,121 +162,155 @@ const getUserProfileData = asyncHandler(async (req, res, next) => {
         linkedin: userData.socialProfile?.linkedin || "",
         github: userData.socialProfile?.github || "",
         portfolio: userData.socialProfile?.portfolio || "",
-      }
-    };
-    
-    return res.status(200).json(
-      new ApiResponse(
-        200,
-        responseData,
-        "User profile data retrieved successfully"
-      )
-    );
-    
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-    return next(new ApiError(500, "Something went wrong while fetching user data"));
-  }
-});
-
-//GET USER DETAILS FOR PROFILE
-const getUserProfile = asyncHandler(async (req, res, next) => {
-  try {
-    const userId = req.params.id;
-
-    const user = await User.findById(userId).select(
-      "name email address phone experience_level job_preference socialProfile"
-    );
-
-    if (!user) {
-      return next(new ApiError(404, "User not found"));
+      },
     }
 
-    return res.status(200).json(
-      new ApiResponse(200, user, "User profile fetched successfully")
-    );
+    return res.status(200).json(new ApiResponse(200, responseData, "User profile data retrieved successfully"))
   } catch (error) {
-    console.error("Error fetching user profile:", error);
-    return next(new ApiError(500, "Something went wrong while fetching user profile"));
+    console.error("Error fetching user data:", error)
+    return next(new ApiError(500, "Something went wrong while fetching user data"))
   }
-});
+})
 
-//UPDATE USER PFORILE FROM PROFILE
+//GET USER DETAILS FOR PROFILE 
+const getUserProfile = asyncHandler(async (req, res, next) => {
+  try {
+    const userId = req.params.id
+
+    const user = await User.findById(userId).select(
+      "name email address district gender phone about field_of_interest experience_level job_preference socialProfile image createdAt updatedAt",
+    )
+
+    if (!user) {
+      return next(new ApiError(404, "User not found"))
+    }
+
+    const responseData = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      address: user.address,
+      district: user.district,
+      gender: user.gender,
+      phone: user.phone,
+      about: user.about,
+      field_of_interest: user.field_of_interest,
+      experience_level: user.experience_level,
+      job_preference: user.job_preference,
+      socialProfile: user.socialProfile,
+      image: user.image,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    }
+
+    return res.status(200).json(new ApiResponse(200, responseData, "User profile fetched successfully"))
+  } catch (error) {
+    console.error("Error fetching user profile:", error)
+    return next(new ApiError(500, "Something went wrong while fetching user profile"))
+  }
+})
+
+//UPDATE USER PROFILE FROM PROFILE 
 export const updateUserProfile = asyncHandler(async (req, res, next) => {
   try {
-    const userId = req.params.id;
-
+    const userId = req.params.id
     const {
       name,
       email,
       address,
+      district,
+      gender,
       phone,
+      about,
+      field_of_interest,
       image,
       experience_level,
       location,
       job_preference,
-      socialProfile
-    } = req.body;
+      socialProfile,
+    } = req.body
 
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      {
-        name: name,
-        email: email,
-        address: address,
-        phone: phone,
-        image: image,
-        experience_level: experience_level,
-        location: {
-          lat: location?.lat || null,
-          lng: location?.lng || null,
-        },
-        job_preference: {
-          title: job_preference?.title || "",
-          skills: job_preference?.skills || [],
-        },
-        socialProfile: {
-          insta: socialProfile?.insta || "",
-          x: socialProfile?.x || "",
-          fb: socialProfile?.fb || "",
-          github: socialProfile?.github || "",
-          linkedin: socialProfile?.linkedin || "",
-          portfolio: socialProfile?.portfolio || "",
-        }
-      },
-      {
-        new: true,
-        runValidators: true,
+    const updateData = {}
+
+    if (name !== undefined) updateData.name = name
+    if (email !== undefined) updateData.email = email
+    if (address !== undefined) updateData.address = address
+    if (district !== undefined) updateData.district = district
+    if (gender !== undefined) updateData.gender = gender
+    if (phone !== undefined) updateData.phone = phone
+    if (about !== undefined) updateData.about = about
+    if (field_of_interest !== undefined) updateData.field_of_interest = field_of_interest
+    if (image !== undefined) updateData.image = image
+    if (experience_level !== undefined) updateData.experience_level = experience_level
+
+    if (location !== undefined) {
+      updateData.location = {
+        lat: location?.lat || null,
+        lng: location?.lng || null,
       }
-    );
-
-    if (!updatedUser) {
-      return next(new ApiError(404, "User not found"));
     }
 
-    return res.status(200).json(
-      new ApiResponse(
-        200,
-        updatedUser,
-        "User profile updated successfully"
-      )
-    );
+    if (job_preference !== undefined) {
+      updateData.job_preference = {
+        title: job_preference?.title || "",
+        job_by_time: job_preference?.job_by_time || "fulltime",
+        job_by_location: job_preference?.job_by_location || "on_site",
+        job_level: job_preference?.job_level || "mid-level",
+        skills: job_preference?.skills || [],
+      }
+    }
 
+    if (socialProfile !== undefined) {
+      updateData.socialProfile = {
+        insta: socialProfile?.insta || "",
+        x: socialProfile?.x || "",
+        fb: socialProfile?.fb || "",
+        github: socialProfile?.github || "",
+        linkedin: socialProfile?.linkedin || "",
+        portfolio: socialProfile?.portfolio || "",
+      }
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+      new: true,
+      runValidators: true,
+    })
+
+    if (!updatedUser) {
+      return next(new ApiError(404, "User not found"))
+    }
+
+    const responseData = {
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      address: updatedUser.address,
+      district: updatedUser.district,
+      gender: updatedUser.gender,
+      phone: updatedUser.phone,
+      about: updatedUser.about,
+      field_of_interest: updatedUser.field_of_interest,
+      experience_level: updatedUser.experience_level,
+      job_preference: updatedUser.job_preference,
+      socialProfile: updatedUser.socialProfile,
+      image: updatedUser.image,
+      updatedAt: updatedUser.updatedAt,
+    }
+
+    return res.status(200).json(new ApiResponse(200, responseData, "User profile updated successfully"))
   } catch (error) {
-    console.error("Error updating user profile:", error);
-    return next(new ApiError(500, "Something went wrong while updating user profile"));
+    console.error("Error updating user profile:", error)
+    return next(new ApiError(500, "Something went wrong while updating user profile"))
   }
-});
+})
 
-//UPDATE USER PROFILE FROM APPLICATION
-
+//UPDATE USER PROFILE FROM APPLICATION 
 const updateUserProfileForApplication = asyncHandler(async (req, res, next) => {
   try {
-    const userId = req.params.id;
-    const { firstName, lastName, email, phoneNo, linkedin, github, portfolio } = req.body;
+    const userId = req.params.id
+    const { firstName, lastName, email, phoneNo, linkedin, github, portfolio } = req.body
 
-    // Combining first and last name
-    const fullName = `${firstName} ${lastName}`.trim();
+    const fullName = `${firstName} ${lastName}`.trim()
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
@@ -291,16 +322,16 @@ const updateUserProfileForApplication = asyncHandler(async (req, res, next) => {
           linkedin: linkedin || "",
           github: github || "",
           portfolio: portfolio || "",
-        }
+        },
       },
-      { 
-        new: true, 
-        runValidators: true 
-      }
-    ).select('name email phone socialProfile.linkedin socialProfile.github socialProfile.portfolio');
+      {
+        new: true,
+        runValidators: true,
+      },
+    ).select("name email phone socialProfile.linkedin socialProfile.github socialProfile.portfolio")
 
     if (!updatedUser) {
-      return next(new ApiError(404, "User not found"));
+      return next(new ApiError(404, "User not found"))
     }
 
     const responseData = {
@@ -311,46 +342,39 @@ const updateUserProfileForApplication = asyncHandler(async (req, res, next) => {
         linkedin: updatedUser.socialProfile?.linkedin || "",
         github: updatedUser.socialProfile?.github || "",
         portfolio: updatedUser.socialProfile?.portfolio || "",
-      }
-    };
+      },
+    }
 
-    return res.status(200).json(
-      new ApiResponse(
-        200,
-        responseData,
-        "User profile updated successfully"
-      )
-    );
-
+    return res.status(200).json(new ApiResponse(200, responseData, "User profile updated successfully"))
   } catch (error) {
-    console.error("Error updating user profile:", error);
-    return next(new ApiError(500, "Something went wrong while updating user profile"));
+    console.error("Error updating user profile:", error)
+    return next(new ApiError(500, "Something went wrong while updating user profile"))
   }
-});
+})
 
-//Logout user
 const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     req.user._id,
     {
       $set: {
-        refreshToken: undefined
-      }
+        refreshToken: undefined,
+      },
     },
     {
-      new: true
+      new: true,
     },
   )
 
   const options = {
     httpOnly: true,
-    secure: true
+    secure: true,
   }
 
-  return res.status(200)
+  return res
+    .status(200)
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
     .json(new ApiResponse(200, {}, "User logged out successfully"))
 })
 
-export { registerUser, loginUser,  getUserProfileData, updateUserProfileForApplication, getUserProfile, logoutUser };
+export { registerUser, loginUser, getUserProfileData, updateUserProfileForApplication, getUserProfile, logoutUser }

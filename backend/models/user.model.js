@@ -25,6 +25,13 @@ const userSchema = new mongoose.Schema(
     address: {
       type: String,
     },
+    district: {
+      type: String,
+    },
+    gender: {
+      type: String,
+      enum: ["M", "F", "Other"],
+    },
     about: {
       type: String,
     },
@@ -42,6 +49,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["Entry-Level", "Junior", "Senior"],
     },
+    field_of_interest: {
+      type: String,
+      trim: true,
+    },
     location: {
       lat: {
         type: Number,
@@ -56,6 +67,21 @@ const userSchema = new mongoose.Schema(
       title: {
         type: String,
         trim: true,
+      },
+      job_by_time: {
+        type: String,
+        enum: ["fulltime", "parttime", "contract"],
+        default: "fulltime",
+      },
+      job_by_location: {
+        type: String,
+        enum: ["on_site", "remote", "hybrid"],
+        default: "on_site",
+      },
+      job_level: {
+        type: String,
+        enum: ["intern", "entry-level", "mid-level", "senior-level", "executive"],
+        default: "mid-level",
       },
       skills: [
         {
