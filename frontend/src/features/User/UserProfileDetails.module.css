@@ -1,8 +1,14 @@
+
 .userProfileSection {
-  max-width: fit-content;
-  margin: 0 auto;
+ background-color: var(--bg);
+ min-height: 100svh;
   margin-top: 6.2rem;
-  height: calc(90vh - var(--nav-height));
+}
+
+.mainWrapper{
+ max-width: fit-content;
+  margin: 0 auto;
+ padding-top: 2rem;
 }
 
 .topContainer {

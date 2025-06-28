@@ -16,7 +16,7 @@ export default function VacancyCard({
 }) {
 
   return (
-    <Link to={`/jobdescription/${id}`}>
+    <Link to={`/view-jobdescription/${id}`}>
     <div className={styles.mainWrapper}>
       <div className={styles.shrinkWrapper}>
         <div className={styles.topMainWrapper}>

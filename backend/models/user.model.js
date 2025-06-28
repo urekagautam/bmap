@@ -70,17 +70,17 @@ const userSchema = new mongoose.Schema(
       },
       job_by_time: {
         type: String,
-        enum: ["fulltime", "parttime", "contract"],
+        enum: ["fulltime", "parttime", "contract", "freelance", "internship"],
         default: "fulltime",
       },
       job_by_location: {
         type: String,
-        enum: ["on_site", "remote", "hybrid"],
+        enum: ["on_site", "remote", "hybrid","none"],
         default: "on_site",
       },
       job_level: {
         type: String,
-        enum: ["intern", "entry-level", "mid-level", "senior-level", "executive"],
+        enum: ["intern", "mid-level","junior","senior"],
         default: "mid-level",
       },
       skills: [

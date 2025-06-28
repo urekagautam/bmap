@@ -339,6 +339,7 @@
 
 .jobInfo{
   padding-top:1.6rem;
+  margin-bottom: 2.4rem;
 }
 
 .tabs {
@@ -402,4 +403,7 @@
   color:var(--neutral90);
   font-size: 1.4rem;
   letter-spacing: 0.7;
+}
+  a > .applyNow{
+  margin-top: 2.4rem;
 }
