@@ -10,6 +10,7 @@ import MultiSelect from "../../../component/MultiSelect.jsx";
 import {
   SKILL_OPTIONS,
   DISTRICT_OPTIONS,
+  INDUSTRY_OPTIONS, 
 } from "../../../constants/constants.js";
 import { IconCross } from "../../../component/icons/IconCross.jsx";
 import { IconInstagram } from "../../../component/icons/IconInstagram.jsx";
@@ -23,9 +24,10 @@ import {
 import useOrgAuth from "../../../hooks/useOrgAuth.js";
 import toast from "react-hot-toast";
 
-export default function EditTab() {
+export default function EditTab({ orgData, onCancel, onUpdateSuccess }) {
   const { orgId } = useOrgAuth();
   const selectRef = useRef(null);
+  const industrySelectRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [profileData, setProfileData] = useState(null);
@@ -46,7 +48,7 @@ export default function EditTab() {
       phoneNo: "",
       email: "",
       foundedYear: "",
-      ownersName: "",
+      industry: "", 
       specialities: [],
       companySize: "fixed",
       minEmployees: "",
@@ -65,6 +67,18 @@ export default function EditTab() {
 
   const watchedCompanySize = watch("companySize");
   const watchedSpecialities = watch("specialities");
+  const watchedIndustry = watch("industry"); 
+
+  const getIndustryLabel = (industryValue) => {
+    if (!industryValue) return "Not specified";
+    
+    if (typeof industryValue === "object" && industryValue.label) {
+      return industryValue.label;
+    }
+    
+    const industryOption = INDUSTRY_OPTIONS.find(opt => opt.value === industryValue);
+    return industryOption ? industryOption.label : industryValue;
+  };
 
   const convertBenefitsToArray = (benefitsString) => {
     if (!benefitsString || typeof benefitsString !== "string") return [];
@@ -98,7 +112,6 @@ export default function EditTab() {
       try {
         setIsLoading(true);
         console.log("Fetching profile data for orgId:", orgId);
-
         const profile = await apiGetOrganizationProfileForEdit(orgId);
         console.log("Fetched profile data:", profile);
 
@@ -110,12 +123,31 @@ export default function EditTab() {
         if (profile.email) setValue("email", profile.email);
         if (profile.foundedYear)
           setValue("foundedYear", profile.foundedYear.toString());
-        if (profile.ownersName) setValue("ownersName", profile.ownersName);
         if (profile.description) setValue("description", profile.description);
         if (profile.minEmployees)
           setValue("minEmployees", profile.minEmployees.toString());
         if (profile.maxEmployees)
           setValue("maxEmployees", profile.maxEmployees.toString());
+
+        if (profile.industry) {
+          console.log("Setting industry from profile:", profile.industry);
+          const industryOption = INDUSTRY_OPTIONS.find(
+            (opt) => opt.value === profile.industry
+          );
+          
+          if (industryOption) {
+            setValue("industry", industryOption); 
+            console.log("Industry option found and set:", industryOption);
+          } else {
+           
+            const customIndustryOption = {
+              value: profile.industry,
+              label: profile.industry.charAt(0).toUpperCase() + profile.industry.slice(1),
+            };
+            setValue("industry", customIndustryOption);
+            console.log("Custom industry option created:", customIndustryOption);
+          }
+        }
 
         if (profile.benefits) {
           if (Array.isArray(profile.benefits)) {
@@ -145,7 +177,6 @@ export default function EditTab() {
 
         if (profile.specialities) {
           let specialitiesArray = [];
-
           if (Array.isArray(profile.specialities)) {
             specialitiesArray = profile.specialities.map((skill) => {
               if (typeof skill === "string") {
@@ -157,12 +188,11 @@ export default function EditTab() {
               return skill;
             });
           }
-
           setValue("specialities", specialitiesArray);
           console.log(" Specialities loaded:", specialitiesArray);
         }
 
-        // Handle company size
+        // Handling company size
         if (profile.maxEmployees && profile.minEmployees) {
           setValue("companySize", "range");
         } else {
@@ -201,6 +231,13 @@ export default function EditTab() {
     }
   };
 
+  // Handle cancel button click
+  const handleCancel = () => {
+    if (onCancel) {
+      onCancel(); // This will switch back to about tab
+    }
+  };
+
   const sizeOptions = [
     { value: "fixed", label: "Fixed" },
     { value: "range", label: "Range" },
@@ -212,6 +249,8 @@ export default function EditTab() {
 
       const districtString =
         typeof data.district === "object" ? data.district.value : data.district;
+      const industryString =
+        typeof data.industry === "object" ? data.industry.value : data.industry;
 
       const specialitiesStringArray = convertSpecialitiesToStringArray(
         data.specialities
@@ -228,7 +267,7 @@ export default function EditTab() {
         foundedYear: data.foundedYear
           ? Number.parseInt(data.foundedYear, 10)
           : null,
-        ownersName: data.ownersName || "",
+        industry: industryString || "", // This will now be the value, not the object
         specialities: specialitiesStringArray,
         companySize: data.companySize || "fixed",
         minEmployees: data.minEmployees
@@ -249,15 +288,26 @@ export default function EditTab() {
       };
 
       console.log("Final Payload (correctly formatted):", payload);
+      console.log("Industry being sent:", payload.industry);
       console.log("Benefits (array of strings):", benefitsStringArray);
       console.log("Specialities (array of strings):", specialitiesStringArray);
 
       await apiEditOrganizationInfo(orgId, payload);
 
-      toast.success("Organization profile updated successfully!");
+      // Call success handler
+      if (onUpdateSuccess) {
+        onUpdateSuccess(); // This will show toast, switch to about tab, and reload page
+      } else {
+        // Fallback if no handler provided
+        toast.success("Profile updated successfully!");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
 
       const updatedProfile = await apiGetOrganizationProfileForEdit(orgId);
       setProfileData(updatedProfile);
+
     } catch (error) {
       console.error("Update error:", error);
       toast.error(error.message || "Failed to update profile");
@@ -293,13 +343,13 @@ export default function EditTab() {
       <div className={styles.pageTitle}>
         <h1>Edit Information</h1>
         <p>Update your company's profile information</p>
-        {profileData && (
+      {/*   {profileData && (
           <small className={styles.dataStatus}>
             {profileData.orgName
               ? `Editing: ${profileData.orgName}`
               : "Complete your profile setup"}
           </small>
-        )}
+        )} */}
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -444,24 +494,40 @@ export default function EditTab() {
           <h2>Company Information</h2>
           <div className={styles.ci_container}>
             <div className={styles.top}>
+              {/* Industry Field - FIXED VERSION */}
               <div className={styles.inputfield}>
                 <label>
-                  Owners Name
+                  Industry
                   <span className={styles.requiredAsterisk}>*</span>
                 </label>
-                <InputField
-                  {...register("ownersName", {
-                    required: "Owner's name is required",
-                    minLength: {
-                      value: 3,
-                      message: "Min 3 characters required",
-                    },
-                  })}
-                  placeholder="Enter Organization's Owners Name"
+                <Controller
+                  name="industry"
+                  control={control}
+                  rules={{ required: "Industry is required" }}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      ref={industrySelectRef}
+                      options={INDUSTRY_OPTIONS}
+                      placeholder="Select industry"
+                      onChange={(value) => {
+                        console.log("Industry selected:", value);
+                        field.onChange(value);
+                        clearErrors("industry");
+                      }}
+                      value={field.value || null}
+                    />
+                  )}
                 />
                 <span className={styles.error}>
-                  {errors.ownersName?.message}
+                  {errors.industry?.message}
                 </span>
+                {/* Debug info - remove this in production */}
+                {watchedIndustry && (
+                  <small style={{ color: "#666", fontSize: "12px" }}>
+                    Selected: {getIndustryLabel(watchedIndustry)}
+                  </small>
+                )}
               </div>
 
               <div className={styles.selectfield}>
@@ -514,6 +580,7 @@ export default function EditTab() {
               </div>
             </div>
 
+            {/* Rest of your form remains the same */}
             <div className={styles.middle}>
               <div className={styles.companySize}>
                 <label className={styles.inputLabel}>Company Size</label>
@@ -532,7 +599,6 @@ export default function EditTab() {
                     />
                   )}
                 />
-
                 <div className={styles.minmax}>
                   <div className={styles.inputWrapper}>
                     <label>
@@ -643,7 +709,6 @@ Professional development opportunities"
                 layout="fw"
               />
             </div>
-
             <div className={styles.social}>
               <IconFacebook />
               <InputField
@@ -652,7 +717,6 @@ Professional development opportunities"
                 layout="fw"
               />
             </div>
-
             <div className={styles.social}>
               <IconX />
               <InputField
@@ -729,7 +793,13 @@ Professional development opportunities"
         </div>
 
         <div className={styles.buttons}>
-          <Button layout="sm" fill="outline" color="neutralLight" type="button">
+          <Button 
+            layout="sm" 
+            fill="outline" 
+            color="neutralLight" 
+            type="button"
+            onClick={handleCancel}
+          >
             Cancel
           </Button>
           <Button layout="sm" type="submit" disabled={isSubmitting}>

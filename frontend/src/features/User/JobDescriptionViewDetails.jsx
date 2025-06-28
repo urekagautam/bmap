@@ -1,16 +1,16 @@
 import { Link, useParams } from "react-router-dom"
 import { useState, useEffect } from "react"
-import styles from "./JobDescriptionDetails.module.css"
+import styles from "../Organization/JobDescriptionDetails.module.css"
 import Button from "../../component/Button.jsx"
-import { IconOrganizationBuilding } from "../../component/icons/IconOrganizationBuilding"
-import { IconPeople } from "../../component/icons/IconPeople"
-import { IconLocationPinned } from "../../component/icons/IconLocationPinned"
-import { IconPhone } from "../../component/icons/IconPhone"
-import { IconEnvelope } from "../../component/icons/IconEnvelope"
-import { IconInstagram } from "../../component/icons/IconInstagram"
-import { IconFacebook } from "../../component/icons/IconFacebook"
-import { IconX } from "../../component/icons/IconX"
-import { IconClock } from "../../component/icons/IconClock"
+import { IconOrganizationBuilding } from "../../component/icons/IconOrganizationBuilding.jsx"
+import { IconPeople } from "../../component/icons/IconPeople.jsx"
+import { IconLocationPinned } from "../../component/icons/IconLocationPinned.jsx"
+import { IconPhone } from "../../component/icons/IconPhone.jsx"
+import { IconEnvelope } from "../../component/icons/IconEnvelope.jsx"
+import { IconInstagram } from "../../component/icons/IconInstagram.jsx"
+import { IconFacebook } from "../../component/icons/IconFacebook.jsx"
+import { IconX } from "../../component/icons/IconX.jsx"
+import { IconClock } from "../../component/icons/IconClock.jsx"
 import Tag from "../../component/Tag.jsx"
 import { IconChartBar } from "../../component/icons/IconChartBar.jsx"
 import { IconChartLinedUp } from "../../component/icons/IconChartLinedUp.jsx"
@@ -23,8 +23,9 @@ import { apiGetOrganizationDetails } from "../../services/apiOrganizationAuth.js
 import toast from "react-hot-toast"
 import { cns } from "../../utils/classNames.js"
 import { getFormattedCompanyInfo } from "../../utils/orgUtils.js"
+import { IconGreaterThan } from "../../component/icons/IconGreaterThan.jsx"
 
-export default function JobDescriptionDetails() {
+export default function JobDescriptionViewDetails() {
   const navigate = useNavigate()
   const { id: jobId } = useParams()
 
@@ -320,14 +321,12 @@ export default function JobDescriptionDetails() {
           </div>
 
           <div className={styles.buttons}>
-            <Link to={`/updatevacancy/${jobId}`}>
-              <Button className={styles.updateBtn} layout="xs">
-                Update
+            <Link to={`/view-orgprofile/${vacancyData.orgId}`}>
+              <Button fill="outline" className={styles.updateBtn} layout="xs">
+                View Company <IconGreaterThan />
               </Button>
             </Link>
-            <Button className={styles.updateBtn} layout="sm" fill="text" color="neutralLight">
-              Delete
-            </Button>
+           
           </div>
         </div>
 
@@ -450,9 +449,16 @@ export default function JobDescriptionDetails() {
                       })()}
                     </div>
                   </div>
+
+              
+
                 </div>
               )}
+            
             </div>
+               <Link to={`/jobapplication/${jobId}`}>
+                <Button fill="outline" layout="sm" className={styles.applyNow}>Apply Now</Button>
+              </Link>
           </div>
 
           <div className={styles.infoAndHiring}>

@@ -4,10 +4,33 @@ import axios from "axios"
 export const apiOrganizationSignup = async (orgData) => {
   try {
     const response = await axios.post("http://localhost:5000/org/api/v1/auth/signup", orgData)
+    
+    console.log("Organization signup response structure:", response.data)
+    
+    if (response.data?.data?.accessToken) {
+      localStorage.setItem("orgAccessToken", response.data.data.accessToken)
+      localStorage.setItem("orgRefreshToken", response.data.data.refreshToken)
+      
+      if (response.data?.data?.organization) {
+        localStorage.setItem("orgId", response.data.data.organization._id)
+        localStorage.setItem("orgName", response.data.data.organization.orgName || "")
+        localStorage.setItem("orgEmail", response.data.data.organization.email)
+        localStorage.setItem("ownersName", response.data.data.organization.ownersName || "")
+      }
+      
+      console.log("Organization tokens stored in localStorage")
+      console.log("🔑 Org Access token preview:", response.data.data.accessToken.substring(0, 50) + "...")
+      console.log("🏢 Organization ID stored:", response.data.data.organization._id)
+    } else {
+      console.error("No access token in organization signup response")
+      console.error("Response data:", response.data)
+    }
+    
     return response.data
   } catch (error) {
+    console.error("Organization signup error:", error)
     if (error.response) {
-      console.error("Error response from backend:", error.response)
+      console.error("Error response from backend:", error.response.data)
       throw error
     } else {
       throw new Error("Network error or server is down")
@@ -25,7 +48,7 @@ export const apiOrganizationLogin = async ({ email, password }) => {
         password,
       },
       {
-        withCredentials: true, // Important for cookies
+        withCredentials: true,
       },
     )
     return response.data

@@ -40,19 +40,13 @@ export default function SignUpDetails() {
 
       console.log("Signup successful!", response.data);
       toast.success("Signup successful!");
-      if (response.data.accessToken && response.data.organization) {
-        localStorage.setItem("orgAccessToken", response.data.accessToken);
-        localStorage.setItem("orgRefreshToken", response.data.refreshToken);
-        localStorage.setItem("organizationId", response.data.organization._id);
 
-     /*    console.log("Stored Auth Data:", {
-          orgId: localStorage.getItem("organizationId"),
-          token: localStorage.getItem("orgAccessToken")?.slice(0, 10) + "...",
-        });  PASSSSSSS */
-      }
+      window.dispatchEvent(new CustomEvent('orgAuthUpdated'));
+
+      console.log("Auth event dispatched, navigating to profile...");
 
       setTimeout(() => {
-        navigate("/orgprofile");
+        navigate('/orgprofile');
       }, 1000);
 
       reset({
@@ -60,6 +54,7 @@ export default function SignUpDetails() {
         password: "",
         confirmPassword: "",
       });
+
     } catch (error) {
       console.error("Signup failed", error);
       const errorMessage =
@@ -74,7 +69,6 @@ export default function SignUpDetails() {
   return (
     <section className={styles.mainWrapper}>
       <h1 className={styles.logo}>BMAP</h1>
-
       <div className={styles.signupWrapper}>
         <div className={styles.signupimgWrapper}>
           <img
@@ -83,11 +77,9 @@ export default function SignUpDetails() {
             alt="SignupImage"
           />
         </div>
-
         <div className={styles.signupContainer}>
           <h1>Get started with BMAP</h1>
           <p>Where business meets opportunity</p>
-
           <form
             onSubmit={handleSubmit(signup)}
             className={styles.formContainer}

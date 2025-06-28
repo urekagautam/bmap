@@ -8,27 +8,46 @@ import AboutTab from "./profile/AboutTab.jsx"
 import EditTab from "./profile/EditTab.jsx"
 import JobsTab from "./profile/JobsTab.jsx"
 import { useOrgData } from "../../hooks/useOrgData.js"
+import OrganizationNavbar from "../../component/OrganizationNavBar.jsx"
+import { 
+  FIELD_OF_EXPERTISE_OPTIONS,
+  INDUSTRY_OPTIONS 
+} from "../../constants/constants.js"
+import toast from "react-hot-toast"
 
 export default function CompanyProfile() {
   const { id: orgId } = useParams()
   const [searchParams, setSearchParams] = useSearchParams()
-
+  
   // Getting initial tab from URL params, default to "about"
   const initialTab = searchParams.get("tab") || "about"
   const [activeTab, setActiveTab] = useState(initialTab)
-
-  const { orgData, isLoading, error } = useOrgData(orgId)
+  const { orgData, isLoading, error, refetch } = useOrgData(orgId) 
 
   // Updating URL when tab changes
   const handleTabChange = (newTab) => {
     setActiveTab(newTab)
     if (newTab === "about") {
-      // Removing tab param for default tab
+      
       searchParams.delete("tab")
     } else {
       searchParams.set("tab", newTab)
     }
     setSearchParams(searchParams)
+  }
+
+  // Handling cancel from EditTab
+  const handleCancelEdit = () => {
+    handleTabChange("about") 
+  }
+
+  const handleUpdateSuccess = () => {
+    toast.success("Profile updated successfully!")
+    handleTabChange("about") 
+   
+    setTimeout(() => {
+      window.location.reload()
+    }, 1000)
   }
 
   // Updating activeTab when URL changes (browser back/forward)
@@ -37,7 +56,23 @@ export default function CompanyProfile() {
     setActiveTab(tabFromUrl)
   }, [searchParams])
 
-  // console.log("OrgData in CompanyProfile:", orgData)
+  // Function to get specialty labels from values
+  const getSpecialtyLabels = (specialties) => {
+    if (!specialties || !Array.isArray(specialties)) return []
+    
+    return specialties.map(specialty => {
+      const found = FIELD_OF_EXPERTISE_OPTIONS.find(option => option.value === specialty)
+      return found ? found.label : specialty 
+    })
+  }
+
+  // Function to get industry label from value
+  const getIndustryLabel = (industryValue) => {
+    if (!industryValue) return "Not Specified"
+    
+    const found = INDUSTRY_OPTIONS.find(option => option.value === industryValue)
+    return found ? found.label : industryValue 
+  }
 
   const formatCompanySize = (orgData) => {
     if (!orgData) return "Not specified"
@@ -47,7 +82,6 @@ export default function CompanyProfile() {
     } else if (orgData.companySize === "range" && orgData.minEmployees && orgData.maxEmployees) {
       return `${orgData.minEmployees}-${orgData.maxEmployees} employees`
     }
-
     return "Not specified"
   }
 
@@ -56,7 +90,6 @@ export default function CompanyProfile() {
 
     try {
       const socialData = orgData.socialProfile
-
       return {
         instagram: socialData.insta || "",
         facebook: socialData.fb || "",
@@ -69,7 +102,7 @@ export default function CompanyProfile() {
   }
 
   const companyName = orgData?.orgName || "Company XYZ"
-  const industry = orgData?.industry || "Not Specified"
+  const industry = getIndustryLabel(orgData?.industry) 
   const employeeCount = formatCompanySize(orgData)
   const foundedYear = orgData?.foundedYear || "N/A"
   const address = orgData?.address || "Address not specified"
@@ -77,10 +110,9 @@ export default function CompanyProfile() {
   const email = orgData?.email || "Email not specified"
   const socials = parseSocialProfiles(orgData)
   const description = orgData?.description || ""
-  const specialities = orgData?.specialities || []
+  const specialities = getSpecialtyLabels(orgData?.specialities || []) 
   const ownerName = orgData?.ownersName || ""
   const district = orgData?.district || ""
-
   const coverImageUrl = "/CoverImage.jpg"
   const profileImageUrl = "/CompanyProfileImage.png"
   const followerCount = "1K Followers"
@@ -111,6 +143,7 @@ export default function CompanyProfile() {
 
   return (
     <>
+      <OrganizationNavbar />
       <section className={styles.heroSection}>
         <section className={styles.imagesSection}>
           <div className={styles.coverImage}>
@@ -170,7 +203,7 @@ export default function CompanyProfile() {
                 Jobs
               </button>
             </div>
-            <h3 className={styles.followers}>{followerCount}</h3>
+            {/* <h3 className={styles.followers}>{followerCount}</h3> */}
           </div>
 
           {activeTab === "about" && (
@@ -179,7 +212,7 @@ export default function CompanyProfile() {
               orgData={orgData}
               companyInfo={{
                 companyName,
-                industry,
+                industry, 
                 employeeCount,
                 foundedYear,
                 address,
@@ -187,7 +220,7 @@ export default function CompanyProfile() {
                 email,
                 socials,
                 description,
-                specialities,
+                specialities, 
                 ownerName,
                 district,
               }}
@@ -196,7 +229,13 @@ export default function CompanyProfile() {
 
           {activeTab === "jobs" && <JobsTab />}
 
-          {activeTab === "edittab" && <EditTab />}
+          {activeTab === "edittab" && (
+            <EditTab 
+              orgData={orgData}
+              onCancel={handleCancelEdit}
+              onUpdateSuccess={handleUpdateSuccess}
+            />
+          )}
         </section>
       </section>
     </>

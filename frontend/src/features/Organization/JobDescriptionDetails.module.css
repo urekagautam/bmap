@@ -202,12 +202,11 @@
   font-size: 2.4rem;
 }
 
-/* Job description card area */
 .cardWrapper {
   display: flex;
   flex-direction: column;
-  border-radius: 16px;
   width: 100%;
+  border-bottom: 1px solid var(--neutral10);
 }
 
 .cardHeader {
@@ -315,7 +314,6 @@
   gap: 0.4rem;
   padding-top: 0.6rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--neutral10);
 }
 
 .bottomLWrapper > h3 {
@@ -341,6 +339,7 @@
 
 .jobInfo{
   padding-top:1.6rem;
+  margin-bottom: 2.4rem;
 }
 
 .tabs {
@@ -405,4 +404,6 @@
   font-size: 1.4rem;
   letter-spacing: 0.7;
 }
-
+  a > .applyNow{
+  margin-top: 2.4rem;
+}

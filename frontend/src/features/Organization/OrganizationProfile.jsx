@@ -2,28 +2,37 @@ import { useRef, useState, useEffect } from "react";
 import styles from "./OrganizationProfile.module.css";
 import { DISTRICT_OPTIONS } from "../../constants/constants.js";
 import { IconGreaterThan } from "../../component/icons/IconGreaterThan";
-import OrganizationNavbar from "../../component/OrganizationNavbar";
 import InputField from "../../component/InputField";
 import Button from "../../component/Button";
 import Select from "../../component/Select";
 import ImageUpload from "../../component/ImageUpload";
 import { useForm, Controller } from "react-hook-form";
-import useOrgAuth from "../../hooks/useOrgAuth.js";
 import { apiOrganizationSetup } from "../../services/apiOrganizationAuth.js";
 import { apiOrganizationGetProfile } from "../../services/apiOrganizationAuth.js";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import useOrgAuth from "../../hooks/useOrgAuth.js";
 
 export default function OrganizationProfile() {
-  const { orgId } = useOrgAuth();
+  const { orgId, isAuthenticated } = useOrgAuth();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [profileLoaded, setProfileLoaded] = useState(false);
 
+  // Give some time for localStorage to be read and auth state to update
   useEffect(() => {
-    if (orgId) {
-      console.log("ORGANIZATION ID : " + orgId);
-    }
-  }, [orgId]);
+    console.log("Auth state:", { orgId, isAuthenticated });
+    
+    // Wait a bit for the auth state to update after signup
+    const timer = setTimeout(() => {
+      if (!orgId) {
+        console.log("No orgId found after timeout, redirecting to login");
+        navigate("/org/login");
+      }
+    }, 3000); // Wait 3 seconds
+
+    return () => clearTimeout(timer);
+  }, [orgId, navigate]);
 
   const selectRef = useRef(null);
 
@@ -49,16 +58,18 @@ export default function OrganizationProfile() {
 
   useEffect(() => {
     async function fetchProfile() {
-      if (!orgId) return;
+      if (!orgId || profileLoaded) return;
 
       try {
+        console.log("Fetching profile for orgId:", orgId);
         const profile = await apiOrganizationGetProfile(orgId);
         console.log("API Response:", profile);
 
-        setValue("ownersName", profile.ownersName || "");
-        setValue("orgName", profile.orgName || "");
-        setValue("phoneNo", profile.phoneNo || "");
-        setValue("address", profile.address || "");
+        // Only set values if they exist in the response
+        if (profile.ownersName) setValue("ownersName", profile.ownersName);
+        if (profile.orgName) setValue("orgName", profile.orgName);
+        if (profile.phoneNo) setValue("phoneNo", profile.phoneNo);
+        if (profile.address) setValue("address", profile.address);
 
         if (profile.district) {
           const districtOption = DISTRICT_OPTIONS.find(
@@ -72,21 +83,31 @@ export default function OrganizationProfile() {
           setValue("district", districtOption);
         }
 
+        setProfileLoaded(true);
         console.log("Loaded profile data:", profile);
       } catch (err) {
         console.error("Error loading profile data:", err);
+        // If profile doesn't exist yet, that's fine - user will fill it out
+        setProfileLoaded(true);
       }
     }
 
     fetchProfile();
-  }, [orgId, setValue]);
+  }, [orgId, setValue, profileLoaded]);
 
   const onSubmit = async (data) => {
+    if (!orgId) {
+      toast.error("Organization ID not found. Please log in again.");
+      return;
+    }
+
     try {
       setIsSubmitting(true);
-
       const districtString =
         typeof data.district === "object" ? data.district.value : data.district;
+
+      console.log("Submitting setup for orgId:", orgId);
+
       const response = await apiOrganizationSetup({
         orgId: orgId,
         ownersName: data.ownersName,
@@ -108,9 +129,22 @@ export default function OrganizationProfile() {
     }
   };
 
+  // Show loading while orgId is being determined
+  if (!orgId) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh' 
+      }}>
+        <div>Loading organization data...</div>
+      </div>
+    );
+  }
+
   return (
     <>
-      <OrganizationNavbar />
       <section className={styles.mainWrapper}>
         <div className={styles.box}>
           <div className={styles.title}>
@@ -119,19 +153,15 @@ export default function OrganizationProfile() {
             ) : (
               <h1>Let's get your organization set up</h1>
             )}
-
             <p>
               Ensure you fill all the necessary data, It will only take u few
               minutes
             </p>
           </div>
-
           <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
             <div className={styles.stepOne}>
-              {/* Step 1/3 */}
               <span>Step 1/3</span>
               <h1 className={styles.dataTitle}>Basic Owner's Information</h1>
-
               <div className={styles.allDatas}>
                 <div className={styles.NameImg}>
                   <div className={styles.InpField}>
@@ -204,7 +234,6 @@ export default function OrganizationProfile() {
                       <span className={styles.requiredAsterisk}>*</span>
                       <span className={styles.bracketText}> (front)</span>
                     </label>
-
                     <Controller
                       name="citizenshipFront"
                       control={control}
@@ -224,7 +253,6 @@ export default function OrganizationProfile() {
                         />
                       )}
                     />
-
                     <Button
                       className={styles.removeBtns}
                       layout="xs"
@@ -240,6 +268,7 @@ export default function OrganizationProfile() {
                       {errors.citizenshipFront?.message}
                     </span>
                   </div>
+
                   <div className={styles.back}>
                     <label className={styles.label}>
                       Citizenship Card
@@ -263,7 +292,6 @@ export default function OrganizationProfile() {
                         />
                       )}
                     />
-
                     <Button
                       className={styles.removeBtns}
                       layout="xs"
@@ -283,13 +311,11 @@ export default function OrganizationProfile() {
               </div>
             </div>
 
-            {/* Step 2/3 */}
             <div className={styles.stepTwo}>
               <span>Step 2/3</span>
               <h1 className={styles.dataTitle}>
                 Basic Organization's Information
               </h1>
-
               <div className={styles.orgData}>
                 <div className={styles.InpField}>
                   <label className={styles.label} htmlFor="orgName">
@@ -364,7 +390,6 @@ export default function OrganizationProfile() {
                     District
                     <span className={styles.requiredAsterisk}>*</span>
                   </label>
-
                   <Controller
                     name="district"
                     control={control}
@@ -389,11 +414,9 @@ export default function OrganizationProfile() {
               </div>
             </div>
 
-            {/* Step 3/3 */}
             <div className={styles.stepThree}>
               <span>Step 3/3</span>
               <h1 className={styles.dataTitle}>Registration Information</h1>
-
               <div className={styles.registration}>
                 <div className={styles.pan}>
                   <label className={styles.label}>
@@ -416,7 +439,6 @@ export default function OrganizationProfile() {
                       />
                     )}
                   />
-
                   <Button
                     className={styles.removeBtns}
                     layout="xs"
@@ -432,6 +454,7 @@ export default function OrganizationProfile() {
                     {errors.panCard?.message}
                   </span>
                 </div>
+
                 <div className={styles.vat}>
                   <label className={styles.label}>
                     VAT Card
@@ -453,7 +476,6 @@ export default function OrganizationProfile() {
                       />
                     )}
                   />
-
                   <Button
                     className={styles.removeBtns}
                     layout="xs"
@@ -473,8 +495,13 @@ export default function OrganizationProfile() {
             </div>
 
             <div className={styles.button}>
-              <Button type="submit" color="accent" layout="xs">
-                Submit
+              <Button 
+                type="submit" 
+                color="accent" 
+                layout="xs" 
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Submitting..." : "Submit"}
                 <IconGreaterThan />
               </Button>
             </div>
