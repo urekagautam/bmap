@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect } from "react"
 
 export default function useOrgAuth() {
@@ -11,8 +9,8 @@ export default function useOrgAuth() {
   const [ownersName, setOwnersName] = useState(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
-  // Initialize auth state from localStorage
-  useEffect(() => {
+  // Function to load data from localStorage
+  const loadFromStorage = () => {
     const storedOrgId = localStorage.getItem("orgId")
     const storedToken = localStorage.getItem("orgAccessToken")
     const storedRefreshToken = localStorage.getItem("orgRefreshToken")
@@ -27,13 +25,41 @@ export default function useOrgAuth() {
     setOrgEmail(storedOrgEmail)
     setOwnersName(storedOwnersName)
     setIsAuthenticated(!!(storedOrgId && storedToken))
+
+    console.log("useOrgAuth loaded:", {
+      orgId: storedOrgId,
+      isAuthenticated: !!(storedOrgId && storedToken)
+    })
+  }
+
+  useEffect(() => {
+    loadFromStorage()
+
+    // Listening for storage changes (when localStorage is updated)
+    const handleStorageChange = (e) => {
+      if (e.key?.startsWith('org')) {
+        loadFromStorage()
+      }
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+    
+    //Listening for custom events (for same-tab updates)
+    const handleCustomStorageChange = () => {
+      loadFromStorage()
+    }
+    
+    window.addEventListener('orgAuthUpdated', handleCustomStorageChange)
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('orgAuthUpdated', handleCustomStorageChange)
+    }
   }, [])
 
-  // Set authentication data
   const setAuth = (authData) => {
     const { organization, accessToken, refreshToken: newRefreshToken } = authData
 
-    // Store in localStorage
     localStorage.setItem("orgId", organization._id)
     localStorage.setItem("orgAccessToken", accessToken)
     localStorage.setItem("orgRefreshToken", newRefreshToken)
@@ -41,14 +67,8 @@ export default function useOrgAuth() {
     localStorage.setItem("orgEmail", organization.email)
     localStorage.setItem("ownersName", organization.ownersName || "")
 
-    // Update state
-    setOrgId(organization._id)
-    setToken(accessToken)
-    setRefreshToken(newRefreshToken)
-    setOrgName(organization.orgName || "")
-    setOrgEmail(organization.email)
-    setOwnersName(organization.ownersName || "")
-    setIsAuthenticated(true)
+    // Triggerring custom event to notify other components
+    window.dispatchEvent(new CustomEvent('orgAuthUpdated'))
 
     console.log("Organization auth data set successfully:", {
       orgId: organization._id,
@@ -57,9 +77,7 @@ export default function useOrgAuth() {
     })
   }
 
-  // Clear authentication data
   const clearAuth = () => {
-    // Remove from localStorage
     localStorage.removeItem("orgId")
     localStorage.removeItem("orgAccessToken")
     localStorage.removeItem("orgRefreshToken")
@@ -67,7 +85,6 @@ export default function useOrgAuth() {
     localStorage.removeItem("orgEmail")
     localStorage.removeItem("ownersName")
 
-    // Clear state
     setOrgId(null)
     setToken(null)
     setRefreshToken(null)
@@ -75,6 +92,9 @@ export default function useOrgAuth() {
     setOrgEmail(null)
     setOwnersName(null)
     setIsAuthenticated(false)
+
+    // Trigger custom event
+    window.dispatchEvent(new CustomEvent('orgAuthUpdated'))
 
     console.log("Organization auth data cleared")
   }

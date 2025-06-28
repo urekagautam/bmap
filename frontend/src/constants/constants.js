@@ -232,3 +232,27 @@ export const EXPERIENCE_OPTIONS = [
   { value: "4years", label: "4 Years" },
   { value: "5+years", label: "5+ Years" },
 ];
+
+export const INDUSTRY_OPTIONS = [
+  { value: "technology", label: "Technology" },
+  { value: "healthcare", label: "Healthcare" },
+  { value: "finance", label: "Finance & Banking" },
+  { value: "education", label: "Education" },
+  { value: "retail", label: "Retail & E-commerce" },
+  { value: "manufacturing", label: "Manufacturing" },
+  { value: "construction", label: "Construction & Real Estate" },
+  { value: "hospitality", label: "Hospitality & Tourism" },
+  { value: "transportation", label: "Transportation & Logistics" },
+  { value: "media", label: "Media & Entertainment" },
+  { value: "consulting", label: "Consulting" },
+  { value: "agriculture", label: "Agriculture" },
+  { value: "energy", label: "Energy & Utilities" },
+  { value: "telecommunications", label: "Telecommunications" },
+  { value: "automotive", label: "Automotive" },
+  { value: "food_beverage", label: "Food & Beverage" },
+  { value: "fashion", label: "Fashion & Apparel" },
+  { value: "sports", label: "Sports & Recreation" },
+  { value: "non_profit", label: "Non-Profit" },
+  { value: "government", label: "Government" },
+  { value: "other", label: "Other" }
+];

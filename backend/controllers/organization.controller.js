@@ -98,7 +98,7 @@ export const loginOrganization = asyncHandler(async (req, res, next) => {
       return next(new ApiError(401, "Invalid email or password"))
     }
 
-    // Generate tokens
+    // Generating tokens
     const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(organization._id)
 
     // Getting organization without sensitive data
@@ -194,6 +194,7 @@ export const editOrganizationInfo = asyncHandler(async (req, res, next) => {
       description,
       benefits,
       socialProfile,
+      industry
     } = req.body;
 
     if (orgName !== undefined) org.orgName = orgName;
@@ -201,6 +202,7 @@ export const editOrganizationInfo = asyncHandler(async (req, res, next) => {
     if (address !== undefined) org.address = address;
     if (phoneNo !== undefined) org.phoneNo = phoneNo;
     if (email !== undefined) org.email = email;
+    if (industry !== undefined) org.industry = industry;
     if (foundedYear !== undefined) org.foundedYear = foundedYear;
     if (ownersName !== undefined) org.ownersName = ownersName;
     if (specialities !== undefined) org.specialities = specialities; 
@@ -222,7 +224,7 @@ export const editOrganizationInfo = asyncHandler(async (req, res, next) => {
     await org.save();
 
     const updatedOrg = await Organization.findById(orgId).select(
-      "orgName district address phoneNo email foundedYear ownersName specialities companySize minEmployees maxEmployees description benefits socialProfile.insta socialProfile.x socialProfile.fb",
+      "orgName district address phoneNo email industry foundedYear ownersName specialities companySize minEmployees maxEmployees description benefits socialProfile.insta socialProfile.x socialProfile.fb",
     );
 
     res.status(200).json(
@@ -247,7 +249,7 @@ export const getOrganizationProfileForEdit = async (req, res) => {
     const orgId = req.params.id
 
     const org = await Organization.findById(orgId).select(
-      "orgName district address phoneNo email benefits foundedYear ownersName specialities companySize minEmployees maxEmployees description benefits socialProfile.insta socialProfile.x socialProfile.fb",
+      "orgName district address phoneNo email industry benefits foundedYear ownersName specialities companySize minEmployees maxEmployees description benefits socialProfile.insta socialProfile.x socialProfile.fb",
     )
 
     if (!org) {
