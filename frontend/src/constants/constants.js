@@ -1,20 +1,36 @@
 // Field of Expertise and Department
-export const FIELD_OF_EXPERTISE_OPTIONS = [
-  { value: "acc_finance", label: "Accounting/ Finance" },
-  { value: "architecture", label: "Architecture/ Interior Designing" },
-  {
-    value: "banking_insurance",
-    label: "Banking/ Insurance/ Financial Services",
-  },
-  { value: "creative_design", label: "Creative/ Designing / Graphics" },
-  {
-    value: "construction_engg",
-    label: "Construction/ Engineering / Architecture",
-  },
-  { value: "fashion_textile", label: "Fashion/ Textile Designing" },
-  { value: "hospitality", label: "Hospitality" },
-  { value: "it_telecom", label: "IT & Telecommunication" },
-];
+// Unified Field of Interest/Industry Options
+export const FIELD_OF_INTEREST_OPTIONS = [
+  { value: "accounting_finance", label: "Accounting & Finance" },
+  { value: "agriculture", label: "Agriculture & Farming" },
+  { value: "architecture_design", label: "Architecture & Interior Design" },
+  { value: "automotive", label: "Automotive" },
+  { value: "banking_insurance", label: "Banking, Insurance & Financial Services" },
+  { value: "construction_engineering", label: "Construction & Engineering" },
+  { value: "consulting", label: "Consulting & Advisory" },
+  { value: "creative_design", label: "Creative Design & Graphics" },
+  { value: "education_training", label: "Education & Training" },
+  { value: "energy_utilities", label: "Energy & Utilities" },
+  { value: "fashion_textile", label: "Fashion & Textile" },
+  { value: "food_beverage", label: "Food & Beverage" },
+  { value: "government_public", label: "Government & Public Sector" },
+  { value: "healthcare_medical", label: "Healthcare & Medical" },
+  { value: "hospitality_tourism", label: "Hospitality & Tourism" },
+  { value: "it_telecom", label: "Information Technology & Software" },
+  { value: "manufacturing", label: "Manufacturing & Production" },
+  { value: "marketing_advertising", label: "Marketing & Advertising" },
+  { value: "media_entertainment", label: "Media & Entertainment" },
+  { value: "non_profit", label: "Non-Profit & Social Services" },
+  { value: "real_estate", label: "Real Estate & Property" },
+  { value: "retail_ecommerce", label: "Retail & E-commerce" },
+  { value: "sports_recreation", label: "Sports & Recreation" },
+  { value: "telecommunications", label: "Telecommunications" },
+  { value: "transportation_logistics", label: "Transportation & Logistics" },
+  { value: "other", label: "Other" },
+]
+
+export const FIELD_OF_EXPERTISE_OPTIONS = FIELD_OF_INTEREST_OPTIONS
+export const INDUSTRY_OPTIONS = FIELD_OF_INTEREST_OPTIONS
 
 // Education Levels
 export const EDUCATION_LEVEL_OPTIONS = [
@@ -228,12 +244,12 @@ export const EXPERIENCE_CRITERIA_OPTIONS = [
 export const EXPERIENCE_OPTIONS = [
   { value: "1year", label: "1 Year" },
   { value: "2years", label: "2 Years" },
-  { value: "3years", label: "3 Years" },
-  { value: "4years", label: "4 Years" },
-  { value: "5+years", label: "5+ Years" },
+  { value: "5years", label: "3 Years" },
+  { value: "9years", label: " 9Years" },
+  { value: "10years", label: "10Years" },
 ];
 
-export const INDUSTRY_OPTIONS = [
+/* export const INDUSTRY_OPTIONS = [
   { value: "technology", label: "Technology" },
   { value: "healthcare", label: "Healthcare" },
   { value: "finance", label: "Finance & Banking" },
@@ -255,4 +271,4 @@ export const INDUSTRY_OPTIONS = [
   { value: "non_profit", label: "Non-Profit" },
   { value: "government", label: "Government" },
   { value: "other", label: "Other" }
-];
+]; */

@@ -67,7 +67,7 @@ export const apiGetFollowedOrganizations = async () => {
 //Get organization follower count (public endpoint)
 export const apiGetOrganizationFollowerCount = async (orgId) => {
   try {
-    const response = await axios.get(`http://localhost:5000/api/v1/organization/${orgId}/followers`)
+    const response = await axios.get(`http://localhost:5000/org/api/v1/${orgId}/followers`)
     return response.data
   } catch (error) {
     console.error("Error getting follower count:", error)

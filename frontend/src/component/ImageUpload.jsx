@@ -10,7 +10,9 @@ const ImageUpload = ({
   onChange,
   className,
   shape = "default",
-  imgFile: controlledImgFile, 
+  imgFile: controlledImgFile,
+  currentImage,
+  isUploading = false,
 }) => {
   const [imgFile, setImgFile] = useState(controlledImgFile || null);
   const [preview, setPreview] = useState(null);
@@ -24,10 +26,12 @@ const ImageUpload = ({
       const objectUrl = URL.createObjectURL(imgFile);
       setPreview(objectUrl);
       return () => URL.revokeObjectURL(objectUrl);
+    } else if (currentImage) {
+      setPreview(currentImage);
     } else {
       setPreview(null);
     }
-  }, [imgFile]);
+  }, [imgFile, currentImage]);
 
   const handleChange = (e) => {
     const file = e.target.files?.[0] || null;
@@ -38,19 +42,24 @@ const ImageUpload = ({
   return (
     <div className={cns(styles.uploadWrapper, className)}>
       <label htmlFor={id} className={cns(styles.uploadButton, styles[shape])}>
-        {preview ? (
+        {isUploading ? (
+          <div className={styles.uploadText}>
+            <div className={styles.loadingSpinner}></div>
+            <h3>Uploading...</h3>
+          </div>
+        ) : preview ? (
           <div className={styles.previewContainer}>
             <img src={preview} alt="Preview" className={styles.previewImage} />
             <div className={styles.overlay}>
               <span className={shape === "circle" || shape === "square" ? styles.smaller : ""}>
-                Change Image
+                {imgFile ? "Change Image" : "Update Image"}
               </span>
             </div>
           </div>
         ) : (
           <div className={styles.uploadText}>
             {shape === "circle" || shape === "square" ? <IconCamera style={{ fontSize: '2.4rem' }} /> : <IconUpload />}
-            <h3>{ImgUploadText}</h3>
+            <h3>{ImgUploadText || "Upload Image"}</h3>
           </div>
         )}
 
@@ -60,6 +69,7 @@ const ImageUpload = ({
           accept="image/*"
           onChange={handleChange}
           className={styles.fileInput}
+          disabled={isUploading}
         />
       </label>
     </div>

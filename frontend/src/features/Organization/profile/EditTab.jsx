@@ -20,6 +20,7 @@ import ImageUpload from "../../../component/ImageUpload.jsx";
 import {
   apiGetOrganizationProfileForEdit,
   apiEditOrganizationInfo,
+  apiUploadOrgImage,
 } from "../../../services/apiOrganizationAuth.js";
 import useOrgAuth from "../../../hooks/useOrgAuth.js";
 import toast from "react-hot-toast";
@@ -31,6 +32,14 @@ export default function EditTab({ orgData, onCancel, onUpdateSuccess }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [profileData, setProfileData] = useState(null);
+  const [companyLogoUrl, setCompanyLogoUrl] = useState(null);
+  const [companyCoverUrl, setCompanyCoverUrl] = useState(null);
+  // Upload progress states
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
+  // Selected files (not yet uploaded)
+  const [newLogoFile, setNewLogoFile] = useState(null);
+  const [newCoverFile, setNewCoverFile] = useState(null);
 
   const {
     register,
@@ -100,6 +109,20 @@ export default function EditTab({ orgData, onCancel, onUpdateSuccess }) {
         return String(item);
       })
       .filter(Boolean);
+  };
+
+  // Handle logo file selection (upload occurs on Save)
+  const handleLogoUpload = (file) => {
+    if (!file) return;
+    setNewLogoFile(file);
+    setCompanyLogoUrl(URL.createObjectURL(file));
+  };
+
+  // Handle cover file selection (upload occurs on Save)
+  const handleCoverUpload = (file) => {
+    if (!file) return;
+    setNewCoverFile(file);
+    setCompanyCoverUrl(URL.createObjectURL(file));
   };
 
   useEffect(() => {
@@ -208,6 +231,15 @@ export default function EditTab({ orgData, onCancel, onUpdateSuccess }) {
             setValue("socialProfile.twitter", profile.socialProfile.x);
         }
 
+        if (profile.companyLogo) {
+          setCompanyLogoUrl(profile.companyLogo);
+          setValue("companyLogo", profile.companyLogo);
+        }
+        if (profile.companyCover) {
+          setCompanyCoverUrl(profile.companyCover);
+          setValue("companyCover", profile.companyCover);
+        }
+
         console.log("Profile data loaded successfully");
       } catch (err) {
         console.error("Error loading profile data:", err);
@@ -252,10 +284,52 @@ export default function EditTab({ orgData, onCancel, onUpdateSuccess }) {
       const industryString =
         typeof data.industry === "object" ? data.industry.value : data.industry;
 
-      const specialitiesStringArray = convertSpecialitiesToStringArray(
-        data.specialities
-      );
+      // Handle image uploads first if new files were selected
+      let logoResult = null;
+      let coverResult = null;
+      const uploadPromises = [];
+      
+      if (newLogoFile) {
+        setIsUploadingLogo(true);
+        uploadPromises.push(
+          apiUploadOrgImage(orgId, newLogoFile, 'companyLogo')
+            .then(res => {
+              logoResult = res;
+              console.log('Logo upload successful:', res);
+              return res;
+            })
+            .catch(error => {
+              console.error('Error uploading logo:', error);
+              throw new Error('Failed to upload company logo');
+            })
+        );
+      }
+      
+      if (newCoverFile) {
+        setIsUploadingCover(true);
+        uploadPromises.push(
+          apiUploadOrgImage(orgId, newCoverFile, 'companyCover')
+            .then(res => {
+              coverResult = res;
+              console.log('Cover upload successful:', res);
+              return res;
+            })
+            .catch(error => {
+              console.error('Error uploading cover:', error);
+              throw new Error('Failed to upload company cover');
+            })
+        );
+      }
 
+      // Wait for all uploads to complete
+      if (uploadPromises.length > 0) {
+        await Promise.all(uploadPromises);
+      }
+      setIsUploadingLogo(false);
+      setIsUploadingCover(false);
+
+      // Now prepare the data for profile update
+      const specialitiesStringArray = convertSpecialitiesToStringArray(data.specialities);
       const benefitsStringArray = convertBenefitsToArray(data.benefits);
 
       const payload = {
@@ -267,7 +341,7 @@ export default function EditTab({ orgData, onCancel, onUpdateSuccess }) {
         foundedYear: data.foundedYear
           ? Number.parseInt(data.foundedYear, 10)
           : null,
-        industry: industryString || "", // This will now be the value, not the object
+        industry: industryString || "",
         specialities: specialitiesStringArray,
         companySize: data.companySize || "fixed",
         minEmployees: data.minEmployees
@@ -283,33 +357,76 @@ export default function EditTab({ orgData, onCancel, onUpdateSuccess }) {
           fb: data.socialProfile?.facebook || "",
           x: data.socialProfile?.twitter || "",
         },
-        companyLogo: data.companyLogo,
-        companyCover: data.companyCover,
+        // Include new image URLs in the update payload
+        companyLogo: logoResult ? { url: logoResult.url, publicId: logoResult.publicId } : profileData?.companyLogo,
+        companyCover: coverResult ? { url: coverResult.url, publicId: coverResult.publicId } : profileData?.companyCover,
       };
 
-      console.log("Final Payload (correctly formatted):", payload);
-      console.log("Industry being sent:", payload.industry);
-      console.log("Benefits (array of strings):", benefitsStringArray);
-      console.log("Specialities (array of strings):", specialitiesStringArray);
+      console.log("Sending payload to server:", payload);
 
-      await apiEditOrganizationInfo(orgId, payload);
+      // Update the organization info
+      const updateResponse = await apiEditOrganizationInfo(orgId, payload);
+      console.log("Update response:", updateResponse);
 
-      // Call success handler
-      if (onUpdateSuccess) {
-        onUpdateSuccess(); // This will show toast, switch to about tab, and reload page
-      } else {
-        // Fallback if no handler provided
-        toast.success("Profile updated successfully!");
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+      // Handle image uploads if new files were selected
+      const updatePromises = [];
+      
+      if (newLogoFile) {
+        setIsUploadingLogo(true);
+        updatePromises.push(
+          apiUploadOrgImage(orgId, newLogoFile, 'companyLogo')
+            .then(res => {
+              console.log('Logo upload successful:', res);
+              return res;
+            })
+            .catch(error => {
+              console.error('Error uploading logo:', error);
+              throw new Error('Failed to upload company logo');
+            })
+        );
+      }
+      
+      // Handle company cover if it's a new file
+      if (newCoverFile) {
+        setIsUploadingCover(true);
+        updatePromises.push(
+          apiUploadOrgImage(orgId, newCoverFile, 'companyCover')
+            .then(res => {
+              console.log('Cover upload successful:', res);
+              return res;
+            })
+            .catch(error => {
+              console.error('Error uploading cover:', error);
+              throw new Error('Failed to upload company cover');
+            })
+        );
       }
 
-      const updatedProfile = await apiGetOrganizationProfileForEdit(orgId);
-      setProfileData(updatedProfile);
+      // Wait for all uploads to complete
+      if (updatePromises.length > 0) {
+        await Promise.all(updatePromises);
+      }
+      setIsUploadingLogo(false);
+      setIsUploadingCover(false);
 
+      // Force re-fetch of the latest profile data after all updates
+      const updatedProfile = await apiGetOrganizationProfileForEdit(orgId);
+      console.log("Updated profile data:", updatedProfile);
+      
+      // Update local state with the latest data
+      setProfileData(updatedProfile);
+      if (updatedProfile.companyLogo) setCompanyLogoUrl(updatedProfile.companyLogo);
+      if (updatedProfile.companyCover) setCompanyCoverUrl(updatedProfile.companyCover);
+
+      // Show success message
+      toast.success("Profile updated successfully!");
+      
+      // Call success handler if provided
+      if (onUpdateSuccess) {
+        onUpdateSuccess();
+      }
     } catch (error) {
-      console.error("Update error:", error);
+      console.error("Error updating profile:", error);
       toast.error(error.message || "Failed to update profile");
     } finally {
       setIsSubmitting(false);
@@ -740,8 +857,10 @@ Professional development opportunities"
                     <ImageUpload
                       id="companyLogo"
                       shape="circle"
-                      imgFile={field.value}
-                      onChange={(file) => field.onChange(file)}
+                      imgFile={null}
+                      currentImage={companyLogoUrl}
+                      isUploading={isUploadingLogo}
+                      onChange={handleLogoUpload}
                     />
                   )}
                 />
@@ -772,9 +891,11 @@ Professional development opportunities"
                 render={({ field }) => (
                   <ImageUpload
                     id="companyCover"
-                    imgFile={field.value}
+                    imgFile={null}
+                    currentImage={companyCoverUrl}
+                    isUploading={isUploadingCover}
                     ImgUploadText="Upload Cover Photo"
-                    onChange={(file) => field.onChange(file)}
+                    onChange={handleCoverUpload}
                   />
                 )}
               />

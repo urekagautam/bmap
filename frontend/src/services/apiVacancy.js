@@ -2,17 +2,13 @@ import axios from "axios"
 
 // Post a new job vacancy
 export const apiPostVacancy = async (vacancyData) => {
-  // const token = localStorage.getItem("orgAccessToken")
 
-  /* if (!token) {
-    throw new Error("No access token found. Please log in first.")
-  } */
 
   try {
     console.log("Sending vacancy data:", vacancyData)
     const response = await axios.post("http://localhost:5000/api/v1/vacancy", vacancyData, {
       headers: {
-        /* Authorization: `Bearer ${token}`, */
+       
         "Content-Type": "application/json",
       },
     })
@@ -30,20 +26,12 @@ export const apiPostVacancy = async (vacancyData) => {
 
 // Get all vacancies for an organization
 export const apiGetOrgVacancies = async (orgId) => {
-  // const token = localStorage.getItem("orgAccessToken")
-
-  /* if (!token) {
-    throw new Error("No access token found. Please log in first.")
-  } */
-
   try {
-    const response = await axios.get(`http://localhost:5000/api/v1/vacancy/org?id=${orgId}`, {
+    const response = await axios.get(`http://localhost:5000/api/v1/getAllvacancies/${orgId}`, {
       headers: {
-        /* Authorization: `Bearer ${token}`, */
         "Content-Type": "application/json",
       },
     })
-
     return response.data
   } catch (error) {
     if (error.response) {
@@ -172,3 +160,63 @@ export const apiGetJobDetailsForApplication = async (jobId) => {
     }
   }
 }
+
+// Get all jobs for an organization (alias for apiGetOrgVacancies)
+export const apiGetJobsByOrgId = async (orgId) => {
+  return apiGetOrgVacancies(orgId);
+};
+
+// Get all available vacancies (for search functionality)
+export const apiGetAllVacancies = async () => {
+  try {
+    console.log("Fetching all vacancies...");
+    
+    const response = await axios.get("http://localhost:5000/api/v1/vacancy", {
+      headers: { "Content-Type": "application/json" },
+      validateStatus: status => status < 500
+    });
+    
+    console.log("Vacancies API response:", response);
+    
+    // Handle the response structure from the backend
+    let vacancies = [];
+    if (response.data?.data?.vacancies) {
+      // Response from getFilteredVacancies
+      vacancies = Array.isArray(response.data.data.vacancies) ? response.data.data.vacancies : [];
+    } else if (Array.isArray(response.data?.data)) {
+      // Direct array response
+      vacancies = response.data.data;
+    } else if (Array.isArray(response.data)) {
+      // Direct array response (alternative)
+      vacancies = response.data;
+    }
+    
+    // Map the response to match the expected format in the frontend
+    const formattedVacancies = vacancies.map(vacancy => ({
+      ...vacancy,
+      organization: vacancy.orgId ? {
+        _id: vacancy.orgId._id,
+        name: vacancy.orgId.name,
+        location: vacancy.orgId.location,
+        orgName: vacancy.orgId.name // For backward compatibility
+      } : {
+        _id: 'unknown',
+        name: 'Unknown Organization',
+        location: 'Unknown Location',
+        orgName: 'Unknown Organization'
+      }
+    }));
+    
+    console.log("Formatted vacancies:", formattedVacancies);
+    return { data: formattedVacancies };
+    
+  } catch (error) {
+    console.error("Error fetching all vacancies:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    });
+    
+    return { data: [] }; // Return empty array to prevent crashes
+  }
+};

@@ -53,6 +53,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    // ✅ Simple lat/lng format for users
     location: {
       lat: {
         type: Number,
@@ -75,12 +76,12 @@ const userSchema = new mongoose.Schema(
       },
       job_by_location: {
         type: String,
-        enum: ["on_site", "remote", "hybrid","none"],
+        enum: ["on_site", "remote", "hybrid", "none"],
         default: "on_site",
       },
       job_level: {
         type: String,
-        enum: ["intern", "mid-level","junior","senior"],
+        enum: ["intern", "mid-level", "junior", "senior"],
         default: "mid-level",
       },
       skills: [
@@ -116,6 +117,13 @@ const userSchema = new mongoose.Schema(
         ref: "Organization",
       },
     ],
+    resume: {
+      url: { type: String },
+      filename: { type: String },
+      size: { type: Number },
+      uploadedAt: { type: Date },
+      publicId: { type: String },
+    },
     refreshToken: String,
     passwordChangedAt: Date,
   },
@@ -125,7 +133,6 @@ const userSchema = new mongoose.Schema(
 // Hashing password before saving
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next()
-
   try {
     console.log("Hashing password for user:", this.email)
     this.password = await bcrypt.hash(this.password, 12)
@@ -146,31 +153,25 @@ userSchema.methods.isPasswordCorrect = async function (candidatePassword) {
     console.log("Input password type:", typeof candidatePassword)
     console.log("Stored hash exists:", !!this.password)
     console.log("Stored hash type:", typeof this.password)
-
     // Validating inputs
     if (!candidatePassword || typeof candidatePassword !== "string") {
       console.error("Invalid candidate password:", candidatePassword)
       return false
     }
-
     if (!this.password || typeof this.password !== "string") {
       console.error("Invalid stored password hash:", this.password)
       return false
     }
-
     // Ensuring password is a string and not empty
     const passwordString = String(candidatePassword).trim()
     const hashString = String(this.password).trim()
-
     if (!passwordString || !hashString) {
       console.error("Empty password or hash after conversion")
       return false
     }
-
     console.log("Password length:", passwordString.length)
     console.log("Hash length:", hashString.length)
     console.log("Hash starts with $2b$:", hashString.startsWith("$2b$"))
-
     const result = await bcrypt.compare(passwordString, hashString)
     console.log("Password comparison result:", result)
     return result

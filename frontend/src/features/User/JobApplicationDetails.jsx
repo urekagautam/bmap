@@ -18,7 +18,9 @@ import { IconHourglass } from "../../component/icons/IconHourglass"
 import TextArea from "../../component/TextArea"
 import Button from "../../component/Button"
 import { IconWeb } from "../../component/icons/IconWeb"
-import { apiGetUserDataForApplication, apiUpdateUserProfileForApplication, apiSubmitJobApplication } from "../../services/apiAuth"
+import { IconUpload } from "../../component/icons/IconUpload"
+import UserNavbar from "../../component/UserNavbar"
+import { apiGetUserProfile, apiUpdateUserProfileForApplication, apiSubmitJobApplication, apiUploadResume } from "../../services/apiAuth"
 import { apiGetJobDetailsForApplication } from "../../services/apiVacancy"
 import useUserAuth from "../../hooks/useUserAuth"
 
@@ -31,6 +33,10 @@ export default function JobApplicationDetails() {
   const [isLoadingUserData, setIsLoadingUserData] = useState(true)
   const [isLoadingJobData, setIsLoadingJobData] = useState(true)
   const [jobDetails, setJobDetails] = useState(null)
+  const [resume, setResume] = useState(null)
+  const [resumeUploading, setResumeUploading] = useState(false)
+  const [coverLetter, setCoverLetter] = useState(null)
+  const [coverLetterUploading, setCoverLetterUploading] = useState(false)
 
   const {
     register,
@@ -64,10 +70,13 @@ export default function JobApplicationDetails() {
         setIsLoadingUserData(true)
         console.log("Fetching user data for ID:", userId)
 
-        const response = await apiGetUserDataForApplication(userId)
+        const response = await apiGetUserProfile(userId)
         const userData = response.data
 
         console.log("Fetched user data:", userData)
+        console.log("Resume object from API:", userData.resume)
+        console.log("Resume type:", typeof userData.resume)
+        console.log("Resume keys:", userData.resume ? Object.keys(userData.resume) : "null")
 
         const nameParts = userData.name ? userData.name.trim().split(" ") : ["", ""]
         const firstName = nameParts[0] || ""
@@ -76,10 +85,12 @@ export default function JobApplicationDetails() {
         setValue("firstName", firstName)
         setValue("lastName", lastName)
         setValue("email", userData.email || "")
-        setValue("phoneNo", userData.phoneNo || "")
+        setValue("phoneNo", userData.phone || "")
         setValue("linkedin", userData.socialProfile?.linkedin || "")
         setValue("github", userData.socialProfile?.github || "")
         setValue("portfolio", userData.socialProfile?.portfolio || "")
+        console.log("Setting resume state to:", userData.resume)
+        setResume(userData.resume || null)
       } catch (error) {
         console.error("Error fetching user data:", error)
         toast.error("Failed to load user data. You can still fill the form manually.")
@@ -90,6 +101,11 @@ export default function JobApplicationDetails() {
 
     fetchUserData()
   }, [userId, setValue])
+
+  // Monitor resume state changes
+  useEffect(() => {
+    console.log("Resume state changed to:", resume)
+  }, [resume])
 
   useEffect(() => {
     const fetchJobDetails = async () => {
@@ -150,6 +166,50 @@ export default function JobApplicationDetails() {
     }
   }
 
+  // Handler for resume upload
+  const handleResumeChange = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!/(pdf|doc|docx)$/i.test(file.name.split('.').pop())) {
+      toast.error("Only PDF, DOC, or DOCX files are allowed.")
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File size must be less than 5MB.")
+      return
+    }
+    setResumeUploading(true)
+    try {
+      const response = await apiUploadResume(userId, file)
+      setResume(response.data)
+      toast.success("Resume uploaded!")
+    } catch (error) {
+      toast.error("Failed to upload resume.")
+    } finally {
+      setResumeUploading(false)
+    }
+  }
+
+  // Handler for cover letter upload (local only)
+  const handleCoverLetterChange = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!/(pdf|doc|docx)$/i.test(file.name.split('.').pop())) {
+      toast.error("Only PDF, DOC, or DOCX files are allowed.")
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File size must be less than 5MB.")
+      return
+    }
+    setCoverLetterUploading(true)
+    setTimeout(() => {
+      setCoverLetter(file)
+      setCoverLetterUploading(false)
+      toast.success("Cover letter ready!")
+    }, 500)
+  }
+
   const onSubmit = async (data) => {
     try {
       setIsSubmitting(true)
@@ -180,7 +240,7 @@ export default function JobApplicationDetails() {
 
       toast.success("Application submitted successfully!")
       setTimeout(() => {
-        navigate("/jobs")
+        navigate(`/view-jobdescription/${jobId}`)
       }, 1000)
     } catch (error) {
       console.error("Error submitting application:", error)
@@ -211,7 +271,7 @@ export default function JobApplicationDetails() {
         <div className={styles.mainContainer}>
           <div style={{ textAlign: "center", padding: "2rem" }}>
             <p>Job not found</p>
-            <Button onClick={() => navigate("/jobs")}>Back to Jobs</Button>
+            <Button onClick={() => navigate(`/view-jobdescription/${jobId}`)}>Back to Jobs</Button>
           </div>
         </div>
       </section>
@@ -219,10 +279,12 @@ export default function JobApplicationDetails() {
   }
 
   return (
-    <section className={styles.postjobSection}>
-      <Link to={`/view-jobdescription/${jobId}`} className={styles.backBtn}>
-        <IconBack /> Back
-      </Link>
+    <>
+      <UserNavbar />
+      <section className={styles.postjobSection}>
+        <Link to={`/view-jobdescription/${jobId}`} className={styles.backBtn}>
+          <IconBack /> Back
+        </Link>
 
       <div className={styles.mainContainer}>
         <div className={styles.formContainer}>
@@ -331,6 +393,65 @@ export default function JobApplicationDetails() {
                   </div>
                   <span className={styles.error}>{errors.phoneNo?.message}</span>
                 </div>
+              </div>
+            </div>
+
+            <div className={styles.jobDetails}>
+              <h2>Documents</h2>
+              <div className={styles.jd_container} style={{flexDirection: 'row', gap: '2rem'}}>
+                {/* Resume Upload */}
+                <div style={{flex: 1}}>
+                  <label className={styles.fieldLabel}>
+                    Resume / CV <span className={styles.requiredAsterisk}>*</span>
+                  </label>
+                  <div
+                    style={{
+                      border: '2px dashed #bdbdbd',
+                      borderRadius: '12px',
+                      padding: '1.5rem',
+                      textAlign: 'center',
+                      background: '#f8fafc',
+                      marginBottom: 8,
+                      minHeight: 120,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <label style={{cursor: resumeUploading ? 'not-allowed' : 'pointer', width: '100%'}}>
+                      <input
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        onChange={handleResumeChange}
+                        disabled={resumeUploading}
+                        style={{ display: 'none' }}
+                      />
+                      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                        <IconUpload style={{fontSize: 32, color: '#bdbdbd', marginBottom: 8}} />
+                        {resume && resume.filename ? (
+                          <>
+                            <span style={{fontWeight: 500}}>{resume.filename}</span>
+                            {resume.uploadedAt && (
+                              <span style={{ color: '#888', fontSize: 12 }}>
+                                Uploaded: {new Date(resume.uploadedAt).toLocaleDateString()}
+                              </span>
+                            )}
+                            <span style={{ color: '#888', fontSize: 12 }}>(Click to replace)</span>
+                          </>
+                        ) : resumeUploading ? (
+                          <span style={{ color: '#888' }}>Uploading...</span>
+                        ) : (
+                          <>
+                            <span style={{ color: '#888' }}>Upload Resume (PDF, DOC, DOCX, max 5MB)</span>
+                          </>
+                        )}
+                      </div>
+                    </label>
+                  </div>
+                </div>
+                {/* Cover Letter Upload */}
+                
               </div>
             </div>
 
@@ -493,5 +614,6 @@ export default function JobApplicationDetails() {
         </div>
       </div>
     </section>
+    </>
   )
 }

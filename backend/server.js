@@ -3,6 +3,7 @@ import express from "express";
 import connectDB from "./db/index.js";
 import { config } from "./config/config.js";
 import {app} from "./app.js"
+import connectCloudinary from "./config/cloudinary.js";
 
 // const app = express();
 
@@ -21,6 +22,7 @@ app.get("/", (req, res) => {
 const startServer = async () => {
   try {
     await connectDB();
+    await connectCloudinary();
     app.listen(config.port, () => {
       console.log(`Server running at http://localhost:${config.port}`);
     });

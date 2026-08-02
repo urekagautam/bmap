@@ -64,3 +64,23 @@
 font-size: 2.4rem;
 color:var(--neutral70);
 }
+
+.viewButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewButton > svg {
+  font-size: 2.4rem;
+  color: var(--neutral70);
+  transition: color 0.2s ease;
+}
+
+.viewButton:hover > svg {
+  color: var(--neutral90);
+}

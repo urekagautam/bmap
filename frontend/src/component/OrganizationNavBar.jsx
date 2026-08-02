@@ -1,5 +1,5 @@
 import styles from "./OrganizationNavbar.module.css"
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 import { IconBag } from "./icons/IconBag"
 import SearchBar from "./SearchBar"
@@ -9,32 +9,36 @@ import { IconPeoplePlus } from "./icons/IconPeoplePlus";
 import useOrgAuth from "../hooks/useOrgAuth";
 
 export default function OrganizationNavbar({ className = "" }) {
-   const { orgId, isAuthenticated } = useOrgAuth()
+  const { orgId, isAuthenticated, clearAuth } = useOrgAuth();
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    clearAuth();
+    navigate("/org/login");
+  };
   return (
     <nav className={cns(styles.navbar, className)}>
-
-      <Link className={styles.logo}>BMAP</Link>
-     
-  {/*     <div className={styles.searchContainer}>
-        <SearchBar />
-      </div> */}
-
+      <Link className={styles.logo} to="/org">BMAP</Link>
       <div className={styles.navActions}>
-      <Link to="/org" className={styles.navItem}>
+        <Link to="/org" className={styles.navItem}>
           <IconBag />
           <span className={styles.navItemText}>DashBoard</span>
         </Link>
-
-      {/*   <Link to={`/orgprofile/${orgId}`}  className={styles.navItem}>
-          <IconPeoplePlus />
-          <span className={styles.navItemText}>Register</span>
-        </Link> */}
-
-        <Link to={`/cmpprofile/${orgId}`} className={styles.navItem}>
-          <IconOrganizationBuilding />
-          <span className={styles.navItemText}>Profile</span>
-        </Link>
+        {orgId && (
+          <Link to={`/cmpprofile/${orgId}`} className={styles.navItem}>
+            <IconOrganizationBuilding />
+            <span className={styles.navItemText}>Profile</span>
+          </Link>
+        )}
+        {isAuthenticated && (
+          <button
+            onClick={handleLogout}
+            className={styles.navItem}
+            style={{ background: 'none', border: 'none', padding: 0, font: 'inherit' }}
+          >
+            Logout
+          </button>
+        )}
       </div>
     </nav>
-  )
+  );
 }

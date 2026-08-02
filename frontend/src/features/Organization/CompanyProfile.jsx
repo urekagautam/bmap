@@ -15,6 +15,8 @@ import {
 } from "../../constants/constants.js"
 import toast from "react-hot-toast"
 
+import { apiGetOrganizationDetails } from "../../services/apiOrganizationAuth";
+
 export default function CompanyProfile() {
   const { id: orgId } = useParams()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -23,6 +25,20 @@ export default function CompanyProfile() {
   const initialTab = searchParams.get("tab") || "about"
   const [activeTab, setActiveTab] = useState(initialTab)
   const { orgData, isLoading, error, refetch } = useOrgData(orgId) 
+
+  // Session validity check on mount
+  useEffect(() => {
+    if (orgId) {
+      apiGetOrganizationDetails(orgId).catch(() => {
+        // The API service will handle logout and redirect
+      });
+    } else {
+      // No orgId, force logout
+      localStorage.clear();
+      window.location.href = "/organization/login";
+    }
+  }, [orgId]);
+
 
   // Updating URL when tab changes
   const handleTabChange = (newTab) => {
@@ -113,8 +129,8 @@ export default function CompanyProfile() {
   const specialities = getSpecialtyLabels(orgData?.specialities || []) 
   const ownerName = orgData?.ownersName || ""
   const district = orgData?.district || ""
-  const coverImageUrl = "/CoverImage.jpg"
-  const profileImageUrl = "/CompanyProfileImage.png"
+  const coverImageUrl = orgData?.companyCover?.url || "/CoverImage.jpg"
+  const profileImageUrl = orgData?.companyLogo?.url || "/CompanyProfileImage.png"
   const followerCount = "1K Followers"
 
   // Loading state
@@ -195,13 +211,13 @@ export default function CompanyProfile() {
               >
                 About
               </button>
-              <button
+              {/* <button
                 type="button"
                 className={cns(styles.tab, activeTab === "jobs" && styles.activeTab)}
                 onClick={() => handleTabChange("jobs")}
               >
                 Jobs
-              </button>
+              </button> */}
             </div>
             {/* <h3 className={styles.followers}>{followerCount}</h3> */}
           </div>
@@ -227,7 +243,7 @@ export default function CompanyProfile() {
             />
           )}
 
-          {activeTab === "jobs" && <JobsTab />}
+          {/* {activeTab === "jobs" && <JobsTab />} */}
 
           {activeTab === "edittab" && (
             <EditTab 

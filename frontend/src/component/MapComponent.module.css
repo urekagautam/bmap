@@ -1,0 +1,51 @@
+.mapContainer {
+  height: 320px;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  z-index: 1; /*  Lower z-index to avoid conflicts */
+}
+
+.leafletContainer {
+  height: 100% !important; /* FIXED: Force height with !important */
+  width: 100% !important; /* FIXED: Force width with !important */
+  z-index: 1; /*  FIXED: Ensure proper stacking */
+}
+
+/*  FIXED: Add these critical Leaflet overrides */
+.leafletContainer .leaflet-container {
+  height: 100% !important;
+  width: 100% !important;
+  position: relative !important;
+}
+
+.leafletContainer .leaflet-map-pane {
+  z-index: 1 !important;
+}
+
+.leafletContainer .leaflet-tile-pane {
+  z-index: 1 !important;
+}
+
+.leafletContainer .leaflet-overlay-pane {
+  z-index: 2 !important;
+}
+
+.leafletContainer .leaflet-marker-pane {
+  z-index: 3 !important;
+}
+
+.leafletContainer .leaflet-popup-pane {
+  z-index: 4 !important;
+}
+
+/*  FIXED: Ensure tiles load properly */
+.leafletContainer .leaflet-tile {
+  max-width: none !important;
+  max-height: none !important;
+}
+
+._mapSection_1s158_551 > div{
+    /* min-height: 0; */
+}

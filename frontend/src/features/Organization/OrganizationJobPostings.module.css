@@ -1,0 +1,29 @@
+.timeAndActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.editBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s ease;
+  text-decoration: none;
+}
+
+.editBtn:hover {
+  background: #218838;
+}

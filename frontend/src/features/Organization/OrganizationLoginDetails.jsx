@@ -25,7 +25,7 @@ export default function OrganizationLoginDetails() {
   const [error, setError] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const navigate = useNavigate()
-  const { setAuth, isAuthenticated } = useOrgAuth()
+  const { setAuth } = useOrgAuth()
 
   // Redirecting if already authenticated
   /*   if (isAuthenticated) {
@@ -45,34 +45,33 @@ export default function OrganizationLoginDetails() {
         password: data.password,
       })
 
-      console.log("Organization login successful!", response)
-      toast.success("Login successful!")
+      console.log("Organization login response:", response)
 
-      // Using the hook to set authentication data
-      if (response.data.accessToken && response.data.organization) {
-        setAuth({
-          organization: response.data.organization,
-          accessToken: response.data.accessToken,
-          refreshToken: response.data.refreshToken,
-        })
+      if (response && response.data) {
+        const { organization, accessToken, refreshToken } = response.data
+
+        if (organization && accessToken) {
+          setAuth({
+            organization: organization,
+            accessToken: accessToken,
+            refreshToken: refreshToken || ""
+          })
+          toast.success(response.message || "Login successful!")
+          reset()
+          navigate("/org")
+        } else {
+          throw new Error("Login failed: Invalid data received from server.")
+        }
+      } else {
+        throw new Error(response?.message || "Login failed: No data received from server.")
       }
-
-      // Reset form
-      reset({
-        email: "",
-        password: "",
-      })
-
-      setTimeout(() => {
-        navigate("/org") 
-      }, 1000)
     } catch (error) {
-      console.error("Organization login failed", error)
-      const errorMessage = error.response?.data?.message || "Invalid email or password"
-      setError(errorMessage)
-      toast.error(errorMessage)
+      console.error("Organization login failed:", error);
+      const errorMessage = error.message || "Invalid email or password";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
