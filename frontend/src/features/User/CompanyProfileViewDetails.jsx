@@ -14,6 +14,7 @@ import {
   apiCheckFollowStatus,
   apiGetOrganizationFollowerCount,
 } from "../../services/apiFollow.js"
+import UserNavbar from "../../component/UserNavbar.jsx"
 
 export default function CompanyProfileViewDetails() {
   const { id: orgId } = useParams()
@@ -59,9 +60,11 @@ export default function CompanyProfileViewDetails() {
     try {
       setFollowerCountLoading(true)
       const response = await apiGetOrganizationFollowerCount(orgId)
-      setFollowerCount(response.data.followerCount)
+      // Defensive: if response or followerCount missing, treat as 0
+      setFollowerCount(response?.data?.followerCount ?? 0)
     } catch (error) {
-      console.error("Error fetching follower count:", error)
+      // If 404 or any error, just set followerCount to 0 and log for debugging
+      console.warn("Could not fetch follower count for orgId", orgId, error?.response?.status)
       setFollowerCount(0)
     } finally {
       setFollowerCountLoading(false)
@@ -174,8 +177,8 @@ export default function CompanyProfileViewDetails() {
   const ownerName = orgData?.ownersName || ""
   const district = orgData?.district || ""
 
-  const coverImageUrl = "/CoverImage.jpg"
-  const profileImageUrl = "/CompanyProfileImage.png"
+  const coverImageUrl = orgData?.companyCover?.url || "/CoverImage.jpg";
+  const profileImageUrl = orgData?.companyLogo?.url || "/CompanyProfileImage.png";
 
   if (isLoading) {
     return (
@@ -201,6 +204,7 @@ export default function CompanyProfileViewDetails() {
 
   return (
     <>
+      <UserNavbar />
       <section className={styles.heroSection}>
         <section className={styles.imagesSection}>
           <div className={styles.coverImage}>
@@ -288,7 +292,7 @@ export default function CompanyProfileViewDetails() {
             />
           )}
 
-          {activeTab === "jobs" && <JobsTab />}
+          {activeTab === "jobs" && <JobsTab orgId={orgId} />}
         </section>
       </section>
     </>

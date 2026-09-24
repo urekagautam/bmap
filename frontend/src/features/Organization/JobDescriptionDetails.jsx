@@ -1,7 +1,10 @@
+"use client"
+
 import { Link, useParams } from "react-router-dom"
 import { useState, useEffect } from "react"
 import styles from "./JobDescriptionDetails.module.css"
 import Button from "../../component/Button.jsx"
+import OrganizationNavbar from "../../component/OrganizationNavbar"
 import { IconOrganizationBuilding } from "../../component/icons/IconOrganizationBuilding"
 import { IconPeople } from "../../component/icons/IconPeople"
 import { IconLocationPinned } from "../../component/icons/IconLocationPinned"
@@ -15,7 +18,6 @@ import Tag from "../../component/Tag.jsx"
 import { IconChartBar } from "../../component/icons/IconChartBar.jsx"
 import { IconChartLinedUp } from "../../component/icons/IconChartLinedUp.jsx"
 import { IconHourglass } from "../../component/icons/IconHourglass.jsx"
-import { IconEyeOpen } from "../../component/icons/IconEyeOpen.jsx"
 import { IconBills } from "../../component/icons/IconBills.jsx"
 import { useNavigate } from "react-router-dom"
 import { apiGetVacancyDetails } from "../../services/apiVacancy.js"
@@ -27,15 +29,12 @@ import { getFormattedCompanyInfo } from "../../utils/orgUtils.js"
 export default function JobDescriptionDetails() {
   const navigate = useNavigate()
   const { id: jobId } = useParams()
-
   const [activeTab, setActiveTab] = useState("description")
 
   const parseSocialProfiles = (orgData) => {
     if (!orgData || !orgData.socialProfile) return {}
-
     try {
       const socialData = orgData.socialProfile
-
       return {
         instagram: socialData.insta || "",
         facebook: socialData.fb || "",
@@ -68,15 +67,13 @@ export default function JobDescriptionDetails() {
 
       try {
         setIsLoading(true)
-
         const vacancyResponse = await apiGetVacancyDetails(jobId)
         console.log("Vacancy API Response:", vacancyResponse)
-
         const vacancy = vacancyResponse.data?.vacancy || vacancyResponse.vacancy || vacancyResponse
         setVacancyData(vacancy)
-
         console.log("Full vacancy data structure:", vacancy)
         console.log("Skills specifically:", vacancy.skillsRequired)
+        console.log("Education level:", vacancy.educationLevel)
         console.log("All vacancy keys:", Object.keys(vacancy))
 
         if (vacancy.orgId) {
@@ -107,52 +104,58 @@ export default function JobDescriptionDetails() {
   // Loading state
   if (isLoading) {
     return (
-      <section className={styles.heroSection}>
-        <div className={styles.loadingContainer}>
-          <div className={styles.loader}>Loading job details...</div>
-        </div>
-      </section>
+      <>
+        <OrganizationNavbar />
+        <section className={styles.heroSection}>
+          <div className={styles.loadingContainer}>
+            <div className={styles.loader}>Loading job details...</div>
+          </div>
+        </section>
+      </>
     )
   }
 
   // Error state
   if (error) {
     return (
-      <section className={styles.heroSection}>
-        <div className={styles.errorContainer}>
-          <h2>Error Loading Job Details</h2>
-          <p>{error}</p>
-          <Button onClick={() => window.location.reload()}>Try Again</Button>
-        </div>
-      </section>
+      <>
+        <OrganizationNavbar />
+        <section className={styles.heroSection}>
+          <div className={styles.errorContainer}>
+            <h2>Error Loading Job Details</h2>
+            <p>{error}</p>
+            <Button onClick={() => window.location.reload()}>Try Again</Button>
+          </div>
+        </section>
+      </>
     )
   }
 
   // No data state
   if (!vacancyData) {
     return (
-      <section className={styles.heroSection}>
-        <div className={styles.errorContainer}>
-          <h2>Job Not Found</h2>
-          <p>The requested job posting could not be found.</p>
-          <Button onClick={() => navigate(-1)}>Go Back</Button>
-        </div>
-      </section>
+      <>
+        <OrganizationNavbar />
+        <section className={styles.heroSection}>
+          <div className={styles.errorContainer}>
+            <h2>Job Not Found</h2>
+            <p>The requested job posting could not be found.</p>
+            <Button onClick={() => navigate(-1)}>Go Back</Button>
+          </div>
+        </section>
+      </>
     )
   }
 
   // Formatting salary display structure ansar
   const formatSalary = () => {
     if (!vacancyData.salary) return "Negotiable"
-
     if (vacancyData.hideSalary) return "Confidential"
-
     if (vacancyData.salary.type === "fixed") {
       return `${vacancyData.salary.min}`
     } else if (vacancyData.salary.type === "range") {
       return `${vacancyData.salary.min} - ${vacancyData.salary.max}`
     }
-
     return vacancyData.salary.min || "Negotiable"
   }
 
@@ -160,11 +163,9 @@ export default function JobDescriptionDetails() {
     try {
       const deadlineDate = new Date(dateString)
       const today = new Date()
-
       // Resetting time to start of day for accurate day calculation
       deadlineDate.setHours(0, 0, 0, 0)
       today.setHours(0, 0, 0, 0)
-
       const timeDiff = deadlineDate.getTime() - today.getTime()
       const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24))
 
@@ -208,7 +209,6 @@ export default function JobDescriptionDetails() {
 
   const formatJobType = (type) => {
     if (!type) return "Not specified"
-
     const typeMap = {
       fulltime: "Full-time",
       parttime: "Part-time",
@@ -216,11 +216,9 @@ export default function JobDescriptionDetails() {
       internship: "Internship",
       freelance: "Freelance",
     }
-
     return typeMap[type] || type
   }
 
-  // Adding the experience criteria mapping after the other format functions
   const formatExperienceCriteria = (criteria) => {
     const criteriaMap = {
       more_than: "More than",
@@ -229,19 +227,16 @@ export default function JobDescriptionDetails() {
       less_than_or_equal_to: "Less than or equal to",
       equal_to: "Equal to",
     }
-
     return criteriaMap[criteria] || criteria
   }
 
-  // Updating the formatExperienceRequired function to use the mapping
   const formatExperienceRequired = () => {
     if (!vacancyData.isExperienceRequired) {
-      return "No Experience Required"
+      return "10 years"
     }
 
     let experienceText = ""
-
-    // Combining experienceCriteria and experience fields with proper formatting
+  
     if (vacancyData.experienceCriteria && vacancyData.experience) {
       const formattedCriteria = formatExperienceCriteria(vacancyData.experienceCriteria)
       experienceText = `${formattedCriteria} ${vacancyData.experience}`
@@ -256,28 +251,56 @@ export default function JobDescriptionDetails() {
     return experienceText
   }
 
+
+  const formatEducationLevel = (level) => {
+    if (!level) return "Not specified"
+    const educationMap = {
+      bca: "Doctorate (Ph.D)",
+      masters: "Graduate (Masters)",
+      professional_cert: "Professional Certificate",
+      bachelor: "Under Graduate (Bachelor)",
+      diploma: "Diploma Certificate",
+      high_school: "Higher Secondary (+2/ A Levels/ IB)",
+      school: "School (SLC/ SEE)",
+      others: "Others",
+    }
+    return educationMap[level] || level
+  }
+
   const formatSkills = (skills) => {
     if (!skills || !Array.isArray(skills) || skills.length === 0) return []
-
-    return skills.map((skill) => {
-      return skill
+    return skills.map((skill) =>
+      skill
         .split("_")
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ")
-    })
+        .join(" "),
+    )
+  }
+
+  const formatAddressWithDistrict = (address, district) => {
+    if (!address && !district) return "Not specified"
+    if (!district) return address
+    if (!address) return district
+    return `${address}, ${district}`
   }
 
   const companyInfo = getFormattedCompanyInfo(orgData, vacancyData)
-
   const { companyName, industry, employeeCount, foundedYear, address, phonenum, email, socials } = companyInfo
 
-  const coverImageUrl = "/CoverImage.jpg"
-  const profileImageUrl = "/CompanyProfileImage.png"
 
-  const deadlineDate = new Date(vacancyData?.deadline)
+  const district = orgData?.district || orgData?.location?.district || vacancyData?.district || ""
+  const fullAddress = formatAddressWithDistrict(address, district)
+
+  const coverImageUrl = orgData?.coverUrl || "/CoverImage.jpg"
+  const profileImageUrl = orgData?.avatarUrl || "/CompanyProfileImage.png"
+
+  const deadlineDate = vacancyData?.deadline ? new Date(vacancyData.deadline) : new Date()
   const today = new Date()
+  deadlineDate.setHours(0, 0, 0, 0)
+  today.setHours(0, 0, 0, 0)
   const timeDiff = deadlineDate.getTime() - today.getTime()
   const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24))
+
   const deadlineClass =
     daysDiff <= 0
       ? styles.expiredDeadline
@@ -288,228 +311,244 @@ export default function JobDescriptionDetails() {
           : ""
 
   return (
-    <section className={styles.heroSection}>
-      <section className={styles.imagesSection}>
-        <div className={styles.coverImage}>
-          <img src={coverImageUrl || "/placeholder.svg"} alt="Cover" />
-        </div>
-        <div className={styles.profileImage}>
-          <img src={profileImageUrl || "/placeholder.svg"} alt="Profile" />
-        </div>
-      </section>
+    <>
+      <OrganizationNavbar />
+      <section className={styles.heroSection}>
+        <section className={styles.imagesSection}>
+          <div className={styles.coverImage}>
+            <img src={coverImageUrl || "/placeholder.svg"} alt="Cover" />
+          </div>
+          <div className={styles.profileImage}>
+            <img src={profileImageUrl || "/placeholder.svg"} alt="Profile" />
+          </div>
+        </section>
 
-      <section className={styles.mainWrapper}>
-        <div className={styles.headerDivison}>
-          <div className={styles.header}>
-            <h1>{companyName}</h1>
-            <div className={styles.companyInfo}>
-              <span>{industry}</span>
-              {employeeCount !== "Not specified" && (
-                <>
-                  <span className={styles.dot}>•</span>
-                  <span>{employeeCount}</span>
-                </>
-              )}
-              {foundedYear !== "N/A" && (
-                <>
-                  <span className={styles.dot}>•</span>
-                  <span>Founded {foundedYear}</span>
-                </>
-              )}
+        <section className={styles.mainWrapper}>
+          <div className={styles.headerDivison}>
+            <div className={styles.header}>
+              <h1>{companyName}</h1>
+              <div className={styles.companyInfo}>
+                <span>{industry}</span>
+                {employeeCount !== "Not specified" && (
+                  <>
+                    <span className={styles.dot}>•</span>
+                    <span>{employeeCount}</span>
+                  </>
+                )}
+                {foundedYear !== "N/A" && (
+                  <>
+                    <span className={styles.dot}>•</span>
+                    <span>Founded {foundedYear}</span>
+                  </>
+                )}
+              </div>
+            </div>
+            <div className={styles.buttons}>
+              <Link to={`/updatevacancy/${jobId}`}>
+                <Button className={styles.updateBtn} layout="xs">
+                  Update
+                </Button>
+              </Link>
             </div>
           </div>
 
-          <div className={styles.buttons}>
-            <Link to={`/updatevacancy/${jobId}`}>
-              <Button className={styles.updateBtn} layout="xs">
-                Update
-              </Button>
-            </Link>
-            <Button className={styles.updateBtn} layout="sm" fill="text" color="neutralLight">
-              Delete
-            </Button>
-          </div>
-        </div>
-
-        <div className={styles.aboutContent}>
-          <div className={styles.jobDescriptionWrapper}>
-            <div className={styles.cardWrapper}>
-              <div className={styles.cardHeader}>
-                <h1>{vacancyData.title}</h1>
-                <div className={styles.viewCount}>
+          <div className={styles.aboutContent}>
+            <div className={styles.jobDescriptionWrapper}>
+              <div className={styles.cardWrapper}>
+                <div className={styles.cardHeader}>
+                  <h1>{vacancyData.title}</h1>
+                  {/*   <div className={styles.viewCount}>
                   <IconEyeOpen />
                   <span>{vacancyData.views || 0}</span>
-                </div>
-              </div>
-
-              <div className={styles.tagsContainer}>
-                <Tag
-                  data={formatJobType(vacancyData.jobByTime)}
-                  icon={<IconClock />}
-                  layout="primary"
-                  color="blue"
-                  size="md"
-                />
-
-                <Tag
-                  data={`Rs. ${formatSalary()} ${vacancyData.salaryPeriod || "Monthly"}`}
-                  icon={<IconBills />}
-                  layout="success"
-                  color="green"
-                  size="md"
-                />
-              </div>
-
-              <div className={styles.detailsContainer}>
-                <div className={styles.detailItem}>
-                  <IconLocationPinned />
-                  <span>{address}</span>
+                </div> */}
                 </div>
 
-                <div className={styles.detailItem}>
-                  <IconChartBar />
-                  <span>{formatJobLevel(vacancyData.jobLevel)}</span>
+                <div className={styles.tagsContainer}>
+                  <Tag
+                    data={formatJobType(vacancyData.jobByTime)}
+                    icon={<IconClock />}
+                    layout="primary"
+                    color="blue"
+                    size="md"
+                  />
+                  <Tag
+                    data={`Rs. ${formatSalary()} ${vacancyData.salaryPeriod || "Monthly"}`}
+                    icon={<IconBills />}
+                    layout="success"
+                    color="green"
+                    size="md"
+                  />
                 </div>
-              </div>
 
-              <div className={styles.detailsContainer}>
-                <div className={`${styles.bottomLWrapper} ${deadlineClass}`}>
-                  <IconHourglass />
-                  <h3>{formatDeadline(vacancyData.deadline)}</h3>
-                </div>
-
-                <div className={styles.detailItem}>
-                  <IconChartLinedUp />
-                  <span>{formatExperienceRequired()}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.jobInfo}>
-              <div className={styles.tabs}>
-                <button
-                  type="button"
-                  className={cns(styles.tab, activeTab === "description" && styles.activeTab)}
-                  onClick={() => setActiveTab("description")}
-                >
-                  Decscription
-                </button>
-                <button
-                  type="button"
-                  className={cns(styles.tab, activeTab === "requirements" && styles.activeTab)}
-                  onClick={() => setActiveTab("requirements")}
-                >
-                  Requirements
-                </button>
-              </div>
-
-              {activeTab === "description" && (
-                <div className={styles.description}>
-                  <h3>Job Description</h3>
-                  <p>{vacancyData.description}</p>
-                </div>
-              )}
-
-              {activeTab === "requirements" && (
-                <div className={styles.requirement}>
-                  <h3>Requirements</h3>
-                  <div className={styles.requirementsList}>
-                    <ul>
-                      {vacancyData.additionalInfo.split(",").map((requirement, index) => (
-                        <li key={index}>{requirement.trim()}</li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className={styles.skillsContainer}>
-                    <div className={styles.skillsHeader}>
-                      <IconOrganizationBuilding />
-                      <h4>Key Skills:</h4>
-                    </div>
-                    <div className={styles.skillsTags}>
-                      {(() => {
-                        const skills = vacancyData.skillsRequired
-
-                        // If no skills available, show message
-                        if (!skills || (Array.isArray(skills) && skills.length === 0)) {
-                          return <span className={styles.notAvailable}>No skills mentioned as required</span>
-                        }
-
-                        // If skills exist, format and display them (restore original logic)
-                        const formattedSkills = formatSkills(skills)
-
-                        // If formatting resulted in empty array, show message
-                        if (!formattedSkills || formattedSkills.length === 0) {
-                          return <span className={styles.notAvailable}>No skills mentioned as required</span>
-                        }
-
-                        // Display the skills as tags
-                        return formattedSkills.map((skill, index) => (
-                          <Tag key={index} data={skill} layout="primary" color="neutral" size="md" />
-                        ))
-                      })()}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className={styles.infoAndHiring}>
-            <div className={styles.companyOtherInfo}>
-              <h2>Company Information</h2>
-              <div className={styles.infoList}>
-                <span>
-                  <IconOrganizationBuilding />
-                  {industry}
-                </span>
-                <span>
-                  <IconPeople />
-                  {employeeCount}
-                </span>
-                <span className={styles.showLocation}>
-                  <span className={styles.locationDetails}>
+                <div className={styles.detailsContainer}>
+                  <div className={styles.detailItem}>
                     <IconLocationPinned />
-                    {address}
-                  </span>
-                </span>
-                <span>
-                  <IconPhone />
-                  {phonenum}
-                </span>
-                <span>
-                  <IconEnvelope />
-                  {email}
-                </span>
+                    <span>{fullAddress}</span>
+                  </div>
+                  <div className={styles.detailItem}>
+                    <IconChartBar />
+                    <span>{formatJobLevel(vacancyData.jobLevel)}</span>
+                  </div>
+                </div>
+
+                <div className={styles.detailsContainer}>
+                  <div className={`${styles.bottomLWrapper} ${deadlineClass}`}>
+                    <IconHourglass />
+                    <h3>{formatDeadline(vacancyData.deadline)}</h3>
+                  </div>
+                  <div className={styles.detailItem}>
+                    <IconChartLinedUp />
+                    <span>{formatExperienceRequired()}</span>
+                  </div>
+                </div>
+
+                {/* Add education level display */}
+                <div className={styles.detailsContainer}>
+                  <div className={styles.detailItem}>
+                    <IconOrganizationBuilding />
+                    <span>Education: {formatEducationLevel(vacancyData.educationLevel)}</span>
+                  </div>
+                </div>
               </div>
 
-              <div className={styles.socialInfo}>
-                <h4>Social Media</h4>
-                <div className={styles.socialsList}>
-                  {orgData?.socialProfile?.insta && (
-                    <a href={orgData.socialProfile.insta} target="_blank" rel="noopener noreferrer">
-                      <IconInstagram platform="instagram" />
-                    </a>
-                  )}
-                  {orgData?.socialProfile?.fb && (
-                    <a href={orgData.socialProfile.fb} target="_blank" rel="noopener noreferrer">
-                      <IconFacebook platform="facebook" />
-                    </a>
-                  )}
-                  {orgData?.socialProfile?.x && (
-                    <a href={orgData.socialProfile.x} target="_blank" rel="noopener noreferrer">
-                      <IconX platform="x" />
-                    </a>
-                  )}
-                  {!orgData?.socialProfile?.insta && !orgData?.socialProfile?.fb && !orgData?.socialProfile?.x && (
-                    <span className={styles.notAvailable}>No information available</span>
-                  )}
+              <div className={styles.jobInfo}>
+                <div className={styles.tabs}>
+                  <button
+                    type="button"
+                    className={cns(styles.tab, activeTab === "description" && styles.activeTab)}
+                    onClick={() => setActiveTab("description")}
+                  >
+                    Decscription
+                  </button>
+                  <button
+                    type="button"
+                    className={cns(styles.tab, activeTab === "requirements" && styles.activeTab)}
+                    onClick={() => setActiveTab("requirements")}
+                  >
+                    Requirements
+                  </button>
+                </div>
+
+                {activeTab === "description" && (
+                  <div className={styles.description}>
+                    <h3>Job Description</h3>
+                    <p>{vacancyData.description}</p>
+                  </div>
+                )}
+
+                {activeTab === "requirements" && (
+                  <div className={styles.requirement}>
+                    <h3>Requirements</h3>
+                    <div className={styles.requirementsList}>
+                      <ul>
+                        {vacancyData.additionalInfo.split(",").map((requirement, index) => (
+                          <li key={index}>{requirement.trim()}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Add education requirement section */}
+                    <div className={styles.educationContainer}>
+                      <div className={styles.educationHeader}>
+                        <IconOrganizationBuilding />
+                        <h4>Education Requirement:</h4>
+                      </div>
+                      <div className={styles.educationLevel}>
+                        <Tag
+                          data={formatEducationLevel(vacancyData.educationLevel)}
+                          layout="primary"
+                          color="blue"
+                          size="md"
+                        />
+                      </div>
+                    </div>
+
+                    <div className={styles.skillsContainer}>
+                      <div className={styles.skillsHeader}>
+                        <IconOrganizationBuilding />
+                        <h4>Key Skills:</h4>
+                      </div>
+                      <div className={styles.skillsTags}>
+                        {(() => {
+                          const skills = vacancyData.skillsRequired
+                          // If no skills available, show message
+                          if (!skills || (Array.isArray(skills) && skills.length === 0)) {
+                            return <span className={styles.notAvailable}>No skills mentioned as required</span>
+                          }
+                          // If skills exist, format and display them (restore original logic)
+                          const formattedSkills = formatSkills(skills)
+                          // If formatting resulted in empty array, show message
+                          if (!formattedSkills || formattedSkills.length === 0) {
+                            return <span className={styles.notAvailable}>No skills mentioned as required</span>
+                          }
+                          // Display the skills as tags
+                          return formattedSkills.map((skill, index) => (
+                            <Tag key={index} data={skill} layout="primary" color="neutral" size="md" />
+                          ))
+                        })()}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className={styles.infoAndHiring}>
+              <div className={styles.companyOtherInfo}>
+                <h2>Company Information</h2>
+                <div className={styles.infoList}>
+                  <span>
+                    <IconOrganizationBuilding />
+                    {industry}
+                  </span>
+                  <span>
+                    <IconPeople />
+                    {employeeCount}
+                  </span>
+                  <span className={styles.showLocation}>
+                    <span className={styles.locationDetails}>
+                      <IconLocationPinned />
+                      {fullAddress}
+                    </span>
+                  </span>
+                  <span>
+                    <IconPhone />
+                    {phonenum}
+                  </span>
+                  <span>
+                    <IconEnvelope />
+                    {email}
+                  </span>
+                </div>
+
+                <div className={styles.socialInfo}>
+                  <h4>Social Media</h4>
+                  <div className={styles.socialsList}>
+                    {orgData?.socialProfile?.insta && (
+                      <a href={orgData.socialProfile.insta} target="_blank" rel="noopener noreferrer">
+                        <IconInstagram platform="instagram" />
+                      </a>
+                    )}
+                    {orgData?.socialProfile?.fb && (
+                      <a href={orgData.socialProfile.fb} target="_blank" rel="noopener noreferrer">
+                        <IconFacebook platform="facebook" />
+                      </a>
+                    )}
+                    {orgData?.socialProfile?.x && (
+                      <a href={orgData.socialProfile.x} target="_blank" rel="noopener noreferrer">
+                        <IconX platform="x" />
+                      </a>
+                    )}
+                    {!orgData?.socialProfile?.insta && !orgData?.socialProfile?.fb && !orgData?.socialProfile?.x && (
+                      <span className={styles.notAvailable}>No information available</span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </section>
       </section>
-    </section>
+    </>
   )
 }

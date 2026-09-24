@@ -26,7 +26,7 @@ import RadioGroup from "../../../component/RadioGroup"
 import MultiSelect from "../../../component/MultiSelect"
 import { IconCross } from "../../../component/icons/IconCross"
 import TextArea from "../../../component/TextArea"
-import { apiGetUserProfile, apiUpdateUserProfile } from "../../../services/apiAuth.js"
+import { apiGetUserProfile, apiUpdateUserProfile, apiUploadProfileImage } from "../../../services/apiAuth.js"
 import useUserAuth from "../../../hooks/useUserAuth.js"
 import { convertSkillsToOptions } from "../../../utils/dataHelpers.js"
 
@@ -35,6 +35,8 @@ export default function EditInformation({ onCancel, onSuccess }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [companyLogo, setCompanyLogo] = useState(null)
+  const [currentProfileImage, setCurrentProfileImage] = useState("")
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
 
   const {
     register,
@@ -140,6 +142,11 @@ export default function EditInformation({ onCancel, onSuccess }) {
           })
 
           console.log("User data loaded successfully")
+          
+          // Set current profile image
+          if (userData.image) {
+            setCurrentProfileImage(userData.image)
+          }
         }
       } catch (error) {
         console.error("Error loading user data:", error)
@@ -154,6 +161,27 @@ export default function EditInformation({ onCancel, onSuccess }) {
 
   const handleRemoveImage = () => {
     setCompanyLogo(null)
+  }
+
+  const handleImageUpload = async (file) => {
+    if (!file) return
+
+    try {
+      setIsUploadingImage(true)
+      
+      const response = await apiUploadProfileImage(userId, file)
+      
+      if (response?.data?.user?.image) {
+        setCurrentProfileImage(response.data.user.image)
+        toast.success("Profile image uploaded successfully!")
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error)
+      const errorMessage = error.response?.data?.message || "Failed to upload image"
+      toast.error(errorMessage)
+    } finally {
+      setIsUploadingImage(false)
+    }
   }
 
   const handleSkillChange = (skills) => {
@@ -256,12 +284,21 @@ export default function EditInformation({ onCancel, onSuccess }) {
                   id="companyLogo"
                   shape="circle"
                   imgFile={companyLogo}
-                  onChange={(file) => setCompanyLogo(file)}
+                  onChange={handleImageUpload}
+                  currentImage={currentProfileImage}
+                  isUploading={isUploadingImage}
                 />
                 <div className={styles.rightSide}>
                   <label>User Profile Photo</label>
-                  <Button type="button" layout="xs" color="neutralLight" fill="outline" onClick={handleRemoveImage}>
-                    Remove
+                  <Button 
+                    type="button" 
+                    layout="xs" 
+                    color="neutralLight" 
+                    fill="outline" 
+                    onClick={handleRemoveImage}
+                    disabled={isUploadingImage}
+                  >
+                    {isUploadingImage ? "Uploading..." : "Remove"}
                   </Button>
                 </div>
               </div>

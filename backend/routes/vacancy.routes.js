@@ -6,16 +6,18 @@ import {
   getNearbyVacancies,
   getAllVacancies,
   getJobDetailsForApplication,
-  getFilteredVacancies
+  getFilteredVacancies,
+  getOrganizationJobListings
 } from "../controllers/vacancy.controller.js";
 import { verifyOrgJWT } from "../middlewares/verifyOrgJWT.middleware.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
 // Post a new vacancy
 router.route("/vacancy").post(postVacancyDetails);
 
-// Get all details of a vacancy
+// Get all details of a vacancy (public route, authentication handled in controller)
 router.route("/getvacancy/:id").get(getVacancyDetails);
 
 // Get specific details of all vacancies by an organization
@@ -25,6 +27,7 @@ router.route("/vacancy/:id").put(updateVacancyDetails)
 // Get nearby vacancies (uses query parameters)
 router.route("/nearbyVacancies").get(getNearbyVacancies);
 router.get("/job-details/:id", getJobDetailsForApplication)
+router.get("/job-listings/:id", getOrganizationJobListings)
 
 //Get filtered vacancies based on various criteria
 router.route("/vacancy").get(getFilteredVacancies);

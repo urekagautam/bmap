@@ -1,0 +1,411 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    background: #f5f6f8;
+    min-height: 100vh;
+    margin-top: var(--nav-height);
+  }
+  
+  .container {
+    display: flex;
+    flex: 1;
+    height: 100%;
+  }
+  
+  .dashboard {
+    padding: 30px 130px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+    font-size: 16px;
+  }
+  
+  .backBtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: #387adf;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 8px 0;
+    margin-bottom: 16px;
+    transition: color 0.2s ease;
+  }
+  
+  .backBtn:hover {
+    color: #2d6bc7;
+  }
+  
+  .mainContainer {
+    display: flex;
+    gap: 26px;
+  }
+  
+  .formContainer {
+    min-width: 620px;
+    padding: 16px;
+    margin-bottom: 100px;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background-color: white;
+  }
+  
+  .pageTitle {
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .pageTitle h1 {
+    font-weight: 600;
+    font-size: 24px;
+    margin-bottom: 8px;
+    color: #1f2937;
+  }
+  
+  .jobInfo {
+    margin-bottom: 12px;
+  }
+  
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #6b7280;
+    font-size: 14px;
+  }
+  
+  .row .icon {
+    font-size: 16px;
+  }
+  
+  .statusBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.statusNote {
+  font-size: 12px;
+  color: #6b7280;
+  font-style: italic;
+}
+  
+  .statusTag {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    color: white;
+  }
+  
+  /* Dynamic Status Colors for Header Badge */
+  .statusTag.underReview {
+    background-color: #0093a8;
+  }
+  
+  .statusTag.pending {
+    background-color: #6B7280;
+  }
+  
+  .statusTag.shortListed {
+    background-color: #EEE8A9;
+    color: #333;
+  }
+  
+  .statusTag.interviewScheduled {
+    background-color: #9A49EA;
+  }
+  
+  .statusTag.hired {
+    background-color: #40ad36;
+  }
+  
+  .statusTag.rejected {
+    background-color: #E6094B;
+  }
+  
+  .section {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .section h2 {
+    font-weight: 600;
+    font-size: 18px;
+    background-color: #f3f4f6;
+    padding: 14px;
+    margin: 0;
+    color: #1f2937;
+  }
+  
+  .infoGrid {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .infoRow {
+    display: flex;
+    gap: 32px;
+  }
+  
+  .infoItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    color: #374151;
+  }
+  
+  .infoItem .icon {
+    color: #6b7280;
+    font-size: 16px;
+    min-width: 16px;
+  }
+  
+  .documentsContainer {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .documentItem h4 {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #1f2937;
+  }
+  
+  .documentFile {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    background-color: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+  }
+  
+  .fileName {
+    font-weight: 500;
+    color: #1f2937;
+  }
+  
+  .fileInfo {
+    font-size: 12px;
+    color: #6b7280;
+  }
+  
+  .downloadBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #10b981;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    width: fit-content;
+    margin-top: 8px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .downloadBtn:hover {
+    background-color: #059669;
+  }
+  
+  .additionalInfo {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .questionAnswer h4 {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #1f2937;
+  }
+  
+  .questionAnswer p {
+    height:10rem;
+    color: #374151;
+    line-height: 1.5;
+    padding: 12px;
+    background-color: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+   
+  }
+  
+  .salaryExpectation {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #374151;
+    padding: 16px 0;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 16px;
+  }
+  
+  .salaryExpectation .icon {
+    color: #6b7280;
+    font-size: 16px;
+  }
+  
+  /* New Status Selection Styles */
+  .statusSelection {
+    padding: 20px;
+    background-color: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  
+  .statusOptions {
+    display: flex;
+    gap: 0;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: white;
+    width: 100%;
+  }
+  
+  .statusOption {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    background: none;
+    border: none;
+    border-right: 1px solid #e5e7eb;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  
+  .statusOption:last-child {
+    border-right: none;
+  }
+  
+  .statusOption:hover {
+    background-color: #f3f4f6;
+  }
+  
+  .statusOption.statusOptionActive {
+    background-color: #f0f9ff;
+    color: #0369a1;
+    border-bottom: 2px solid #0369a1;
+  }
+  
+  .statusIcon {
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+  
+  .statusOption.statusOptionActive .statusIcon {
+    color: #0369a1;
+  }
+  
+  .viewProfileBtn {
+    background-color: #1f2937;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    align-self: flex-start;
+  }
+  
+  .viewProfileBtn:hover {
+    background-color: #111827;
+  }
+  
+  .jobDetailsContainer {
+    width: 600px;
+    height: fit-content;
+    background-color: white;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+  }
+  
+  .jobDetailsContainer h3 {
+    font-size: 18px;
+    font-weight: 600;
+    padding: 8px 14px;
+    background-color: #f3f4f6;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    color: #1f2937;
+  }
+  
+  .detailsList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .detailItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #374151;
+    font-size: 14px;
+  }
+  
+  .detailItem .icon {
+    color: #6b7280;
+    font-size: 18px;
+    min-width: 18px;
+  }
+  
+  .deadline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    color: #374151;
+    font-weight: 500;
+    background-color: #f9fafb;
+    padding: 8px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+  }
+  
+  .deadline .icon {
+    color: #6b7280;
+    font-size: 16px;
+  }

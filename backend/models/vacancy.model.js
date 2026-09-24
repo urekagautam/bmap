@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"
 
 const vacancySchema = new mongoose.Schema(
   {
@@ -9,6 +9,13 @@ const vacancySchema = new mongoose.Schema(
     additionalInfo: String,
     skillsRequired: [String],
     isSkillsRequired: { type: Boolean, default: true },
+    // Add education level field
+    educationLevel: {
+      type: String,
+      enum: ["phd", "masters", "professional_cert", "bachelor", "diploma", "high_school", "school", "others"],
+      default: "bachelor",
+    },
+    isEducationRequired: { type: Boolean, default: true },
     jobByTime: {
       type: String,
       enum: ["fulltime", "parttime", "contract", "internship", "freelance"],
@@ -41,13 +48,7 @@ const vacancySchema = new mongoose.Schema(
     hideSalary: { type: Boolean, default: false },
     experienceCriteria: {
       type: String,
-      enum: [
-        "more_than",
-        "less_than",
-        "more_than_or_equal_to",
-        "less_than_or_equal_to",
-        "equal_to",
-      ],
+      enum: ["more_than", "less_than", "more_than_or_equal_to", "less_than_or_equal_to", "equal_to"],
     },
     experience: {
       type: String,
@@ -55,13 +56,14 @@ const vacancySchema = new mongoose.Schema(
     },
     isExperienceRequired: { type: Boolean, default: false },
     requiredEmployees: Number,
+    isVacancyOpen: { type: Boolean, default: true },
     orgId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Organization",
       required: true,
     },
   },
-  { timestamps: true }
-);
+  { timestamps: true },
+)
 
-export const Vacancy = mongoose.model("Vacancy", vacancySchema);
+export const Vacancy = mongoose.model("Vacancy", vacancySchema)

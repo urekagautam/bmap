@@ -22,7 +22,7 @@ const organizationSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      select: false, 
+      select: false,
     },
     phoneNo: {
       type: String,
@@ -32,6 +32,19 @@ const organizationSchema = new mongoose.Schema(
     image: {
       type: [String],
     },
+    ownerPhoto: {
+      url: { type: String },
+      publicId: { type: String },
+    },
+    citizenshipCardFront: {
+      url: { type: String },
+      publicId: { type: String },
+    },
+    citizenshipCardBack: {
+      url: { type: String },
+      publicId: { type: String },
+    },
+    // ✅ GeoJSON format for organizations
     location: {
       type: {
         type: String,
@@ -83,6 +96,34 @@ const organizationSchema = new mongoose.Schema(
         type: String,
       },
     },
+    companyLogo: {
+      url: {
+        type: String,
+        default: "",
+      },
+      publicId: {
+        type: String,
+        default: "",
+      },
+      uploadedAt: {
+        type: Date,
+        default: null,
+      },
+    },
+    companyCover: {
+      url: {
+        type: String,
+        default: "",
+      },
+      publicId: {
+        type: String,
+        default: "",
+      },
+      uploadedAt: {
+        type: Date,
+        default: null,
+      },
+    },
     refreshToken: {
       type: String,
     },
@@ -94,7 +135,6 @@ const organizationSchema = new mongoose.Schema(
 // Hashing password before saving
 organizationSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next()
-
   try {
     console.log("Hashing password for organization:", this.email)
     this.password = await bcrypt.hash(this.password, 12)
@@ -107,7 +147,7 @@ organizationSchema.pre("save", async function (next) {
   }
 })
 
-// Comparing password 
+// Comparing password
 organizationSchema.methods.isPasswordCorrect = async function (candidatePassword) {
   try {
     console.log("Comparing organization passwords...")
@@ -115,31 +155,25 @@ organizationSchema.methods.isPasswordCorrect = async function (candidatePassword
     console.log("Input password type:", typeof candidatePassword)
     console.log("Stored hash exists:", !!this.password)
     console.log("Stored hash type:", typeof this.password)
-
     // Validate inputs
     if (!candidatePassword || typeof candidatePassword !== "string") {
       console.error("Invalid candidate password:", candidatePassword)
       return false
     }
-
     if (!this.password || typeof this.password !== "string") {
       console.error("Invalid stored password hash:", this.password)
       return false
     }
-
     // Ensuring password is a string and not empty
     const passwordString = String(candidatePassword).trim()
     const hashString = String(this.password).trim()
-
     if (!passwordString || !hashString) {
       console.error("Empty password or hash after conversion")
       return false
     }
-
     console.log("Password length:", passwordString.length)
     console.log("Hash length:", hashString.length)
     console.log("Hash starts with $2b$:", hashString.startsWith("$2b$"))
-
     const result = await bcrypt.compare(passwordString, hashString)
     console.log("Organization password comparison result:", result)
     return result

@@ -1,20 +1,394 @@
-.mainWrapper{
-    margin: 0 auto;
-    margin-top: 6.2rem;
-    color:white;
-    max-width: var(--max-width);
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  background: #f5f6f8;
+  height: 100vh;
+  margin-top: var(--nav-height);
 }
 
-.UploadPan{
-    width: 30rem;
-    height: 30rem;
-    cursor: pointer;
-    background-color: var(--neutral30);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.container {
+  display: flex;
+  flex: 1;
+  height: 100%;
 }
 
-.pan{
-    display: none;
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 18px;
+  background-color: #f9fdfd;
+  width: 280px;
+  border-right: 1px solid #eee;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.heading {
+  font-size: 18px;
+  font-weight: 500;
+  color: #112211;
+  margin-bottom: 16px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 12px 16px 12px;
+  gap: 12px;
+  align-self: stretch;
+  margin-bottom: 12px;
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #000;
+  margin-bottom: 4px;
+}
+
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.menuItem a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.menuItem:hover {
+  background-color: rgba(171, 204, 207, 0.2);
+  transform: translateX(2px);
+}
+
+.menuItem.active {
+  background: rgba(171, 204, 207, 0.3);
+  color: #000;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.menuItem svg {
+  min-width: 20px;
+  font-size: 16px;
+}
+
+.dashboard {
+  padding: 30px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 1118px;
+}
+
+.header h1 {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.actionBtn {
+  font-size: 1.4rem;
+}
+
+.stats {
+  display: inline-flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.statBox {
+  display: flex;
+  width: 200px;
+  height: 98px;
+  padding: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  border-radius: 12px;
+  background-color: var(--secondary10);
+}
+
+.insideStatBox {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  align-self: stretch;
+}
+
+.insideStatBox p {
+  color: var(--primary90);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 120%;
+  letter-spacing: 0.42px;
+}
+
+.statIcon {
+  display: flex;
+  padding: 4px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 100px;
+  background: var(--secondary20);
+}
+
+.statIcon svg {
+  color: var(--primary40);
+}
+
+.statBox span {
+  display: block;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 120%;
+  letter-spacing: 0.6px;
+  color: var(--primary90);
+}
+
+.content {
+  display: flex;
+  gap: 30px;
+}
+
+.recentApps {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+  width: 581px;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: #f9fdfd;
+  border-bottom: 1px solid #f0f0f0;
+  border-radius: 6px;
+  max-width: 600px;
+}
+
+.imageSection img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.userDetails {
+  flex: 1;
+  margin-left: 12px;
+}
+
+.userDetails strong {
+  display: block;
+  font-weight: 600;
+  color: #2b2b2b;
+}
+
+.userDetails p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: #888;
+}
+
+.meta {
+  text-align: right;
+  min-width: 80px;
+}
+
+.meta span {
+  display: block;
+  font-size: 12px;
+  color: #6b6b6b;
+  margin-bottom: 4px;
+}
+
+.meta a {
+  font-weight: 600;
+  font-size: 13px;
+  color: #386b59;
+  text-decoration: none;
+}
+
+.jobPerformance {
+  display: flex;
+  width: 440px;
+  height: 526px;
+  padding: 16px;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-radius: 16px;
+  border: 1px solid var(--neutral20);
+}
+
+.pieChartSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
+  align-self: stretch;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0px 24px;
+  gap: 16px 32px;
+  flex-shrink: 0;
+  align-self: stretch;
+  justify-content: flex-start;
+}
+
+.legend div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: calc(50% - 16px);
+}
+
+.legend div span {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  border-radius: 2px;
+}
+
+/* ✅ FIXED: Map section styling with proper z-index management */
+.mapSection {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  position: relative; /* ✅ ADDED: Establish stacking context */
+  z-index: 1; /* ✅ ADDED: Lower z-index */
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box; /* ✅ ADDED: Proper box sizing */
+}
+
+/* ✅ ADDED: Ensure map container has proper dimensions */
+.mapSection > div {
+  /* min-height: 320px; */
+  width: 100%;
+}
+
+.recentApps button {
+  margin-top: 20px;
+}
+
+.applicationItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.applicationItem:hover {
+  background-color: #f9f9f9;
+}
+
+.applicantInfo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.applicantAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #9d75f0;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.applicantName {
+  font-weight: 600;
+  font-size: 15px;
+  color: #333;
+}
+
+.jobTitle {
+  font-size: 13px;
+  color: #666;
+}
+
+.applicationMeta {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  text-align: right;
+}
+
+.applyDate {
+  font-size: 13px;
+  color: #888;
+}
+
+.viewLink {
+  font-size: 14px;
+  color: #387adf;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.viewLink:hover {
+  text-decoration: underline;
 }

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"
 
 const applicationSchema = new mongoose.Schema(
   {
@@ -13,7 +13,7 @@ const applicationSchema = new mongoose.Schema(
       required: true,
     },
     documents: {
-      type: String, 
+      type: String,
       required: true,
     },
     description: {
@@ -26,14 +26,14 @@ const applicationSchema = new mongoose.Schema(
     },
     status: {
       type: Number,
-      enum: [0, 1, 2, 3, 4], // 0: Applied, 1: Under Review, 2: Interview, 3: Rejected, 4: Accepted
-      default: 0,
-    },
+      enum: [0, 1, 2, 3, 4, 5], // 0: Applied, 1: Shortlisted, 2: Interview, 3: Rejected, 4: Hired, 5: Under Review
+      default: 0, // Applied / Pending
+    }, 
   },
-  { timestamps: true }
-);
+  { timestamps: true },
+)
 
 // Create a compound index to prevent duplicate applications
-applicationSchema.index({ user_id: 1, vacancy_id: 1 }, { unique: true });
+applicationSchema.index({ user_id: 1, vacancy_id: 1 }, { unique: true })
 
-export const Application = mongoose.model("Application", applicationSchema);
+export const Application = mongoose.model("Application", applicationSchema)

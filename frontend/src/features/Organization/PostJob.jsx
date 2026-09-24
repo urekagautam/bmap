@@ -1,3 +1,5 @@
+"use client"
+
 import { useForm, Controller } from "react-hook-form"
 import { Link, useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
@@ -17,11 +19,9 @@ import {
   JOB_BY_LOCATION,
   JOB_BY_LEVEL,
   SALARY_TYPE,
-}
-from "../../constants/constants.js"
+} from "../../constants/constants.js"
 import { apiPostVacancy } from "../../services/apiVacancy.js"
 import useOrgAuth from "../../hooks/useOrgAuth.js"
-
 import styles from "./PostJob.module.css"
 import ToggleSwitch from "../../component/ToggleSwitch.jsx"
 import MultiSelect from "../../component/MultiSelect.jsx"
@@ -48,7 +48,7 @@ export default function PostJob() {
       reqEmployees: "",
       department: "",
       jobByTime: "fulltime",
-      jobByLocation: "on_site", 
+      jobByLocation: "on_site",
       jobLevel: "mid-level",
       salaryDisclosure: "fixed",
       minValue: "",
@@ -73,7 +73,6 @@ export default function PostJob() {
   const handleAdditionalInfo = (e) => {
     const raw = e.target.value
     const lines = raw.split("\n")
-
     const numbered = lines.map((line, i) => `${i + 1}. ${line.replace(/^\d+\.\s*/, "")}`)
     setValue("additionalInfo", numbered.join("\n"))
   }
@@ -87,7 +86,6 @@ export default function PostJob() {
   const onSubmit = async (data) => {
     try {
       setIsSubmitting(true)
-
       const vacancyData = {
         title: data.jobTitle,
         description: data.jobDescription,
@@ -99,7 +97,6 @@ export default function PostJob() {
         jobByTime: data.jobByTime,
         jobByLocation: data.jobByLocation,
         jobLevel: data.jobLevel,
-      
         salary: {
           type: data.salaryDisclosure,
           min: data.minValue ? Number.parseInt(data.minValue) : undefined,
@@ -112,18 +109,16 @@ export default function PostJob() {
         experience: typeof data.experience === "object" ? data.experience.value : data.experience,
         isExperienceRequired: data.isExperienceRequired,
         requiredEmployees: Number.parseInt(data.reqEmployees) || 1,
-        orgId: orgId, 
+        orgId: orgId,
       }
 
       console.log("Formatted vacancy data:", vacancyData)
       const response = await apiPostVacancy(vacancyData)
       console.log("API Response:", response)
-
       toast.success("Job posted successfully!")
       setTimeout(() => {
-        navigate("/cmpprofile")
+        navigate("/orgJobPostings")
       }, 1000)
-
       reset()
     } catch (error) {
       console.error("Error posting job:", error)
@@ -134,9 +129,13 @@ export default function PostJob() {
     }
   }
 
+  const handleCancel = () => {
+    navigate("/orgJobPostings")
+  }
+
   return (
     <section className={styles.postjobSection}>
-      <Link to="/cmpprofile" className={styles.backBtn}>
+      <Link to="/orgJobPostings" className={styles.backBtn}>
         <IconBack /> Back
       </Link>
       <div className={styles.formContainer}>
@@ -144,7 +143,6 @@ export default function PostJob() {
           <h1>Create New Job Posting</h1>
           <p>Fill in the details to create a new job vacancy</p>
         </div>
-
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className={styles.jobDetails}>
             <h2>Job Details</h2>
@@ -166,7 +164,6 @@ export default function PostJob() {
                   />
                   <span className={styles.error}>{errors.jobTitle?.message}</span>
                 </div>
-
                 <div className={styles.inputField}>
                   <label className={styles.fieldLabel}>Req No. of Employees.</label>
                   <InputField
@@ -187,7 +184,6 @@ export default function PostJob() {
                   />
                   <span className={styles.error}>{errors.reqEmployees?.message}</span>
                 </div>
-
                 <div className={styles.inputField}>
                   <label className={styles.fieldLabel}>
                     Department<span className={styles.requiredAsterisk}>*</span>
@@ -211,7 +207,6 @@ export default function PostJob() {
                   <span className={styles.error}>{errors.department?.message}</span>
                 </div>
               </div>
-
               <div className={styles.inputRow}>
                 <label className={styles.fieldLabel}>
                   Job Type <span className={styles.subLabel}>(by time)</span>
@@ -229,7 +224,6 @@ export default function PostJob() {
                   )}
                 />
               </div>
-
               <div className={styles.inputRow}>
                 <label className={styles.fieldLabel}>
                   <span className={styles.subLabel}>(by location)</span>
@@ -247,7 +241,6 @@ export default function PostJob() {
                   )}
                 />
               </div>
-
               <div className={styles.inputRow}>
                 <label className={styles.fieldLabel}>Job Level</label>
                 <Controller
@@ -265,7 +258,6 @@ export default function PostJob() {
               </div>
             </div>
           </div>
-
           <div className={styles.salaryDetails}>
             <h2>Salary Details</h2>
             <div className={styles.sd_container}>
@@ -286,7 +278,6 @@ export default function PostJob() {
                     />
                   )}
                 />
-
                 <div className={styles.minmax}>
                   <div className={styles.inputWrapper}>
                     <label className={styles.inputLabel}>
@@ -307,7 +298,6 @@ export default function PostJob() {
                     />
                     <span className={styles.error}>{errors.minValue?.message}</span>
                   </div>
-
                   <div className={styles.inputWrapper}>
                     <label className={styles.inputLabel}>Maximum</label>
                     <InputField
@@ -340,7 +330,6 @@ export default function PostJob() {
                   </div>
                 </div>
               </div>
-
               <div className={styles.rightSide}>
                 <div className={styles.inputRow}>
                   <label className={styles.fieldLabel}>Salary Type</label>
@@ -357,7 +346,6 @@ export default function PostJob() {
                     )}
                   />
                 </div>
-
                 <div className={styles.hideSalary}>
                   <label className={styles.fieldLabel}>Hide Salary</label>
                   <div className={styles.hideSwitch}>
@@ -378,7 +366,6 @@ export default function PostJob() {
               </div>
             </div>
           </div>
-
           <div className={styles.jobSpecs}>
             <h2>Job Specification</h2>
             <div className={styles.js_container}>
@@ -407,7 +394,6 @@ export default function PostJob() {
                   />
                   <span className={styles.error}>{errors.experienceCriteria?.message}</span>
                 </div>
-
                 <div className={styles.inputField}>
                   <label className={styles.fieldLabel}>
                     Experience<span className={styles.requiredAsterisk}>*</span>
@@ -432,7 +418,6 @@ export default function PostJob() {
                   />
                   <span className={styles.error}>{errors.experience?.message}</span>
                 </div>
-
                 <div className={styles.hideSalary}>
                   <label className={styles.fieldLabel}>Is experience mandatory to apply for this job ? </label>
                   <div className={styles.hideSwitch}>
@@ -451,14 +436,12 @@ export default function PostJob() {
                   </div>
                 </div>
               </div>
-
               <div className={styles.specialities}>
                 <div className={styles.selectfield}>
                   <label htmlFor="specialities">
                     Specialities
                     <span className={styles.requiredAsterisk}>*</span>
                   </label>
-
                   <Controller
                     name="specialities"
                     control={control}
@@ -483,7 +466,6 @@ export default function PostJob() {
                   />
                   <span className={styles.error}>{errors.specialities?.message}</span>
                 </div>
-
                 <div className={styles.selectedTags}>
                   <h2>Selected Specialities</h2>
                   <div className={styles.tagsContainer}>
@@ -511,13 +493,11 @@ export default function PostJob() {
                   </div>
                 </div>
               </div>
-
               <div className={styles.isSkillRequired}>
                 <div className={styles.mandatory}>
                   <IconInvalid />
                   <span>Enter up to 5 primary skills required for this position</span>
                 </div>
-
                 <div className={styles.mark}>
                   <Controller
                     name="isSkillsRequired"
@@ -533,7 +513,6 @@ export default function PostJob() {
                   <span>Mark this skill as required.</span>
                 </div>
               </div>
-
               <div className={styles.descXdocs}>
                 <div className={styles.about}>
                   <label className={styles.inputLabel}>
@@ -560,7 +539,6 @@ export default function PostJob() {
                   />
                   <span className={styles.error}>{errors.jobDescription?.message}</span>
                 </div>
-
                 <div className={styles.docXdeadline}>
                   <div className={styles.resume}>
                     <label className={styles.resume}>Required Document</label>
@@ -569,7 +547,6 @@ export default function PostJob() {
                       <span className={styles.resumeText}>Resume / cv</span>
                     </div>
                   </div>
-
                   <div className={styles.docs}>
                     <label className={styles.fieldLabel}>
                       Application Deadline
@@ -594,7 +571,6 @@ export default function PostJob() {
                   </div>
                 </div>
               </div>
-
               <div className={styles.about}>
                 <label className={styles.inputLabel}>
                   Additional Information
@@ -612,8 +588,7 @@ export default function PostJob() {
                       onChange={(e) => {
                         handleAdditionalInfo(e)
                       }}
-                      placeholder="1. Describe the benefits of your company
-2. Describe the perks"
+                      placeholder="1. Describe the benefits of your company2. Describe the perks"
                       rows={4}
                     />
                   )}
@@ -622,9 +597,8 @@ export default function PostJob() {
               </div>
             </div>
           </div>
-
           <div className={styles.buttons}>
-            <Button type="button" layout="sm" fill="outline" color="neutralLight">
+            <Button type="button" layout="sm" fill="outline" color="neutralLight" onClick={handleCancel}>
               Cancel
             </Button>
             <Button type="submit" layout="sm" disabled={isSubmitting}>

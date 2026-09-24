@@ -58,23 +58,62 @@ export default function useOrgAuth() {
   }, [])
 
   const setAuth = (authData) => {
-    const { organization, accessToken, refreshToken: newRefreshToken } = authData
+    try {
+      console.log("Setting auth data:", {
+        hasOrganization: !!authData.organization,
+        hasAccessToken: !!authData.accessToken,
+        hasRefreshToken: !!authData.refreshToken
+      });
 
-    localStorage.setItem("orgId", organization._id)
-    localStorage.setItem("orgAccessToken", accessToken)
-    localStorage.setItem("orgRefreshToken", newRefreshToken)
-    localStorage.setItem("orgName", organization.orgName || "")
-    localStorage.setItem("orgEmail", organization.email)
-    localStorage.setItem("ownersName", organization.ownersName || "")
+      const { organization, accessToken, refreshToken: newRefreshToken } = authData;
 
-    // Triggerring custom event to notify other components
-    window.dispatchEvent(new CustomEvent('orgAuthUpdated'))
+      if (!organization || !accessToken) {
+        console.error("Invalid auth data provided:", authData);
+        throw new Error("Invalid authentication data");
+      }
 
-    console.log("Organization auth data set successfully:", {
-      orgId: organization._id,
-      orgName: organization.orgName,
-      token: accessToken?.slice(0, 10) + "...",
-    })
+      // Ensure we have the required fields
+      const authState = {
+        _id: organization._id || organization.id,
+        orgName: organization.orgName || organization.name || "",
+        email: organization.email || "",
+        ownersName: organization.ownersName || organization.ownerName || "",
+        accessToken: accessToken,
+        refreshToken: newRefreshToken || ""
+      };
+
+      // Store in localStorage
+      localStorage.setItem("orgId", authState._id);
+      localStorage.setItem("orgAccessToken", authState.accessToken);
+      localStorage.setItem("orgRefreshToken", authState.refreshToken);
+      localStorage.setItem("orgName", authState.orgName);
+      localStorage.setItem("orgEmail", authState.email);
+      localStorage.setItem("ownersName", authState.ownersName);
+
+      // Update state
+      setOrgId(authState._id);
+      setToken(authState.accessToken);
+      setRefreshToken(authState.refreshToken);
+      setOrgName(authState.orgName);
+      setOrgEmail(authState.email);
+      setOwnersName(authState.ownersName);
+      setIsAuthenticated(true);
+
+      // Trigger custom event to notify other components
+      window.dispatchEvent(new CustomEvent('orgAuthUpdated'));
+
+      console.log("Organization auth data set successfully:", {
+        orgId: authState._id,
+        orgName: authState.orgName,
+        token: authState.accessToken?.slice(0, 8) + "...",
+      });
+
+      return authState;
+    } catch (error) {
+      console.error("Error in setAuth:", error);
+      clearAuth();
+      throw error;
+    }
   }
 
   const clearAuth = () => {

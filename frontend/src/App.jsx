@@ -20,6 +20,11 @@ import JoinAs from "./pages/JoinAs";
 import OrganizationLogin from "./pages/organization/OrganizationLogin";
 import JobDescriptionView from "./pages/user/JobDescriptionView";
 import CompanyProfile from "./features/Organization/CompanyProfile";
+import ViewApplicants from "./features/Organization/ViewApplicants";
+import OrganizationApplications from "./features/Organization/OrganizationApplications";
+
+import OrganizationJobPostings from "./features/Organization/OrganizationJobPostings";
+import JobApplicationDetails from "./features/User/ApplicationDetails";
 
 function App() {
 
@@ -45,6 +50,11 @@ function App() {
         
           {/* ORGANIZATION */}
           <Route path="/org" element={<DashboardPage />} />
+             {/* <Route path="/orgJobPostings" element={<DashboardPage />} /> */}
+          <Route path="/orgJobApplications" element={<OrganizationApplications />} />
+          <Route path="/orgJobPostings" element={<OrganizationJobPostings />} />
+          <Route path="/viewApplicants/:id" element={<ViewApplicants />} />
+          <Route path="/applicationDetails/:id" element={<JobApplicationDetails />} />
           <Route path="/org/signup" element={<OrganizationSignup />} />
           <Route path="/org/login" element={<OrganizationLogin />} />
           <Route path="/orgprofile" element={<ProfilePage />} />

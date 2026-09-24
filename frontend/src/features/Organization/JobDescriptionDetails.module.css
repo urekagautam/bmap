@@ -375,6 +375,11 @@
   color:var(--neutral90);
 }
 
+.description >p{
+text-wrap: wrap;
+    word-break: break-all;
+}
+
 .requirementsList{
   padding-left:2.4rem;
   padding-bottom: 0.8rem;

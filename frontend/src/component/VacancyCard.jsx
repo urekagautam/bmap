@@ -48,8 +48,8 @@ export default function VacancyCard({
           </div>
 
           <div className={styles.bottomRWrapper}>
-            <IconEyeOpen />
-            <h3>{views}</h3>
+           {/*  <IconEyeOpen />
+            <h3>{views}</h3> */}
           </div>
         </div>
       </div>

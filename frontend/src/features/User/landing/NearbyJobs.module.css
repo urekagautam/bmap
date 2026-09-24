@@ -3,6 +3,7 @@
     max-width: var(--maxwidth);
     margin: 0 auto;
     cursor: pointer;
+    margin-bottom: 2.4rem ;
   }
   
   .mainWrapper > header {

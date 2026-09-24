@@ -1,3 +1,5 @@
+"use client"
+
 import { Link, useParams } from "react-router-dom"
 import { useState, useEffect } from "react"
 import styles from "../Organization/JobDescriptionDetails.module.css"
@@ -20,23 +22,25 @@ import { IconBills } from "../../component/icons/IconBills.jsx"
 import { useNavigate } from "react-router-dom"
 import { apiGetVacancyDetails } from "../../services/apiVacancy.js"
 import { apiGetOrganizationDetails } from "../../services/apiOrganizationAuth.js"
+import { apiCheckApplicationStatus } from "../../services/apiAuth.js"
 import toast from "react-hot-toast"
 import { cns } from "../../utils/classNames.js"
 import { getFormattedCompanyInfo } from "../../utils/orgUtils.js"
 import { IconGreaterThan } from "../../component/icons/IconGreaterThan.jsx"
+import UserNavbar from "../../component/UserNavbar.jsx"
 
 export default function JobDescriptionViewDetails() {
   const navigate = useNavigate()
   const { id: jobId } = useParams()
-
   const [activeTab, setActiveTab] = useState("description")
+  const [hasApplied, setHasApplied] = useState(false)
+  const [applicationStatus, setApplicationStatus] = useState(null)
+  const [checkingApplicationStatus, setCheckingApplicationStatus] = useState(false)
 
   const parseSocialProfiles = (orgData) => {
     if (!orgData || !orgData.socialProfile) return {}
-
     try {
       const socialData = orgData.socialProfile
-
       return {
         instagram: socialData.insta || "",
         facebook: socialData.fb || "",
@@ -59,6 +63,35 @@ export default function JobDescriptionViewDetails() {
     navigate("/cmpprofile?tab=jobs")
   }
 
+  // Function to check application status
+  const checkApplicationStatus = async (userId, jobId) => {
+    if (!userId || !jobId) return
+
+    try {
+      setCheckingApplicationStatus(true)
+      console.log("🔍 Checking if user has applied for this job...")
+
+      const response = await apiCheckApplicationStatus(userId, jobId)
+
+      if (response.success && response.data) {
+        setHasApplied(response.data.hasApplied)
+        setApplicationStatus(response.data)
+
+        console.log("📊 Application status check result:", {
+          hasApplied: response.data.hasApplied,
+          status: response.data.statusLabel,
+          appliedAt: response.data.appliedAt,
+        })
+      }
+    } catch (error) {
+      console.error("Error checking application status:", error)
+      // Don't show error toast for this check, just log it
+      setHasApplied(false)
+    } finally {
+      setCheckingApplicationStatus(false)
+    }
+  }
+
   useEffect(() => {
     async function fetchData() {
       if (!jobId) {
@@ -69,16 +102,20 @@ export default function JobDescriptionViewDetails() {
 
       try {
         setIsLoading(true)
-
         const vacancyResponse = await apiGetVacancyDetails(jobId)
         console.log("Vacancy API Response:", vacancyResponse)
-
         const vacancy = vacancyResponse.data?.vacancy || vacancyResponse.vacancy || vacancyResponse
         setVacancyData(vacancy)
 
         console.log("Full vacancy data structure:", vacancy)
         console.log("Skills specifically:", vacancy.skillsRequired)
         console.log("All vacancy keys:", Object.keys(vacancy))
+
+        // Check application status if user is logged in
+        const userId = localStorage.getItem("userId")
+        if (userId && jobId) {
+          await checkApplicationStatus(userId, jobId)
+        }
 
         if (vacancy.orgId) {
           try {
@@ -88,7 +125,9 @@ export default function JobDescriptionViewDetails() {
             setOrgData(orgResponse)
           } catch (orgError) {
             console.error("Error fetching organization details:", orgError)
-            toast.error("Could not load organization details")
+            if (!orgError.message || !orgError.message.includes("No access token found")) {
+              toast.error("Could not load organization details")
+            }
           }
         }
 
@@ -142,18 +181,15 @@ export default function JobDescriptionViewDetails() {
     )
   }
 
-  // Formatting salary display structure ansar
+  // Formatting salary display structure
   const formatSalary = () => {
     if (!vacancyData.salary) return "Negotiable"
-
     if (vacancyData.hideSalary) return "Confidential"
-
     if (vacancyData.salary.type === "fixed") {
       return `${vacancyData.salary.min}`
     } else if (vacancyData.salary.type === "range") {
       return `${vacancyData.salary.min} - ${vacancyData.salary.max}`
     }
-
     return vacancyData.salary.min || "Negotiable"
   }
 
@@ -161,11 +197,8 @@ export default function JobDescriptionViewDetails() {
     try {
       const deadlineDate = new Date(dateString)
       const today = new Date()
-
-      // Resetting time to start of day for accurate day calculation
       deadlineDate.setHours(0, 0, 0, 0)
       today.setHours(0, 0, 0, 0)
-
       const timeDiff = deadlineDate.getTime() - today.getTime()
       const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24))
 
@@ -209,7 +242,6 @@ export default function JobDescriptionViewDetails() {
 
   const formatJobType = (type) => {
     if (!type) return "Not specified"
-
     const typeMap = {
       fulltime: "Full-time",
       parttime: "Part-time",
@@ -217,11 +249,9 @@ export default function JobDescriptionViewDetails() {
       internship: "Internship",
       freelance: "Freelance",
     }
-
     return typeMap[type] || type
   }
 
-  // Adding the experience criteria mapping after the other format functions
   const formatExperienceCriteria = (criteria) => {
     const criteriaMap = {
       more_than: "More than",
@@ -230,19 +260,14 @@ export default function JobDescriptionViewDetails() {
       less_than_or_equal_to: "Less than or equal to",
       equal_to: "Equal to",
     }
-
     return criteriaMap[criteria] || criteria
   }
 
-  // Updating the formatExperienceRequired function to use the mapping
   const formatExperienceRequired = () => {
     if (!vacancyData.isExperienceRequired) {
       return "No Experience Required"
     }
-
     let experienceText = ""
-
-    // Combining experienceCriteria and experience fields with proper formatting
     if (vacancyData.experienceCriteria && vacancyData.experience) {
       const formattedCriteria = formatExperienceCriteria(vacancyData.experienceCriteria)
       experienceText = `${formattedCriteria} ${vacancyData.experience}`
@@ -253,13 +278,11 @@ export default function JobDescriptionViewDetails() {
     } else {
       experienceText = "Experience Required"
     }
-
     return experienceText
   }
 
   const formatSkills = (skills) => {
     if (!skills || !Array.isArray(skills) || skills.length === 0) return []
-
     return skills.map((skill) => {
       return skill
         .split("_")
@@ -269,16 +292,16 @@ export default function JobDescriptionViewDetails() {
   }
 
   const companyInfo = getFormattedCompanyInfo(orgData, vacancyData)
-
   const { companyName, industry, employeeCount, foundedYear, address, phonenum, email, socials } = companyInfo
 
-  const coverImageUrl = "/CoverImage.jpg"
-  const profileImageUrl = "/CompanyProfileImage.png"
+  const coverImageUrl = orgData?.companyCover?.url || "/CoverImage.jpg"
+  const profileImageUrl = orgData?.companyLogo?.url || "/CompanyProfileImage.png"
 
   const deadlineDate = new Date(vacancyData?.deadline)
   const today = new Date()
   const timeDiff = deadlineDate.getTime() - today.getTime()
   const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24))
+
   const deadlineClass =
     daysDiff <= 0
       ? styles.expiredDeadline
@@ -288,234 +311,232 @@ export default function JobDescriptionViewDetails() {
           ? styles.soonDeadline
           : ""
 
+  // Check if user is logged in
+  const isLoggedIn = !!localStorage.getItem("userId")
+
   return (
-    <section className={styles.heroSection}>
-      <section className={styles.imagesSection}>
-        <div className={styles.coverImage}>
-          <img src={coverImageUrl || "/placeholder.svg"} alt="Cover" />
-        </div>
-        <div className={styles.profileImage}>
-          <img src={profileImageUrl || "/placeholder.svg"} alt="Profile" />
-        </div>
-      </section>
-
-      <section className={styles.mainWrapper}>
-        <div className={styles.headerDivison}>
-          <div className={styles.header}>
-            <h1>{companyName}</h1>
-            <div className={styles.companyInfo}>
-              <span>{industry}</span>
-              {employeeCount !== "Not specified" && (
-                <>
-                  <span className={styles.dot}>•</span>
-                  <span>{employeeCount}</span>
-                </>
-              )}
-              {foundedYear !== "N/A" && (
-                <>
-                  <span className={styles.dot}>•</span>
-                  <span>Founded {foundedYear}</span>
-                </>
-              )}
-            </div>
+    <>
+      <UserNavbar />
+      <section className={styles.heroSection}>
+        <section className={styles.imagesSection}>
+          <div className={styles.coverImage}>
+            <img src={coverImageUrl || "/placeholder.svg"} alt="Cover" />
           </div>
-
-          <div className={styles.buttons}>
-            <Link to={`/view-orgprofile/${vacancyData.orgId}`}>
-              <Button fill="outline" className={styles.updateBtn} layout="xs">
-                View Company <IconGreaterThan />
-              </Button>
-            </Link>
-           
+          <div className={styles.profileImage}>
+            <img src={profileImageUrl || "/placeholder.svg"} alt="Profile" />
           </div>
-        </div>
-
-        <div className={styles.aboutContent}>
-          <div className={styles.jobDescriptionWrapper}>
-            <div className={styles.cardWrapper}>
-              <div className={styles.cardHeader}>
-                <h1>{vacancyData.title}</h1>
-                <div className={styles.viewCount}>
-                  <IconEyeOpen />
-                  <span>{vacancyData.views || 0}</span>
-                </div>
-              </div>
-
-              <div className={styles.tagsContainer}>
-                <Tag
-                  data={formatJobType(vacancyData.jobByTime)}
-                  icon={<IconClock />}
-                  layout="primary"
-                  color="blue"
-                  size="md"
-                />
-
-                <Tag
-                  data={`Rs. ${formatSalary()} ${vacancyData.salaryPeriod || "Monthly"}`}
-                  icon={<IconBills />}
-                  layout="success"
-                  color="green"
-                  size="md"
-                />
-              </div>
-
-              <div className={styles.detailsContainer}>
-                <div className={styles.detailItem}>
-                  <IconLocationPinned />
-                  <span>{address}</span>
-                </div>
-
-                <div className={styles.detailItem}>
-                  <IconChartBar />
-                  <span>{formatJobLevel(vacancyData.jobLevel)}</span>
-                </div>
-              </div>
-
-              <div className={styles.detailsContainer}>
-                <div className={`${styles.bottomLWrapper} ${deadlineClass}`}>
-                  <IconHourglass />
-                  <h3>{formatDeadline(vacancyData.deadline)}</h3>
-                </div>
-
-                <div className={styles.detailItem}>
-                  <IconChartLinedUp />
-                  <span>{formatExperienceRequired()}</span>
-                </div>
+        </section>
+        <section className={styles.mainWrapper}>
+          <div className={styles.headerDivison}>
+            <div className={styles.header}>
+              <h1>{companyName}</h1>
+              <div className={styles.companyInfo}>
+                <span>{industry}</span>
+                {employeeCount !== "Not specified" && (
+                  <>
+                    <span className={styles.dot}>•</span>
+                    <span>{employeeCount}</span>
+                  </>
+                )}
+                {foundedYear !== "N/A" && (
+                  <>
+                    <span className={styles.dot}>•</span>
+                    <span>Founded {foundedYear}</span>
+                  </>
+                )}
               </div>
             </div>
-
-            <div className={styles.jobInfo}>
-              <div className={styles.tabs}>
-                <button
-                  type="button"
-                  className={cns(styles.tab, activeTab === "description" && styles.activeTab)}
-                  onClick={() => setActiveTab("description")}
-                >
-                  Decscription
-                </button>
-                <button
-                  type="button"
-                  className={cns(styles.tab, activeTab === "requirements" && styles.activeTab)}
-                  onClick={() => setActiveTab("requirements")}
-                >
-                  Requirements
-                </button>
-              </div>
-
-              {activeTab === "description" && (
-                <div className={styles.description}>
-                  <h3>Job Description</h3>
-                  <p>{vacancyData.description}</p>
-                </div>
-              )}
-
-              {activeTab === "requirements" && (
-                <div className={styles.requirement}>
-                  <h3>Requirements</h3>
-                  <div className={styles.requirementsList}>
-                    <ul>
-                      {vacancyData.additionalInfo.split(",").map((requirement, index) => (
-                        <li key={index}>{requirement.trim()}</li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className={styles.skillsContainer}>
-                    <div className={styles.skillsHeader}>
-                      <IconOrganizationBuilding />
-                      <h4>Key Skills:</h4>
-                    </div>
-                    <div className={styles.skillsTags}>
-                      {(() => {
-                        const skills = vacancyData.skillsRequired
-
-                        // If no skills available, show message
-                        if (!skills || (Array.isArray(skills) && skills.length === 0)) {
-                          return <span className={styles.notAvailable}>No skills mentioned as required</span>
-                        }
-
-                        // If skills exist, format and display them (restore original logic)
-                        const formattedSkills = formatSkills(skills)
-
-                        // If formatting resulted in empty array, show message
-                        if (!formattedSkills || formattedSkills.length === 0) {
-                          return <span className={styles.notAvailable}>No skills mentioned as required</span>
-                        }
-
-                        // Display the skills as tags
-                        return formattedSkills.map((skill, index) => (
-                          <Tag key={index} data={skill} layout="primary" color="neutral" size="md" />
-                        ))
-                      })()}
-                    </div>
-                  </div>
-
-              
-
-                </div>
-              )}
-            
-            </div>
-               <Link to={`/jobapplication/${jobId}`}>
-                <Button fill="outline" layout="sm" className={styles.applyNow}>Apply Now</Button>
+            <div className={styles.buttons}>
+              <Link to={`/view-orgprofile/${vacancyData.orgId}`}>
+                <Button fill="outline" className={styles.updateBtn} layout="xs">
+                  View Company <IconGreaterThan />
+                </Button>
               </Link>
+            </div>
           </div>
-
-          <div className={styles.infoAndHiring}>
-            <div className={styles.companyOtherInfo}>
-              <h2>Company Information</h2>
-              <div className={styles.infoList}>
-                <span>
-                  <IconOrganizationBuilding />
-                  {industry}
-                </span>
-                <span>
-                  <IconPeople />
-                  {employeeCount}
-                </span>
-                <span className={styles.showLocation}>
-                  <span className={styles.locationDetails}>
+          <div className={styles.aboutContent}>
+            <div className={styles.jobDescriptionWrapper}>
+              <div className={styles.cardWrapper}>
+                <div className={styles.cardHeader}>
+                  <h1>{vacancyData.title}</h1>
+                 {/*  <div className={styles.viewCount}>
+                    <IconEyeOpen />
+                    <span>{vacancyData.views || 0}</span>
+                  </div> */}
+                </div>
+                <div className={styles.tagsContainer}>
+                  <Tag
+                    data={formatJobType(vacancyData.jobByTime)}
+                    icon={<IconClock />}
+                    layout="primary"
+                    color="blue"
+                    size="md"
+                  />
+                  <Tag
+                    data={`Rs. ${formatSalary()} ${vacancyData.salaryPeriod || "Monthly"}`}
+                    icon={<IconBills />}
+                    layout="success"
+                    color="green"
+                    size="md"
+                  />
+                </div>
+                <div className={styles.detailsContainer}>
+                  <div className={styles.detailItem}>
                     <IconLocationPinned />
-                    {address}
-                  </span>
-                </span>
-                <span>
-                  <IconPhone />
-                  {phonenum}
-                </span>
-                <span>
-                  <IconEnvelope />
-                  {email}
-                </span>
+                    <span>{address}</span>
+                  </div>
+                  <div className={styles.detailItem}>
+                    <IconChartBar />
+                    <span>{formatJobLevel(vacancyData.jobLevel)}</span>
+                  </div>
+                </div>
+                <div className={styles.detailsContainer}>
+                  <div className={`${styles.bottomLWrapper} ${deadlineClass}`}>
+                    <IconHourglass />
+                    <h3>{formatDeadline(vacancyData.deadline)}</h3>
+                  </div>
+                  <div className={styles.detailItem}>
+                    <IconChartLinedUp />
+                    <span>{formatExperienceRequired()}</span>
+                  </div>
+                </div>
+              </div>
+              <div className={styles.jobInfo}>
+                <div className={styles.tabs}>
+                  <button
+                    type="button"
+                    className={cns(styles.tab, activeTab === "description" && styles.activeTab)}
+                    onClick={() => setActiveTab("description")}
+                  >
+                    Description
+                  </button>
+                  <button
+                    type="button"
+                    className={cns(styles.tab, activeTab === "requirements" && styles.activeTab)}
+                    onClick={() => setActiveTab("requirements")}
+                  >
+                    Requirements
+                  </button>
+                </div>
+                {activeTab === "description" && (
+                  <div className={styles.description}>
+                    <h3>Job Description</h3>
+                    <p>{vacancyData.description}</p>
+                  </div>
+                )}
+                {activeTab === "requirements" && (
+                  <div className={styles.requirement}>
+                    <h3>Requirements</h3>
+                    <div className={styles.requirementsList}>
+                      <ul>
+                        {vacancyData.additionalInfo.split(",").map((requirement, index) => (
+                          <li key={index}>{requirement.trim()}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className={styles.skillsContainer}>
+                      <div className={styles.skillsHeader}>
+                        <IconOrganizationBuilding />
+                        <h4>Key Skills:</h4>
+                      </div>
+                      <div className={styles.skillsTags}>
+                        {(() => {
+                          const skills = vacancyData.skillsRequired
+                          if (!skills || (Array.isArray(skills) && skills.length === 0)) {
+                            return <span className={styles.notAvailable}>No skills mentioned as required</span>
+                          }
+                          const formattedSkills = formatSkills(skills)
+                          if (!formattedSkills || formattedSkills.length === 0) {
+                            return <span className={styles.notAvailable}>No skills mentioned as required</span>
+                          }
+                          return formattedSkills.map((skill, index) => (
+                            <Tag key={index} data={skill} layout="primary" color="neutral" size="md" />
+                          ))
+                        })()}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              <div className={styles.socialInfo}>
-                <h4>Social Media</h4>
-                <div className={styles.socialsList}>
-                  {orgData?.socialProfile?.insta && (
-                    <a href={orgData.socialProfile.insta} target="_blank" rel="noopener noreferrer">
-                      <IconInstagram platform="instagram" />
-                    </a>
-                  )}
-                  {orgData?.socialProfile?.fb && (
-                    <a href={orgData.socialProfile.fb} target="_blank" rel="noopener noreferrer">
-                      <IconFacebook platform="facebook" />
-                    </a>
-                  )}
-                  {orgData?.socialProfile?.x && (
-                    <a href={orgData.socialProfile.x} target="_blank" rel="noopener noreferrer">
-                      <IconX platform="x" />
-                    </a>
-                  )}
-                  {!orgData?.socialProfile?.insta && !orgData?.socialProfile?.fb && !orgData?.socialProfile?.x && (
-                    <span className={styles.notAvailable}>No information available</span>
-                  )}
+              {/* Updated Apply Button Logic */}
+              {!isLoggedIn ? (
+                <Link to="/login">
+                  <Button fill="outline" layout="sm" className={styles.applyNow}>
+                    Login to Apply
+                  </Button>
+                </Link>
+              ) : checkingApplicationStatus ? (
+                <Button fill="outline" layout="sm" className={styles.applyNow} disabled>
+                  Checking Status...
+                </Button>
+              ) : hasApplied ? (
+                <Button fill="outline" layout="sm" className={styles.applyNow} disabled>
+                  {applicationStatus?.statusLabel && ` (${applicationStatus.statusLabel})`}
+                </Button>
+              ) : (
+                <Link to={`/jobapplication/${jobId}`}>
+                  <Button fill="outline" layout="sm" className={styles.applyNow}>
+                    Apply Now
+                  </Button>
+                </Link>
+              )}
+            </div>
+            <div className={styles.infoAndHiring}>
+              <div className={styles.companyOtherInfo}>
+                <h2>Company Information</h2>
+                <div className={styles.infoList}>
+                  <span>
+                    <IconOrganizationBuilding />
+                    {industry}
+                  </span>
+                  <span>
+                    <IconPeople />
+                    {employeeCount}
+                  </span>
+                  <span className={styles.showLocation}>
+                    <span className={styles.locationDetails}>
+                      <IconLocationPinned />
+                      {address}
+                    </span>
+                  </span>
+                  <span>
+                    <IconPhone />
+                    {phonenum}
+                  </span>
+                  <span>
+                    <IconEnvelope />
+                    {email}
+                  </span>
+                </div>
+                <div className={styles.socialInfo}>
+                  <h4>Social Media</h4>
+                  <div className={styles.socialsList}>
+                    {orgData?.socialProfile?.insta && (
+                      <a href={orgData.socialProfile.insta} target="_blank" rel="noopener noreferrer">
+                        <IconInstagram platform="instagram" />
+                      </a>
+                    )}
+                    {orgData?.socialProfile?.fb && (
+                      <a href={orgData.socialProfile.fb} target="_blank" rel="noopener noreferrer">
+                        <IconFacebook platform="facebook" />
+                      </a>
+                    )}
+                    {orgData?.socialProfile?.x && (
+                      <a href={orgData.socialProfile.x} target="_blank" rel="noopener noreferrer">
+                        <IconX platform="x" />
+                      </a>
+                    )}
+                    {!orgData?.socialProfile?.insta && !orgData?.socialProfile?.fb && !orgData?.socialProfile?.x && (
+                      <span className={styles.notAvailable}>No information available</span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </section>
       </section>
-    </section>
+    </>
   )
 }

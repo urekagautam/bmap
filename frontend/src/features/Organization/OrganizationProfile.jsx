@@ -19,6 +19,19 @@ export default function OrganizationProfile() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [profileLoaded, setProfileLoaded] = useState(false);
 
+  // Session validity check on mount
+  useEffect(() => {
+    const orgId = localStorage.getItem("orgId")
+    if (orgId) {
+      apiOrganizationGetProfile(orgId).catch(() => {
+        // The API service will handle logout and redirect
+      })
+    } else {
+      localStorage.clear()
+      window.location.href = "/org/login"
+    }
+  }, [])
+
   // Give some time for localStorage to be read and auth state to update
   useEffect(() => {
     console.log("Auth state:", { orgId, isAuthenticated });
@@ -87,13 +100,20 @@ export default function OrganizationProfile() {
         console.log("Loaded profile data:", profile);
       } catch (err) {
         console.error("Error loading profile data:", err);
-        // If profile doesn't exist yet, that's fine - user will fill it out
+        if (err?.response?.status === 404 || (err?.message && err.message.includes("not found"))) {
+          toast.error("Organization not found. Please sign up or log in again.");
+          setTimeout(() => navigate("/org/login"), 2000);
+        } else if (err?.response?.status === 500) {
+          toast.error("Server error. Please try again later or contact support.");
+        } else {
+          toast.error("Failed to load organization profile.");
+        }
         setProfileLoaded(true);
       }
     }
 
     fetchProfile();
-  }, [orgId, setValue, profileLoaded]);
+  }, [orgId, setValue, profileLoaded, navigate]);
 
   const onSubmit = async (data) => {
     if (!orgId) {
@@ -123,7 +143,11 @@ export default function OrganizationProfile() {
       }, 1000);
     } catch (error) {
       console.error("Setup error:", error);
-      toast.error(error.message || "Setup failed");
+      if (error?.response?.status === 500) {
+        toast.error("Server error during setup. Please try again later or contact support.");
+      } else {
+        toast.error(error.message || "Setup failed");
+      }
     } finally {
       setIsSubmitting(false);
     }

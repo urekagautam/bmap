@@ -7,7 +7,6 @@ import { Organization } from "../models/organization.model.js"
 // SET VACANCY DETAILS
 export const postVacancyDetails = asyncHandler(async (req, res, next) => {
   const org = { _id: "68301911226a795e1fc43b63" }
-
   const {
     title,
     description,
@@ -16,6 +15,8 @@ export const postVacancyDetails = asyncHandler(async (req, res, next) => {
     additionalInfo,
     skillsRequired,
     isSkillsRequired,
+    educationLevel,
+    isEducationRequired,
     jobByTime,
     jobByLocation,
     jobLevel,
@@ -43,6 +44,8 @@ export const postVacancyDetails = asyncHandler(async (req, res, next) => {
     additionalInfo: additionalInfo || "",
     skillsRequired: skillsRequired || [],
     isSkillsRequired: isSkillsRequired !== false,
+    educationLevel: educationLevel || "bachelor",
+    isEducationRequired: isEducationRequired !== false,
     jobByTime: jobByTime || "fulltime",
     jobByLocation: jobByLocation || "on_site",
     jobLevel: jobLevel || "mid-level",
@@ -78,23 +81,9 @@ export const postVacancyDetails = asyncHandler(async (req, res, next) => {
   )
 })
 
-// GET ALL VACANCY DETAILS
-export const getVacancyDetails = asyncHandler(async (req, res, next) => {
-  const vacancyId = req.params.id
-
-  const vacancy = await Vacancy.findById(vacancyId)
-
-  if (!vacancy) {
-    throw new ApiError(404, "Vacancy not found")
-  }
-
-  res.status(200).json(new ApiResponse(200, { vacancy }, "Vacancy details fetched successfullyyyy"))
-})
-
-//UPDATE VACANCY DETAILS FOR AN ID
+// UPDATE VACANCY DETAILS FOR AN ID
 export const updateVacancyDetails = asyncHandler(async (req, res, next) => {
   const vacancyId = req.params.id
-
   const {
     title,
     description,
@@ -103,6 +92,8 @@ export const updateVacancyDetails = asyncHandler(async (req, res, next) => {
     additionalInfo,
     skillsRequired,
     isSkillsRequired,
+    educationLevel,
+    isEducationRequired,
     jobByTime,
     jobByLocation,
     jobLevel,
@@ -137,6 +128,8 @@ export const updateVacancyDetails = asyncHandler(async (req, res, next) => {
     additionalInfo: additionalInfo || "",
     skillsRequired: skillsRequired || [],
     isSkillsRequired: isSkillsRequired !== false,
+    educationLevel: educationLevel || "bachelor",
+    isEducationRequired: isEducationRequired !== false,
     jobByTime: jobByTime || "fulltime",
     jobByLocation: jobByLocation || "on_site",
     jobLevel: jobLevel || "mid-level",
@@ -175,15 +168,110 @@ export const updateVacancyDetails = asyncHandler(async (req, res, next) => {
   )
 })
 
-// GET JOB DETAILS FOR APPLICATION 
+// GET ALL VACANCIES FOR AN ORGANIZATION (Job Listings Page)
+export const getOrganizationJobListings = asyncHandler(async (req, res, next) => {
+  try {
+    const orgId = req.params.id
+    console.log("Fetching job listings for orgId:", orgId)
+
+    if (!orgId) {
+      return next(new ApiError(400, "Organization ID is required"))
+    }
+
+    // Fetch all vacancies for this organization - INCLUDE isVacancyOpen field
+    const vacancies = await Vacancy.find({ orgId })
+      .select("title createdAt deadline requiredEmployees isVacancyOpen") // Added isVacancyOpen
+      .sort({ createdAt: -1 }) // Newest first
+      .lean()
+
+    console.log("Found vacancies:", vacancies.length)
+
+    if (!vacancies.length) {
+      return res.status(200).json(new ApiResponse(200, [], "No job postings found for this organization"))
+    }
+
+    // Format the response with status and time calculations
+    const formattedVacancies = vacancies.map((vacancy) => {
+      // Calculate time ago
+      const now = new Date()
+      const postedDate = new Date(vacancy.createdAt)
+      const diffInMinutes = Math.floor((now - postedDate) / (1000 * 60))
+
+      let timeAgo
+      if (diffInMinutes < 60) {
+        timeAgo = `${diffInMinutes}min ago`
+      } else if (diffInMinutes < 1440) {
+        timeAgo = `${Math.floor(diffInMinutes / 60)}hr ago`
+      } else if (diffInMinutes < 10080) {
+        const days = Math.floor(diffInMinutes / 1440)
+        timeAgo = `${days}d ago`
+      } else {
+        const weeks = Math.floor(diffInMinutes / 10080)
+        timeAgo = `${weeks}w ago`
+      }
+
+      // Determine OPEN/CLOSED status based on BOTH deadline AND isVacancyOpen field
+      let status = "OPEN"
+
+      // Check if deadline has passed
+      const deadlinePassed = vacancy.deadline && new Date(vacancy.deadline) <= now
+
+      // Vacancy is CLOSED if:
+      // 1. isVacancyOpen is false (positions filled or manually closed), OR
+      // 2. Deadline has passed
+      if (!vacancy.isVacancyOpen || deadlinePassed) {
+        status = "CLOSED"
+      }
+
+      console.log(
+        `Job: ${vacancy.title} - Status: ${status} - Posted: ${timeAgo} - isVacancyOpen: ${vacancy.isVacancyOpen} - DeadlinePassed: ${deadlinePassed}`,
+      )
+
+      return {
+        vacancyId: vacancy._id,
+        title: vacancy.title,
+        status: status,
+        timeAgo: timeAgo,
+        createdAt: vacancy.createdAt,
+        deadline: vacancy.deadline,
+        requiredEmployees: vacancy.requiredEmployees,
+        isVacancyOpen: vacancy.isVacancyOpen, // Include this for frontend use
+        deadlinePassed: deadlinePassed, // Include this for frontend use
+      }
+    })
+
+    console.log(`✅ Returning ${formattedVacancies.length} job listings`)
+    return res
+      .status(200)
+      .json(new ApiResponse(200, formattedVacancies, `Found ${formattedVacancies.length} job postings`))
+  } catch (error) {
+    console.error("Error fetching organization job listings:", error)
+    return next(new ApiError(500, "Something went wrong while fetching job listings"))
+  }
+})
+
+// GET ALL VACANCY DETAILS
+export const getVacancyDetails = asyncHandler(async (req, res, next) => {
+  const vacancyId = req.params.id
+
+  const vacancy = await Vacancy.findById(vacancyId)
+
+  if (!vacancy) {
+    throw new ApiError(404, "Vacancy not found")
+  }
+
+  res.status(200).json(new ApiResponse(200, { vacancy }, "Vacancy details fetched successfullyyyy"))
+})
+
+// GET JOB DETAILS FOR APPLICATION
 export const getJobDetailsForApplication = asyncHandler(async (req, res, next) => {
   const vacancyId = req.params.id
 
   try {
     const vacancy = await Vacancy.findById(vacancyId)
-      .populate("orgId", "name industry location") 
+      .populate("orgId", "name industry location")
       .select(
-        "title department jobByTime jobByLocation jobLevel salary salaryPeriod experienceCriteria experience deadline",
+        "title department jobByTime jobByLocation jobLevel salary salaryPeriod experienceCriteria experience deadline educationLevel",
       )
 
     if (!vacancy) {
@@ -198,12 +286,13 @@ export const getJobDetailsForApplication = asyncHandler(async (req, res, next) =
       jobByTime: vacancy.jobByTime,
       experienceCriteria: vacancy.experienceCriteria,
       experience: vacancy.experience,
+      educationLevel: vacancy.educationLevel,
       salaryMin: vacancy.salary?.min,
       salaryMax: vacancy.salary?.max,
       salaryPeriod: vacancy.salaryPeriod,
       deadline: vacancy.deadline,
       organizationName: vacancy.orgId?.name,
-      orgId: vacancy.orgId?._id
+      orgId: vacancy.orgId?._id,
     }
 
     res.status(200).json(new ApiResponse(200, jobDetails, "Job details fetched successfully"))
@@ -220,7 +309,7 @@ export const getAllVacancies = async (req, res) => {
 
     const vacancies = await Vacancy.find({ orgId })
       .sort({ createdAt: -1 }) // newest first
-      .select("title salary jobLevel jobByTime jobByLocation deadline createdAt")
+      .select("title salary jobLevel jobByTime jobByLocation deadline createdAt educationLevel")
 
     res.status(200).json({
       success: true,
@@ -236,15 +325,12 @@ export const getAllVacancies = async (req, res) => {
 // Haversine formula to calculate distance in km between two lat/lng points
 function getDistance(lat1, lng1, lat2, lng2) {
   const toRad = (value) => (value * Math.PI) / 180
-
   const R = 6371
   const dLat = toRad(lat2 - lat1)
   const dLng = toRad(lng2 - lng1)
-
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2)
-
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
   return R * c
 }
@@ -280,7 +366,6 @@ export const getNearbyVacancies = asyncHandler(async (req, res, next) => {
     ) {
       const [orgLng, orgLat] = org.location.coordinates // yesma GeoJSON stores as [lng, lat]
       const d = getDistance(userLat, userLng, orgLat, orgLng)
-
       console.log(`Distance to org ${org._id}: ${d.toFixed(2)} km`)
 
       if (d <= distance) {
@@ -294,47 +379,43 @@ export const getNearbyVacancies = asyncHandler(async (req, res, next) => {
   console.log("Nearby Org IDs:", nearbyOrgIds)
 
   const jobs = await Vacancy.find({ orgId: { $in: nearbyOrgIds } })
-
   console.log("Jobs found:", jobs.length)
 
   res.status(200).json(new ApiResponse(200, { jobs }, "Nearby vacancies fetched successfully"))
 })
 
-
 export const getFilteredVacancies = asyncHandler(async (req, res) => {
-  const {
-    jobLevel,
-    jobByTime,
-    jobByLocation,
-    minSalary,
-    maxSalary,
-    searchQuery,
-  } = req.query;
+  const { jobLevel, jobByTime, jobByLocation, minSalary, maxSalary, searchQuery, educationLevel } = req.query
 
-  const filter = {};
+  const filter = {}
 
   // Job level
   if (jobLevel) {
-    filter.jobLevel = { $in: Array.isArray(jobLevel) ? jobLevel : [jobLevel] };
+    filter.jobLevel = { $in: Array.isArray(jobLevel) ? jobLevel : [jobLevel] }
   }
 
   // Job type (by time)
   if (jobByTime) {
-    filter.jobByTime = { $in: Array.isArray(jobByTime) ? jobByTime : [jobByTime] };
+    filter.jobByTime = { $in: Array.isArray(jobByTime) ? jobByTime : [jobByTime] }
   }
 
   // Job mode (by location)
   if (jobByLocation) {
     filter.jobByLocation = {
       $in: Array.isArray(jobByLocation) ? jobByLocation : [jobByLocation],
-    };
+    }
+  }
+
+  // Education level filter
+  if (educationLevel) {
+    filter.educationLevel = { $in: Array.isArray(educationLevel) ? educationLevel : [educationLevel] }
   }
 
   // Salary filter
   if (minSalary || maxSalary) {
-    filter["salary.min"] = {};
-    if (minSalary) filter["salary.min"].$gte = parseInt(minSalary);
-    if (maxSalary) filter["salary.min"].$lte = parseInt(maxSalary);
+    filter["salary.min"] = {}
+    if (minSalary) filter["salary.min"].$gte = Number.parseInt(minSalary)
+    if (maxSalary) filter["salary.min"].$lte = Number.parseInt(maxSalary)
   }
 
   // Text search on title, description, department
@@ -343,15 +424,13 @@ export const getFilteredVacancies = asyncHandler(async (req, res) => {
       { title: { $regex: searchQuery, $options: "i" } },
       { description: { $regex: searchQuery, $options: "i" } },
       { department: { $regex: searchQuery, $options: "i" } },
-    ];
+    ]
   }
 
   const vacancies = await Vacancy.find(filter)
     .sort({ createdAt: -1 })
     .populate("orgId", "name location") // optional
-    .exec();
+    .exec()
 
-  res.status(200).json(
-    new ApiResponse(200, { vacancies }, "Vacancies fetched successfully")
-  );
-});
+  res.status(200).json(new ApiResponse(200, { vacancies }, "Vacancies fetched successfully"))
+})

@@ -3,6 +3,7 @@ import { User } from "../models/user.model.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { ApiError } from "../utils/ApiError.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
+import { uploadImage } from "../config/multer.js"
 import {
   loginOrganization,
   registerOrganization,
@@ -11,6 +12,9 @@ import {
   getOrganizationProfile,
   getOrganizationProfileForEdit,
   getOrganizationDetails,
+  uploadOrgImage,
+  deleteOrgImage,
+  updateOrganizationLocation,
 } from "../controllers/organization.controller.js"
 import { verifyOrgJWT } from "../middlewares/verifyOrgJWT.middleware.js"
 
@@ -53,6 +57,19 @@ router.get(
   }),
 )
 
+// Organization profile routes
+router.route("/organization/profile/:id").get(verifyOrgJWT, getOrganizationProfile)
+router.route("/organization/details/:id").get(getOrganizationDetails)
+router.route("/organization/edit/:id").get(verifyOrgJWT, getOrganizationProfileForEdit)
+
+// Organization image routes
+router.post("/upload-image/:id", verifyOrgJWT, uploadImage.single("image"), uploadOrgImage)
+router.delete("/delete-image/:id", verifyOrgJWT, deleteOrgImage)
+
+// Legacy routes (for backward compatibility)
 router.route("/profile/:id").get(verifyOrgJWT, getOrganizationProfile)
+router.route("/getOrganizationDetails/:id").get(getOrganizationDetails)
+router.route("/getOrganizationDetailsForEdit/:id").get(getOrganizationProfileForEdit)
+router.patch("/updateLocation/:id", updateOrganizationLocation)
 
 export default router
